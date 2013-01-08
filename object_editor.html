@@ -18,7 +18,7 @@
 
         <script src="threejs/three.js"></script>
 
-        <script src="scripts/EditorScene.js"></script>
+        <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
         <script src="scripts/GridGeometry.js"></script>
         <script src="scripts/CameraController.js"></script>
@@ -37,7 +37,7 @@
 
             var renderer;
             var camera, cameraController, projector;
-            var editorScene, interfaceScene;
+            var objectScene, interfaceScene;
 
             var mouse = new THREE.Vector2(0, 0);
 			
@@ -67,19 +67,19 @@
                 cameraController.userZoomSpeed = 2.0;
                 //cameraController.addEventListener( 'change', render );
 				
-                editorScene = new OSMEX.EditorScene();
+                objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
-                editorScene.fog = new THREE.Fog( 0xffffff, 1, 1500 );
-                editorScene.fog.color.setHSV( 0.6, 0.05, 1 );
-                interfaceScene.fog = editorScene.fog;
+                objectScene.fog = new THREE.Fog( 0xffffff, 1, 1500 );
+                objectScene.fog.color.setHSV( 0.6, 0.05, 1 );
+                interfaceScene.fog = objectScene.fog;
 
-                editorScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
+                objectScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
                 interfaceScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
 				
-                var editorLight = new THREE.DirectionalLight( 0xffffff);
-                editorLight.position = camera.position;
-                editorScene.add( editorLight );
+                var objectLight = new THREE.DirectionalLight( 0xffffff);
+                objectLight.position = camera.position;
+                objectScene.add( objectLight );
 				
                 var interfaceLight = new THREE.DirectionalLight( 0xffffff);
                 interfaceLight.position = camera.position;
@@ -90,12 +90,12 @@
                 groundMaterial.side = THREE.DoubleSide;
                 var groundGeometry = new OSMEX.GridGeometry( 100, 100, 20, 20 );
                 groundGrid = new THREE.Mesh( groundGeometry, groundMaterial );
-                editorScene.add( groundGrid );        
+                objectScene.add( groundGrid );        
                 
                 var blockGeometry = new THREE.CubeGeometry( 10, 10, 10 );
                 var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );//new THREE.MeshBasicMaterial( { color: 0xffffff } );//vertexColors: THREE.FaceColors } );
                 var cubeBlock = new OSMEX.Block( blockGeometry, blockMaterial );
-                editorScene.add( cubeBlock );	
+                objectScene.add( cubeBlock );	
 				
                 sizerBasis = new OSMEX.SizerArrowBasis();
                 interfaceScene.add(sizerBasis);
@@ -107,7 +107,7 @@
                 // RENDERER
 
                 renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-                renderer.setClearColor( editorScene.fog.color, 1 );
+                renderer.setClearColor( objectScene.fog.color, 1 );
                 renderer.autoClear = false;
 
                 container.appendChild( renderer.domElement );
@@ -157,7 +157,7 @@
                 
                 if (pickedObject === null) {
                     
-                    pickedObject = getFirstSuitableObject(raycaster, editorScene.children);
+                    pickedObject = getFirstSuitableObject(raycaster, objectScene.children);
                 }
                 
                 return pickedObject;
@@ -298,7 +298,7 @@
             function render() {
                 
                 renderer.clear();
-                renderer.render( editorScene, camera );
+                renderer.render( objectScene, camera );
                 
                 renderer.clear(false, true, false); // clear only Depth
                 renderer.render( interfaceScene, camera );
