@@ -2,6 +2,8 @@ var OSMEX = OSMEX || { REVISION: '1' };
 
 OSMEX.Arrow = function ( dir, origin, length, hex ) {
     
+   
+    
     THREE.Object3D.call( this );
     this.name = "Arrow";
 	
@@ -24,23 +26,20 @@ OSMEX.Arrow = function ( dir, origin, length, hex ) {
         color: hex, 
         shading: THREE.SmoothShading, 
         ambient: 0xffffff
-    } );//new THREE.MeshBasicMaterial( { color: hex } );
+    } );
     
-    /*var cylinderGeometry = new THREE.CylinderGeometry( 0.025, 0.025, 1, 5, 5 );
-    this.cylinder = new THREE.Mesh( cylinderGeometry, meshMaterial );
-    this.cylinder.position.set( 0, 0.5, 0 );
-    this.cylinder.pickable = false;
-    this.add( this.cylinder );*/
 
     var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
     this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
     this.cone.position.set( 0, 1, 0 );
     this.add( this.cone );
-
+    
     if ( origin instanceof THREE.Vector3 ) this.position = origin;
 	
     this.len = 0;
     this.setLength( length );
+    
+ 
 };
 
 OSMEX.Arrow.prototype = Object.create( THREE.Object3D.prototype );
@@ -75,13 +74,12 @@ OSMEX.Arrow.prototype.setLength = function ( length ) {
     this.len = length;
     this.line.scale.y = length;
     this.cone.position.y = length;
+  //  OSMEX.Torus.prototype.setPosition.call(this, length);
     
-    //this.scale.set( length, length, length );
 };
 
 OSMEX.Arrow.prototype.setColor = function ( hex ) {
     
     this.line.material.color.setHex( hex );
-    //this.cylinder.material.color.setHex( hex );
     this.cone.material.color.setHex( hex );
 }; 

@@ -24,11 +24,13 @@
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/Block.js"></script>
         <script src="scripts/Arrow.js"></script>
+        <script src="scripts/Torus.js"></script>
         <script src="scripts/SizerArrow.js"></script>
         <script src="scripts/SizerArrowBasis.js"></script>
+        <script src="scripts/Rotation.js"></script>
 
         <script>
-
+            
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
@@ -41,12 +43,12 @@
 
             var mouse = new THREE.Vector2(0, 0);
 			
-            var PICKED, SELECTED, DRAGGING, SIZING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING;
             var offsetVector = new THREE.Vector3();
             
             var groundGrid;
 			
-            var sizerBasis, sizerPlane;
+            var sizerBasis, rotationBasis, sizerPlane;
 
             init();
             animate();
@@ -99,6 +101,9 @@
 				
                 sizerBasis = new OSMEX.SizerArrowBasis();
                 interfaceScene.add(sizerBasis);
+                
+               // rotationBasis = new OSMEX.RotationArrowBasis();
+               // interfaceScene.add(rotationBasis);
                 
                 sizerPlane = new THREE.Plane();
 						
@@ -176,7 +181,7 @@
 	            projector.unprojectVector( vector, camera );
                     var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
                     var intersects = raycaster.intersectObject(groundGrid);
-                    
+                 
                     if ( intersects.length > 0 ) {
                         
                         DRAGGING.position.copy(intersects[0].point.subSelf( offsetVector ));
@@ -193,14 +198,31 @@
                         
                         intersectPoint.subSelf(SIZING.matrixWorld.getPosition());
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
-                        
+
                         var len = SIZING.dir.dot(intersectPoint);
-                        
+
                         // TODO: workaround should be reimplemented
                         if (Math.abs(SIZING.len - len) < (SIZING.maxLength - SIZING.minLength)) {
                             
                             SIZING.setLength(len);
                         }
+                    }
+                }
+                else if ( ROTATING ) {
+                    
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+                    projector.unprojectVector( vector, camera );
+                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersectPoint = ray.intersectPlane(sizerPlane);
+
+                    if (intersectPoint !== undefined) {
+                        
+                        intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
+                        intersectPoint.multiplyScalar(1.0 / ROTATING.parent.scale.x); // to compensate changing scale on changing distance
+
+                        var angle = ROTATING.dir.dot(intersectPoint);
+                            ROTATING.setAngle(angle);
+                        
                     }
                 }
                 else {
@@ -250,9 +272,22 @@
                             var sizingPos = SIZING.matrixWorld.getPosition();
                             
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(SIZING.dir);                            
+                            var rightDir = cameraDir.clone().crossSelf(SIZING.dir);  
                             var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
+  
+                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
+                        }
+                        else if ( pickRef instanceof OSMEX.Rotation ) {
                             
+                            ROTATING = pickRef;
+                            
+                            var sizingPos = ROTATING.matrixWorld.getPosition();
+                            
+                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
+                            var rightDir = cameraDir.clone().crossSelf(ROTATING.dir);  
+                            var forwardDir = ROTATING.dir.clone().crossSelf(rightDir);
+  
                             sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                         }
@@ -267,6 +302,7 @@
                     }
                     
                     sizerBasis.setTarget(SELECTED);
+                    //rotationBasis.setTarget(SELECTED);
                 }
 
             }
@@ -279,6 +315,7 @@
                     
                     DRAGGING = null;
                     SIZING = null;
+                    ROTATING = null;
                 }
             }
 
