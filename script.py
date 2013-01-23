@@ -110,25 +110,57 @@ def searchNode(node_id, nodes):
             return node
     return 0
 
-#def checkNodeAngle():
+def checkNodeAngle(firstNode, secondNode):
+    a = secondNode[2] - firstNode[2]
+    b = secondNode[1] - firstNode[1]
+    c = sqrt(a*a+b*b)
+    angle = asin(a/c)
+    #grad = 180 - (90 +fabs((angle * 180) / pi))
+    return (angle * 180) / pi
+    #return grad
 
-def parseBuildingsData(nodes, ways):
+def calculateDistance(firstNode, secondNode):
+    return round(111.2 *sqrt(pow((firstNode[1]-secondNode[1]),2)\
+                         +pow((firstNode[2]-secondNode[2])*cos(pi*firstNode[1]/180),2))*1000)
+
+def createRectangle(building):
+    print calculateDistance(building[0], building[1])
+
+def parseBuildingsData(nodes, waysArray):
+    ways = waysArray
     buildingArray = []
     for building in ways:
+        print "******************"
         count_nodes = len(building[1])
         node_index = 0
         nodesArray = []
+        previousAngle = -200
         while node_index < count_nodes:
+            if (node_index == count_nodes - 1) and (building[1][0] == building[1][node_index]):
+                break
             node_id = building[1][node_index]
             node = searchNode(node_id, nodes)
-            if (node_index == count_nodes - 1) and (building[1][0] == building[1][node_index]):
-                node_index += 1
-                continue
-            nodesArray.append(node)
+            if node_index != 0:
+                angle = checkNodeAngle(searchNode(building[1][node_index - 1], nodes), node)
+                if fabs(previousAngle - angle) > 15:
+                    nodesArray.append(node)
+                    previousAngle = angle
+                    print angle
+                else:
+                    print "point remove"
+                    del nodesArray[len(nodesArray) - 1]
+                    print angle
+                    #print previousAngle
+                    #print building
+                    nodesArray.append(node)
+                    previousAngle = checkNodeAngle(nodesArray[len(nodesArray) - 2], node)
+                    #print previousAngle
+                    #print angle
+            else:
+                nodesArray.append(node)
             node_index += 1
         buildingArray.append(nodesArray)
     return buildingArray
-
 
 print "Please, enter file name: "
 FILE_NAME = raw_input()
@@ -138,7 +170,7 @@ print("[%s] Parse nodes...Done!\n" % datetime.today().strftime('%H:%M:%S'))
 way_list = parseWays(FILE_NAME)
 print("[%s] Parse ways...Done!\n" % datetime.today().strftime('%H:%M:%S'))
 buildingArray = parseBuildingsData(node_list, way_list)
-
+createRectangle(buildingArray[0])
 
 coord_start = []
 coord_second = []
