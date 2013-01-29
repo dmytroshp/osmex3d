@@ -7,7 +7,6 @@ OSMEX.Arrow = function ( dir, origin, length, hex ) {
     THREE.Object3D.call( this );
     this.name = "Arrow";
     
-    var that = this;
     this.pickable = false;
     
     this.dir = null;
@@ -40,11 +39,6 @@ OSMEX.Arrow = function ( dir, origin, length, hex ) {
     this.len = 0;
     this.setLength( length );
     this.setBasicArrowLength( );
-    that.coolmethod = function () 
-    {
-        alert ("num");
-    }
-    
  
 };
 

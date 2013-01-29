@@ -6,7 +6,6 @@ OSMEX.SizerArrowBasis = function ( ) {
     
     THREE.Object3D.call( this );
     
-    //this.pickable = true;
     this.target = null;
 	
     this.AxisPositiveX = new OSMEX.SizerArrow( new THREE.Vector3( 1, 0, 0 ), 0xff0000 );  

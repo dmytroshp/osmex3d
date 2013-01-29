@@ -4,7 +4,6 @@ OSMEX.Rotation = function ( dir, hex ) {
     
     OSMEX.Torus.call( this, dir, new THREE.Vector3( 0, 0, 0 ), 30, hex );
 
-    //this.pickable = true;
     this.torus.pickable = true;
     this.torus.pickRef = this;
     

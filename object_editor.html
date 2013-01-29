@@ -176,7 +176,6 @@
                 
                 if ( DRAGGING ) {
                     
-                   // console.log(DRAGGING.position.x + "--" + DRAGGING.scale.x);
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
                     var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
@@ -218,7 +217,6 @@
                     if (intersectPoint !== undefined) {
                         
                         intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
-                     // intersectPoint.multiplyScalar(2.0/* / ROTATING.parent.scale.x*/); // to compensate changing scale on changing distance
 
                         var angle = ROTATING.dir.dot(intersectPoint);
                             ROTATING.setAngle(angle);
@@ -289,7 +287,6 @@
                             var forwardDir = ROTATING.dir.clone().crossSelf(rightDir);
   
                             sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
-                            // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                         }
                         else {
                             
