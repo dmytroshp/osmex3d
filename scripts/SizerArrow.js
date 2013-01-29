@@ -6,7 +6,7 @@ OSMEX.SizerArrow = function ( dir, hex ) {
     this.name = "SizeArrow";
     
     this.minLength = 10;
-    this.maxLength = 50;
+    this.maxLength = 75;
 	
     this.cone.pickable = true;
     this.cone.pickRef = this;
@@ -28,6 +28,6 @@ OSMEX.SizerArrow.prototype.setLength = function ( length ) {
     }
     
     if (this.sizeFunc) this.sizeFunc(length / 30.0);
-    
+
     OSMEX.Arrow.prototype.setLength.call(this, length);
 };

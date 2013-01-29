@@ -44,6 +44,7 @@
             var mouse = new THREE.Vector2(0, 0);
 			
             var PICKED, SELECTED, DRAGGING, SIZING, ROTATING;
+            var BASIS_ARROW_LENGTH = 30;
             var offsetVector = new THREE.Vector3();
             
             var groundGrid;
@@ -101,9 +102,7 @@
 				
                 sizerBasis = new OSMEX.SizerArrowBasis();
                 interfaceScene.add(sizerBasis);
-                
-               // rotationBasis = new OSMEX.RotationArrowBasis();
-               // interfaceScene.add(rotationBasis);
+
                 
                 sizerPlane = new THREE.Plane();
 						
@@ -177,6 +176,7 @@
                 
                 if ( DRAGGING ) {
                     
+                   // console.log(DRAGGING.position.x + "--" + DRAGGING.scale.x);
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
                     var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
@@ -218,7 +218,7 @@
                     if (intersectPoint !== undefined) {
                         
                         intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
-                        intersectPoint.multiplyScalar(1.0 / ROTATING.parent.scale.x); // to compensate changing scale on changing distance
+                     // intersectPoint.multiplyScalar(2.0/* / ROTATING.parent.scale.x*/); // to compensate changing scale on changing distance
 
                         var angle = ROTATING.dir.dot(intersectPoint);
                             ROTATING.setAngle(angle);
@@ -302,7 +302,6 @@
                     }
                     
                     sizerBasis.setTarget(SELECTED);
-                    //rotationBasis.setTarget(SELECTED);
                 }
 
             }
@@ -312,7 +311,10 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
-                    
+                    if (SIZING)
+                        {
+                             //OSMEX.Arrow.coolmethod();
+                        }
                     DRAGGING = null;
                     SIZING = null;
                     ROTATING = null;

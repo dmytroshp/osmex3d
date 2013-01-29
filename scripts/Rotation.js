@@ -8,13 +8,13 @@ OSMEX.Rotation = function ( dir, hex ) {
     this.torus.pickable = true;
     this.torus.pickRef = this;
     
-    this.sizeFunc = null;
+    this.rotationFunc = null;
 };
 
 OSMEX.Rotation.prototype = Object.create( OSMEX.Torus.prototype );
 
 OSMEX.Rotation.prototype.setAngle = function ( angle ) {
     
-    if (this.rotationFunc) this.rotationFunc(angle / 30.0);
+    if (this.rotationFunc) this.rotationFunc(angle / 20.0);
     
 };

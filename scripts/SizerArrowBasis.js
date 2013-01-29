@@ -1,5 +1,7 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
+var SCALE_PREV=0;
+
 OSMEX.SizerArrowBasis = function ( ) {
     
     THREE.Object3D.call( this );
@@ -66,14 +68,14 @@ OSMEX.SizerArrowBasis.prototype.setTarget = function ( target ) {
         this.position = target.position;
         this.traverse( function( object ) { object.visible = true } );
         
-        this.AxisPositiveX.sizeFunc = function(target) { return function(scale) { target.scale.x = scale } }(this.target);
-        this.AxisNegativeX.sizeFunc = function(target) { return function(scale) { target.scale.x = scale } }(this.target);
+        this.AxisPositiveX.sizeFunc = function(target) { return function(scale) { target.scale.x = scale; target.position.x += (scale-SCALE_PREV)*5; SCALE_PREV=scale; /*console.log(target.position.x) */} }(this.target);
+        this.AxisNegativeX.sizeFunc = function(target) { return function(scale) { target.scale.x = scale; target.position.x -= (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
         
-        this.AxisPositiveY.sizeFunc = function(target) { return function(scale) { target.scale.y = scale } }(this.target);
-        this.AxisNegativeY.sizeFunc = function(target) { return function(scale) { target.scale.y = scale } }(this.target);
+        this.AxisPositiveY.sizeFunc = function(target) { return function(scale) { target.scale.y = scale; target.position.y += (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
+        this.AxisNegativeY.sizeFunc = function(target) { return function(scale) { target.scale.y = scale; target.position.y -= (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
         
-        this.AxisPositiveZ.sizeFunc = function(target) { return function(scale) { target.scale.z = scale } }(this.target);
-        this.AxisNegativeZ.sizeFunc = function(target) { return function(scale) { target.scale.z = scale } }(this.target);
+        this.AxisPositiveZ.sizeFunc = function(target) { return function(scale) { target.scale.z = scale; target.position.z += (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
+        this.AxisNegativeZ.sizeFunc = function(target) { return function(scale) { target.scale.z = scale; target.position.z -= (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
         
         this.AxisPositiveXR.rotationFunc = function(target) { return function(angle) { target.rotation.x = angle } }(this.target);
         this.AxisNegativeXR.rotationFunc = function(target) { return function(angle) { target.rotation.x = angle } }(this.target);
