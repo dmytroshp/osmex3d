@@ -39,6 +39,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex ) {
 	
     this.len = 0;
     this.setLength( length );
+    this.setBasicArrowLength( );
     that.coolmethod = function () 
     {
         alert ("num");
@@ -78,9 +79,15 @@ OSMEX.Arrow.prototype.setLength = function ( length ) {
     
     this.len = length;
     this.line.scale.y = length;
-    this.cone.position.y = length;
-     
-   // OSMEX.Torus.prototype.setPosition.call(this, length);
+    this.cone.position.y = length;    
+    
+};
+
+OSMEX.Arrow.prototype.setBasicArrowLength = function ( ) {
+    
+    this.len = 30;
+    this.line.scale.y = 30;
+    this.cone.position.y = 30;    
     
 };
 

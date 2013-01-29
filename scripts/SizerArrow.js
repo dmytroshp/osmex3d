@@ -5,7 +5,7 @@ OSMEX.SizerArrow = function ( dir, hex ) {
     OSMEX.Arrow.call( this, dir, new THREE.Vector3( 0, 0, 0 ), 30, hex );
     this.name = "SizeArrow";
     
-    this.minLength = 10;
+    this.minLength = 5;
     this.maxLength = 75;
 	
     this.cone.pickable = true;

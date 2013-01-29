@@ -65,17 +65,78 @@ OSMEX.SizerArrowBasis.prototype.setTarget = function ( target ) {
     
     if ( target ) {
         
+        var SCALE_PREV=0;
+        
         this.position = target.position;
         this.traverse( function( object ) { object.visible = true } );
         
-        this.AxisPositiveX.sizeFunc = function(target) { return function(scale) { target.scale.x = scale; target.position.x += (scale-SCALE_PREV)*5; SCALE_PREV=scale; /*console.log(target.position.x) */} }(this.target);
-        this.AxisNegativeX.sizeFunc = function(target) { return function(scale) { target.scale.x = scale; target.position.x -= (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
+        this.AxisPositiveX.sizeFunc = function(target) { return function(scale) {
+                /*console.log(target.scale.x);*/
+                if (Math.abs(scale-SCALE_PREV) < 0.2 /*&& target.scale.x >= 0.3*/){                  
+                    if(scale-SCALE_PREV > 0) target.scale.x += Math.abs(scale-SCALE_PREV);
+                        else target.scale.x -= Math.abs(scale-SCALE_PREV);  
+                    target.position.x += (scale-SCALE_PREV)*5;
+                }                              
+                SCALE_PREV=scale; 
+                
+        } }(this.target);
+    
+        this.AxisNegativeX.sizeFunc = function(target) { return function(scale) {
+                
+                if (Math.abs(scale-SCALE_PREV) < 0.2 /*&& target.scale.x >= 0.3*/){                  
+                    if(scale-SCALE_PREV > 0) target.scale.x += Math.abs(scale-SCALE_PREV);
+                        else target.scale.x -= Math.abs(scale-SCALE_PREV);  
+                    target.position.x -= (scale-SCALE_PREV)*5;
+                }                              
+                SCALE_PREV=scale; 
+              
+        } }(this.target);
         
-        this.AxisPositiveY.sizeFunc = function(target) { return function(scale) { target.scale.y = scale; target.position.y += (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
-        this.AxisNegativeY.sizeFunc = function(target) { return function(scale) { target.scale.y = scale; target.position.y -= (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
+        this.AxisPositiveY.sizeFunc = function(target) { return function(scale) { 
+                                
+                if (Math.abs(scale-SCALE_PREV) < 0.2 /*&& target.scale.x >= 0.3*/){                  
+                    if(scale-SCALE_PREV > 0) target.scale.y += Math.abs(scale-SCALE_PREV);
+                        else target.scale.y -= Math.abs(scale-SCALE_PREV);  
+                    target.position.y += (scale-SCALE_PREV)*5;
+                }                              
+                SCALE_PREV=scale; 
+              
+        } }(this.target);
+                
+        this.AxisNegativeY.sizeFunc = function(target) { return function(scale) {
+                                                
+                if (Math.abs(scale-SCALE_PREV) < 0.2 /*&& target.scale.x >= 0.3*/){                  
+                    if(scale-SCALE_PREV > 0) target.scale.y += Math.abs(scale-SCALE_PREV);
+                        else target.scale.y -= Math.abs(scale-SCALE_PREV);  
+                    target.position.y -= (scale-SCALE_PREV)*5;
+                }                              
+                SCALE_PREV=scale; 
+              
+        } }(this.target);
+                
         
-        this.AxisPositiveZ.sizeFunc = function(target) { return function(scale) { target.scale.z = scale; target.position.z += (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
-        this.AxisNegativeZ.sizeFunc = function(target) { return function(scale) { target.scale.z = scale; target.position.z -= (scale-SCALE_PREV)*5; SCALE_PREV=scale; } }(this.target);
+        this.AxisPositiveZ.sizeFunc = function(target) { return function(scale) {
+                                                
+                if (Math.abs(scale-SCALE_PREV) < 0.2 /*&& target.scale.x >= 0.3*/){                  
+                    if(scale-SCALE_PREV > 0) target.scale.z += Math.abs(scale-SCALE_PREV);
+                        else target.scale.z -= Math.abs(scale-SCALE_PREV);  
+                    target.position.z += (scale-SCALE_PREV)*5;
+                }                              
+                SCALE_PREV=scale; 
+              
+        } }(this.target);
+                
+        this.AxisNegativeZ.sizeFunc = function(target) { return function(scale) {
+                                                
+                if (Math.abs(scale-SCALE_PREV) < 0.2 /*&& target.scale.x >= 0.3*/){                  
+                    if(scale-SCALE_PREV > 0) target.scale.z += Math.abs(scale-SCALE_PREV);
+                        else target.scale.z -= Math.abs(scale-SCALE_PREV);  
+                    target.position.z -= (scale-SCALE_PREV)*5;
+                }                              
+                SCALE_PREV=scale; 
+              
+        } }(this.target);
+                
         
         this.AxisPositiveXR.rotationFunc = function(target) { return function(angle) { target.rotation.x = angle } }(this.target);
         this.AxisNegativeXR.rotationFunc = function(target) { return function(angle) { target.rotation.x = angle } }(this.target);
@@ -87,6 +148,7 @@ OSMEX.SizerArrowBasis.prototype.setTarget = function ( target ) {
         this.AxisNegativeZR.rotationFunc = function(target) { return function(angle) { target.rotation.z = angle } }(this.target);
     }
     else {
+        
         
         this.traverse( function( object ) { object.visible = false } );
         
