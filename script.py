@@ -1,8 +1,7 @@
 from lxml import etree
-from random import *
 from datetime import *
 from math import *
-from time import *
+from copy import *
 
 HTML_FILE_BEGIN = """<html>
   <head>
@@ -89,7 +88,14 @@ def parseNodes(file):
 def parseWays(file):
     tree = etree.parse(file)
     ways = tree.xpath('/osm/way')
+    bounds = tree.xpath('/osm/bounds')
+    boundsArray = []
+    boundsArray.append(bounds[0].get('minlat'))
+    boundsArray.append(bounds[0].get('maxlat'))
+    boundsArray.append(bounds[0].get('minlon'))
+    boundsArray.append(bounds[0].get('maxlon'))
     way_list = []
+    way_list.append(boundsArray)
     for way in ways:
         id = way.get('id')
         nodes = tree.xpath('/osm/way[@id=%s]/nd' % id)
@@ -114,25 +120,67 @@ def checkNodeAngle(firstNode, secondNode):
     a = secondNode[2] - firstNode[2]
     b = secondNode[1] - firstNode[1]
     c = sqrt(a*a+b*b)
-    angle = asin(a/c)
+    if c == 0:
+        angle = 0
+    else:
+        angle = asin(a/c)
     #grad = 180 - (90 +fabs((angle * 180) / pi))
     return (angle * 180) / pi
-    #return grad
 
 def calculateDistance(firstNode, secondNode):
-    return round(111.2 *sqrt(pow((firstNode[1]-secondNode[1]),2)\
-                         +pow((firstNode[2]-secondNode[2])*cos(pi*firstNode[1]/180),2))*1000)
+    return round(111.2 * sqrt(pow((firstNode[1]-secondNode[1]),2)\
+                         + pow((firstNode[2]-secondNode[2])*cos(pi*firstNode[1]/180),2))*1000)
 
-def createRectangle(building):
+def searchLeftVector(rectangle):
+    index = 0
+    print "rectangle: ",rectangle
+    for i in range(0, len(rectangle) - 1):
+        if rectangle[i][2] < rectangle[index][2]:
+            index = i
+    last_index = 0
+    rectangle_n = copy(rectangle)
+    del rectangle_n[index]
+    for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1 ????? its very strange
+        if (rectangle_n[i][2] < rectangle_n[last_index][2]):
+            last_index = i
+    if rectangle[index][1] < rectangle_n[last_index][1]:
+        return [rectangle[index], rectangle_n[last_index]]
+    else:
+        return [rectangle_n[last_index], rectangle[index]]
+
+def calculateAngleOffset(boundbox, rectangle):
+    bottomLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[0]), float(boundbox[3])] ]
+    bottomLine[0][0] -= 0.003
+    bottomLine[1][0] -= 0.003
+    buildingLine = searchLeftVector(rectangle)
+    print "bottomLine: ", bottomLine
+    print "building: ", buildingLine
+    v1x = bottomLine[1][0] - bottomLine[0][0]
+    v1y = bottomLine[1][1] - bottomLine[0][1]
+    v2x = buildingLine[1][1] - buildingLine[0][1]
+    v2y = buildingLine[1][2] - buildingLine[0][2]
+    print "vectors: ", v1x, v1y, v2x, v2y
+    angle = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
+    print 180-((angle*180)/pi)
+
+
+def createRectangle(boundbox, building):
+    print building
+    BGN = building[0]
+    END = building[2]
+    cx = BGN[1] + ((END[1] - BGN[1]) / 2)
+    cy = BGN[2] + ((END[2] - BGN[2]) / 2)
     print calculateDistance(building[0], building[1])
+    calculateAngleOffset(boundbox, building)
 
-def parseBuildingsData(nodes, waysArray):
-    ways = waysArray
+def parseBuildingsData(nodes, ways):
     buildingArray = []
+    counter = 0
     for building in ways:
-        print "******************"
         count_nodes = len(building[1])
         node_index = 0
+        counter += 1
+        print "parsing %d of %d" % (counter, len(ways))
         nodesArray = []
         previousAngle = -200
         while node_index < count_nodes:
@@ -140,22 +188,15 @@ def parseBuildingsData(nodes, waysArray):
                 break
             node_id = building[1][node_index]
             node = searchNode(node_id, nodes)
-            if node_index != 0:
+            if node_index != 0 and count_nodes > 4 and (building[1][0] != building[1][4]):
                 angle = checkNodeAngle(searchNode(building[1][node_index - 1], nodes), node)
                 if fabs(previousAngle - angle) > 15:
                     nodesArray.append(node)
                     previousAngle = angle
-                    print angle
                 else:
-                    print "point remove"
                     del nodesArray[len(nodesArray) - 1]
-                    print angle
-                    #print previousAngle
-                    #print building
                     nodesArray.append(node)
                     previousAngle = checkNodeAngle(nodesArray[len(nodesArray) - 2], node)
-                    #print previousAngle
-                    #print angle
             else:
                 nodesArray.append(node)
             node_index += 1
@@ -168,9 +209,13 @@ print("\n[%s] Start parsing...Please wait!\n" % datetime.today().strftime('%H:%M
 node_list = parseNodes(FILE_NAME)
 print("[%s] Parse nodes...Done!\n" % datetime.today().strftime('%H:%M:%S'))
 way_list = parseWays(FILE_NAME)
+bounds = way_list[0]
+del way_list[0]
 print("[%s] Parse ways...Done!\n" % datetime.today().strftime('%H:%M:%S'))
+print("[%s] Start parsing file" % datetime.today().strftime('%H:%M:%S'))
 buildingArray = parseBuildingsData(node_list, way_list)
-createRectangle(buildingArray[0])
+print("[%s] End parsing file" % datetime.today().strftime('%H:%M:%S'))
+createRectangle(bounds, buildingArray[11])
 
 coord_start = []
 coord_second = []
