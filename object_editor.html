@@ -45,12 +45,13 @@
             var mouse = new THREE.Vector2(0, 0);
 			
             var PICKED, SELECTED, DRAGGING, SIZING, ROTATING;
-            var BASIS_ARROW_LENGTH = 30;
             var offsetVector = new THREE.Vector3();
             
             var groundGrid;
 			
             var sizerGizmo, rotationGizmo, sizerPlane;
+            
+            var ROTATION_VECTOR;
 
             init();
             animate();
@@ -213,27 +214,30 @@
                 }
                 else if ( ROTATING ) {
                     
-                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-                    projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersectPoint = ray.intersectPlane(sizerPlane);
+                    var mouseX = (mouse.x* SCREEN_WIDTH/2) + SCREEN_WIDTH/2;
+                    var mouseY = -(mouse.y* SCREEN_HEIGHT/2)+ SCREEN_HEIGHT/2;
+                    var vector = projector.projectVector( ROTATING.matrixWorld.getPosition().clone(), camera );
 
-                    if (intersectPoint !== undefined) {
-                        
-                        intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
-
-                        var angle = ROTATING.dir.dot(intersectPoint);
-                            ROTATING.setAngle(angle);
-                        
-                    }
+                    vector.x = ( vector.x * SCREEN_WIDTH/2 ) + SCREEN_WIDTH/2;
+                    vector.y = - ( vector.y * SCREEN_HEIGHT/2 ) + SCREEN_HEIGHT/2;
+                    var currentVector = new THREE.Vector2(-(vector.x-mouseX), vector.y-mouseY).normalize();
+                    /*console.log (mouseX, mouseY, vector.x, vector.y);
+                    console.log (currentVector);
+                    console.log ("check");*/
+                     ROTATING.setAngle(ROTATION_VECTOR, currentVector);
+                       
                 }
                 else {
                     
                     var pickedObject = getPickedObject();
 
-                    if ( PICKED != pickedObject ) {
+                    if ( PICKED != pickedObject) {
 
-                        if ( PICKED ) PICKED.material.emissive.setHex( PICKED.oldEmissive );
+                        if ( PICKED ) {
+                            
+                            PICKED.material.emissive.setHex( PICKED.oldEmissive );
+                            if (PICKED.pickRef instanceof OSMEX.RotationTorus) PICKED.material.opacity = 0.6;
+                         }
 
                         PICKED = pickedObject;
 
@@ -241,6 +245,7 @@
                             
                             PICKED.oldEmissive = PICKED.material.emissive.getHex();
                             PICKED.material.emissive.setHex( 0xff0000 );
+                            if (PICKED.pickRef instanceof OSMEX.RotationTorus)PICKED.material.opacity = 1;
                         }
                     }
                 }
@@ -251,7 +256,7 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
-                    
+                                     
                     if ( PICKED ) {
                         
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
@@ -264,7 +269,6 @@
                             var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
                             projector.unprojectVector( vector, camera );
                             var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
-                            console.log (raycaster);
                             var intersects = raycaster.intersectObject( groundGrid );
                             offsetVector.copy( intersects[ 0 ].point ).subSelf( DRAGGING.position );
                         }
@@ -285,13 +289,14 @@
                             
                             ROTATING = pickRef;
                             
-                            var sizingPos = ROTATING.matrixWorld.getPosition();
-                            
-                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(ROTATING.dir);  
-                            var forwardDir = ROTATING.dir.clone().crossSelf(rightDir);
-  
-                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            var mouseX = (mouse.x* SCREEN_WIDTH/2) + SCREEN_WIDTH/2;
+                            var mouseY = -(mouse.y* SCREEN_HEIGHT/2)+ SCREEN_HEIGHT/2;
+                            var vector = projector.projectVector( ROTATING.matrixWorld.getPosition().clone(), camera );
+
+                            vector.x = ( vector.x * SCREEN_WIDTH/2 ) + SCREEN_WIDTH/2;
+                            vector.y = - ( vector.y * SCREEN_HEIGHT/2 ) + SCREEN_HEIGHT/2;
+                            ROTATION_VECTOR = new THREE.Vector2(-(vector.x-mouseX), vector.y-mouseY).normalize();
+                           
                         }
                         else {
                             
@@ -318,6 +323,7 @@
                     DRAGGING = null;
                     SIZING = null;
                     ROTATING = null;
+                    ROTATION_VECTOR = null;
                 }
             }
 
