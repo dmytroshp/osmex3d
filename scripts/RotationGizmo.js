@@ -1,5 +1,6 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
+var VECTOR_PREV = null;
 
 OSMEX.RotationGizmo = function ( ) {
     
@@ -33,11 +34,21 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         
                 
         
-        this.AxisX.rotationFunc = function(target) { return function(angle) { target.rotation.x = angle } }(this.target);
+        this.AxisX.rotationFunc = function(target) { return function(BV, CV) { 
+           console.log (BV);
+           console.log (CV);
+           
+           var angle = Math.acos ((BV.x * CV.x + BV.y * CV.y) / (Math.sqrt(Math.pow(BV.x,2) + Math.pow(BV.y,2))*Math.sqrt(Math.pow(CV.x,2) + Math.pow(CV.y,2))));
+      //     console.log (angle*180/Math.PI);
+
+           target.rotation.x = angle;
+                
+                
+        } }(this.target);
         
-        this.AxisY.rotationFunc = function(target) { return function(angle) { target.rotation.y = angle } }(this.target);
+        this.AxisY.rotationFunc = function(target) { return function(vector) { target.rotation.y += 1 } }(this.target);
         
-        this.AxisZ.rotationFunc = function(target) { return function(angle) { target.rotation.z = angle } }(this.target);
+        this.AxisZ.rotationFunc = function(target) { return function(vector) { target.rotation.z += 1 } }(this.target);
     }
     else {
         

@@ -12,8 +12,8 @@ OSMEX.RotationTorus = function ( dir, hex ) {
 
 OSMEX.RotationTorus.prototype = Object.create( OSMEX.Torus.prototype );
 
-OSMEX.RotationTorus.prototype.setAngle = function ( angle ) {
+OSMEX.RotationTorus.prototype.setAngle = function ( BasisVector, CurrentVector ) {
     
-    if (this.rotationFunc) this.rotationFunc(angle / 20.0);
+    if (this.rotationFunc) this.rotationFunc(BasisVector, CurrentVector );
     
 };
