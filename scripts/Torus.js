@@ -61,4 +61,4 @@ OSMEX.Torus.prototype.setDirection = function ( dir ) {
 OSMEX.Torus.prototype.setColor = function ( hex ) {
     
     this.torus.material.color.setHex( hex );
-}; 
+};
