@@ -17,7 +17,8 @@ OSMEX.Torus = function ( dir, origin, hex ) {
     var meshMaterial = new THREE.MeshPhongMaterial( {
         color: hex, 
         shading: THREE.SmoothShading, 
-        ambient: 0xffffff
+        ambient: 0xffffff,
+        opacity: 0.6
     } );    
    
     var torusGeometry = new THREE.TorusGeometry( 15, 0.5, 20, 20);
