@@ -11,20 +11,17 @@ OSMEX.Torus = function ( dir, origin, hex ) {
     this.setDirection( dir );
 
     if ( hex === undefined ) hex = 0xffff00;
-    
-  
 
     var meshMaterial = new THREE.MeshPhongMaterial( {
+        transparent: true,
         color: hex, 
         shading: THREE.SmoothShading, 
         ambient: 0xffffff,
-        opacity: 0.6
+        opacity: 1.0
     } );    
    
     var torusGeometry = new THREE.TorusGeometry( 15, 0.5, 20, 20);
     this.torus = new THREE.Mesh ( torusGeometry, meshMaterial );
-    this.torus.position.set ( 0, 0, 0 );
-    this.torus.rotation.set ( 1.5, 0, 0 );
     this.add( this.torus );
 
     if ( origin instanceof THREE.Vector3 ) this.position = origin;
@@ -36,7 +33,7 @@ OSMEX.Torus.prototype.setDirection = function ( dir ) {
     
     this.dir = dir.clone().normalize();
     
-    var upVector = new THREE.Vector3( 0, 1, 0 );
+    var upVector = new THREE.Vector3( 0, 0, -1 );
 	
     var cosa = upVector.dot( this.dir );
 	
@@ -56,7 +53,6 @@ OSMEX.Torus.prototype.setDirection = function ( dir ) {
     this.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
     this.rotation.setEulerFromRotationMatrix( this.matrix, this.eulerOrder );
 };
-
 
 OSMEX.Torus.prototype.setColor = function ( hex ) {
     

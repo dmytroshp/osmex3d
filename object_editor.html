@@ -28,6 +28,7 @@
         <script src="scripts/SizerGizmo.js"></script>
         <script src="scripts/Torus.js"></script>
         <script src="scripts/RotationTorus.js"></script>
+        <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
 
         <script>
@@ -107,8 +108,8 @@
                 
                 rotationGizmo = new OSMEX.RotationGizmo();
                 interfaceScene.add(rotationGizmo);
-
                 
+   
                 sizerPlane = new THREE.Plane();
 						
                 projector = new THREE.Projector();	
@@ -235,7 +236,6 @@
 
                         if ( PICKED ) {
                             PICKED.material.emissive.setHex( PICKED.oldEmissive );
-                            if (PICKED.pickRef instanceof OSMEX.RotationTorus) PICKED.material.opacity = 0.6;
                         }
 
                         PICKED = pickedObject;
@@ -244,7 +244,6 @@
                             
                             PICKED.oldEmissive = PICKED.material.emissive.getHex();
                             PICKED.material.emissive.setHex( 0xff0000 );
-                            if (PICKED.pickRef instanceof OSMEX.RotationTorus) PICKED.material.opacity = 1;
                         }
                     }
                 }
@@ -318,7 +317,9 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
+                    
                     if (SIZING) SIZING.setBasicArrowLength();
+                    
                     DRAGGING = null;
                     SIZING = null;
                     ROTATING = null;
@@ -337,6 +338,7 @@
             function update() {
                 
                 cameraController.update();
+                rotationGizmo.update(camera);
             } 
 			
             function render() {

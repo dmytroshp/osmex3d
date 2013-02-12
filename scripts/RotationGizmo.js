@@ -2,7 +2,7 @@ var OSMEX = OSMEX || { REVISION: '1' };
 
 var VECTOR_PREV = null;
 
-OSMEX.RotationGizmo = function ( ) {
+OSMEX.RotationGizmo = function (  ) {
     
     THREE.Object3D.call( this );
     
@@ -18,6 +18,9 @@ OSMEX.RotationGizmo = function ( ) {
     this.add(this.AxisY);	
     this.add(this.AxisZ);
     
+    this.overlay = new OSMEX.RotationGizmoOverlay(new THREE.Vector3( 1, 0, 0 ));
+    this.add(this.overlay);
+    
     this.setTarget(null);
 };
 
@@ -31,8 +34,6 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         
         this.position = target.position;
         this.traverse( function( object ) { object.visible = true } );
-        
-                
         
         this.AxisX.rotationFunc = function(target) { return function(BV, CV) { 
            console.log (BV);
@@ -52,7 +53,6 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
     }
     else {
         
-        
         this.traverse( function( object ) { object.visible = false } );
         
         this.AxisX.rotationFunc = null;
@@ -60,6 +60,16 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         this.AxisY.rotationFunc = null;
         
         this.AxisZ.rotationFunc = null;
-        
     }
+}
+
+OSMEX.RotationGizmo.prototype.update = function ( camera ) {
+    
+    var vector = camera.position.clone().subSelf(this.position);
+    
+    this.overlay.setDirection(vector);
+    
+    var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
+    var shiftedPos = this.position.clone().addSelf(shift);
+    this.overlay.position = shiftedPos;
 }
