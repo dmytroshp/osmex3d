@@ -161,8 +161,22 @@ def calculateAngleOffset(boundbox, rectangle):
     v2y = buildingLine[1][2] - buildingLine[0][2]
     print "vectors: ", v1x, v1y, v2x, v2y
     angle = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
-    print 180-((angle*180)/pi)
-
+    horizontalAngle = (angle*180)/pi
+    print "horizontal angle", horizontalAngle
+    verticalLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[1]), float(boundbox[2])] ]
+    verticalLine[0][1] -= 0.003
+    verticalLine[1][1] -= 0.003
+    print "verticalLine: ", verticalLine
+    v1x = verticalLine[1][0] - verticalLine[0][0]
+    v1y = verticalLine[1][1] - verticalLine[0][1]
+    v2x = buildingLine[1][1] - buildingLine[0][1]
+    v2y = buildingLine[1][2] - buildingLine[0][2]
+    print "vectors: ", v1x, v1y, v2x, v2y
+    angleNew = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
+    if horizontalAngle < 90:
+        angleNew *= -1
+    verticalAngle = (angleNew*180)/pi
+    print "vertical angle", verticalAngle
 
 def createRectangle(boundbox, building):
     print building
@@ -215,7 +229,7 @@ print("[%s] Parse ways...Done!\n" % datetime.today().strftime('%H:%M:%S'))
 print("[%s] Start parsing file" % datetime.today().strftime('%H:%M:%S'))
 buildingArray = parseBuildingsData(node_list, way_list)
 print("[%s] End parsing file" % datetime.today().strftime('%H:%M:%S'))
-createRectangle(bounds, buildingArray[11])
+createRectangle(bounds, buildingArray[14])
 
 coord_start = []
 coord_second = []

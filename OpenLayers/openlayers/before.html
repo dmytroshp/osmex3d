@@ -36,9 +36,9 @@
         var icon = new OpenLayers.Icon('http://i062.radikal.ru/1209/58/9d99454e85d0.png',size,offset);
 		var icon_start = new OpenLayers.Icon('http://s09.radikal.ru/i182/1212/ad/590aa0e89cae.png',size,offset);
 		var icon_second = new OpenLayers.Icon('http://s45.radikal.ru/i108/1212/0d/b2cbfeb346ac.png',size,offset);
-		x=[46.4383581, 30.7006202];
-s_x = [46.4384258, 30.7004716];
-t_x = [46.43581, 30.696628, 46.43581, 30.702234];
+		x=[46.43881, 30.693628, 46.442311, 30.693628];
+s_x = [46.438827, 30.697023];
+t_x = [46.4388899, 30.6971695];
 
 	for ( i = 0; i < 500; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(s_x[i+1], s_x[i]).transform( fromProjection, toProjection),icon_start.clone());
