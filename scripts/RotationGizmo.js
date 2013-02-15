@@ -13,10 +13,13 @@ OSMEX.RotationGizmo = function (  ) {
     this.AxisY = new OSMEX.RotationTorus( new THREE.Vector3( 0, 1, 0 ), 0x00ff00 );
 	
     this.AxisZ = new OSMEX.RotationTorus( new THREE.Vector3( 0, 0, 1 ), 0x0000ff );
+    
+    this.AxisFront = new OSMEX.RotationTorus( new THREE.Vector3( 0, 0, 0 ), 0x00ffff );
 	
     this.add(this.AxisX);	
     this.add(this.AxisY);	
     this.add(this.AxisZ);
+    this.add(this.AxisFront);
     
     this.overlay = new OSMEX.RotationGizmoOverlay(new THREE.Vector3( 1, 0, 0 ));
     this.add(this.overlay);
@@ -36,6 +39,8 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         this.traverse( function( object ) { object.visible = true } );
         this.overlay.position = this.AxisX.position;
         
+        this.AxisFront.scale.x = this.AxisFront.scale.y = this.AxisFront.scale.z = 1.2;
+        
         this.AxisX.rotationFunc = function(target) { return function(BV, CV) { 
            
            var angle = Math.acos ((BV.x * CV.x + BV.y * CV.y) / (Math.sqrt(Math.pow(BV.x,2) + Math.pow(BV.y,2))*Math.sqrt(Math.pow(CV.x,2) + Math.pow(CV.y,2))));
@@ -49,6 +54,8 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         this.AxisY.rotationFunc = function(target) { return function(vector) { target.rotation.y += 1 } }(this.target);
         
         this.AxisZ.rotationFunc = function(target) { return function(vector) { target.rotation.z += 1 } }(this.target);
+        
+        this.AxisFront.rotationFunc = function(target) { return function(vector) { target.rotation.z += 1 } }(this.target);
     }
     else {
         
@@ -59,14 +66,21 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         this.AxisY.rotationFunc = null;
         
         this.AxisZ.rotationFunc = null;
+        
+        this.AxisFront.rotationFunc = null;
     }
 }
 
 OSMEX.RotationGizmo.prototype.update = function ( camera ) {
     
-    var vector = camera.position.clone().subSelf(this.position);
+    if(this.target){  
+        
+        var vector = camera.position.clone().subSelf(this.position);
     
-    this.overlay.setDirection(vector);
+        this.overlay.setDirection(vector);
+    
+        this.AxisFront.setDirection(vector);  
+    }
     
   /*  var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
     var shiftedPos = this.position.clone().addSelf(shift);

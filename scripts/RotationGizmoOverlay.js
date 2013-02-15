@@ -10,7 +10,7 @@ OSMEX.RotationGizmoOverlay = function ( dir, origin ) {
     this.dir = null;
     this.setDirection( dir );  
 
-    var meshMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.8});    
+    var meshMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.0 });    
    
     var circleGeometry = new THREE.CircleGeometry( 15 + 1, 20 );
     this.circle = new THREE.Mesh ( circleGeometry, meshMaterial );
@@ -41,7 +41,7 @@ OSMEX.RotationGizmoOverlay.prototype.setDirection = function ( dir ) {
     }
 	
     var radians = Math.acos( cosa );
-    
+	
     this.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
     this.rotation.setEulerFromRotationMatrix( this.matrix, this.eulerOrder );
 };
