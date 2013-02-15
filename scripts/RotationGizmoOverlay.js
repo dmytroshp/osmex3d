@@ -10,7 +10,7 @@ OSMEX.RotationGizmoOverlay = function ( dir, origin ) {
     this.dir = null;
     this.setDirection( dir );  
 
-    var meshMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });    
+    var meshMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.8});    
    
     var circleGeometry = new THREE.CircleGeometry( 15 + 1, 20 );
     this.circle = new THREE.Mesh ( circleGeometry, meshMaterial );

@@ -141,15 +141,16 @@
                 function getFirstSuitableObject(raycaster, objects, recursive) {
                     
                     var intersects = raycaster.intersectObjects( objects, recursive );
+                    
 
                     if ( intersects.length > 0 ) {
-                        
+
                         for( i = 0; i < intersects.length; i++ ) {
                             
                             var intersector = intersects[i];
+                            if (intersector.object.parent.name === "RotationGizmoOverlay") return null;
 
                             if ( intersector.object.pickable && intersector.object.visible ) {
-                                
                                 return intersector.object;
                             }
                         }
@@ -275,7 +276,6 @@
                             SIZING = pickRef;
                             
                             var sizingPos = SIZING.matrixWorld.getPosition();
-                            console.log (sizingPos);
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(SIZING.dir);  
                             var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
@@ -284,7 +284,6 @@
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                         }
                         else if ( pickRef instanceof OSMEX.RotationTorus ) {
-                            
                             ROTATING = pickRef;
                             
                             var mouseX = (mouse.x* SCREEN_WIDTH/2) + SCREEN_WIDTH/2;
