@@ -20,7 +20,7 @@ OSMEX.Torus = function ( dir, origin, hex ) {
         opacity: 1.0
     } );    
    
-    var torusGeometry = new THREE.TorusGeometry( 15, 0.5, 20, 20);
+    var torusGeometry = new THREE.TorusGeometry( 15, 0.5, 10, 10);
     this.torus = new THREE.Mesh ( torusGeometry, meshMaterial );
     this.add( this.torus );
 
@@ -58,3 +58,10 @@ OSMEX.Torus.prototype.setColor = function ( hex ) {
     
     this.torus.material.color.setHex( hex );
 };
+
+/*OSMEX.Torus.prototype.setAngle = function (axis, angle ) {
+    
+    if (axis === "x") this.torus.rotation.z = -angle;
+    if (axis === "y") this.torus.rotation.x = angle;
+    if (axis === "z") this.torus.rotation.z = angle;
+};*/

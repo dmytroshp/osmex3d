@@ -153,3 +153,17 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
         
     }
 }
+
+OSMEX.SizerGizmo.prototype.update = function ( ) {
+    
+    if(this.target){  
+        
+        this.AxisPositiveX.setAngle("x", this.target.rotation.y, this.target.rotation.z);
+        this.AxisPositiveY.setAngle("y", this.target.rotation.x, this.target.rotation.z);
+    }
+    
+  /*  var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
+    var shiftedPos = this.position.clone().addSelf(shift);
+    this.overlay.position = this.target.position;*/
+
+}
