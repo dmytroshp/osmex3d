@@ -34,10 +34,9 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         
         this.position = target.position;
         this.traverse( function( object ) { object.visible = true } );
+        this.overlay.position = this.AxisX.position;
         
         this.AxisX.rotationFunc = function(target) { return function(BV, CV) { 
-           console.log (BV);
-           console.log (CV);
            
            var angle = Math.acos ((BV.x * CV.x + BV.y * CV.y) / (Math.sqrt(Math.pow(BV.x,2) + Math.pow(BV.y,2))*Math.sqrt(Math.pow(CV.x,2) + Math.pow(CV.y,2))));
       //     console.log (angle*180/Math.PI);
@@ -69,7 +68,8 @@ OSMEX.RotationGizmo.prototype.update = function ( camera ) {
     
     this.overlay.setDirection(vector);
     
-    var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
+  /*  var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
     var shiftedPos = this.position.clone().addSelf(shift);
-    this.overlay.position = shiftedPos;
+    this.overlay.position = this.target.position;*/
+
 }
