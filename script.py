@@ -2,6 +2,7 @@ from lxml import etree
 from datetime import *
 from math import *
 from copy import *
+import MySQLdb
 
 HTML_FILE_BEGIN = """<html>
   <head>
