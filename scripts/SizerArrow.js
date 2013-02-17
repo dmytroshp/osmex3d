@@ -10,7 +10,7 @@ OSMEX.SizerArrow = function ( dir, hex ) {
 	
     this.cone.pickable = true;
     this.cone.pickRef = this;
-    
+
     this.sizeFunc = null;
 };
 

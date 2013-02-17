@@ -23,6 +23,8 @@
         <script src="scripts/GridGeometry.js"></script>
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/Block.js"></script>
+        <script src="scripts/Cube.js"></script>
+        <script src="scripts/ScaleCube.js"></script>
         <script src="scripts/Arrow.js"></script>
         <script src="scripts/SizerArrow.js"></script>
         <script src="scripts/SizerGizmo.js"></script>
@@ -45,14 +47,20 @@
 
             var mouse = new THREE.Vector2(0, 0);
 			
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING;
             var offsetVector = new THREE.Vector3();
             
             var groundGrid;
 			
             var sizerGizmo, rotationGizmo, sizerPlane;
             
-            var ROTATION_VECTOR;
+            var arrowMode = false;
+            
+            var ROTATION_VECTOR, SCALING_VECTOR;
+            
+            function setArrowsType() {
+                arrowMode = document.getElementById('arrowMode').checked;
+            }
 
             init();
             animate();
@@ -61,7 +69,15 @@
                 
                 container = document.createElement( 'div' );
                 document.body.appendChild( container );
-				
+                
+                var info = document.createElement('div');
+                info.style.position = 'absolute';
+		info.style.top = '10px';
+		info.style.width = '100%';
+		info.style.textAlign = 'center';
+                info.innerHTML += '<br/>Scale arrows: <input id="arrowMode" onchange="setArrowsType()" type="checkbox" /> ';
+                document.body.appendChild( info );
+                
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
 
                 camera = new THREE.PerspectiveCamera( SCREEN_FOV, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 1000 );
@@ -204,15 +220,33 @@
                         
                         intersectPoint.subSelf(SIZING.matrixWorld.getPosition());
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
-
+                         //console.log (intersectPoint);
                         var len = SIZING.dir.dot(intersectPoint);
-
                         // TODO: workaround should be reimplemented
                         if (Math.abs(SIZING.len - len) < (SIZING.maxLength - SIZING.minLength)) {
                             
                             SIZING.setLength(len);
                         }
                     }
+                }
+                else if ( SCALING ) {
+                    
+                    var dir = new THREE.Vector3(1, 0, 0);
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+                    projector.unprojectVector( vector, camera );
+                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersectPoint = ray.intersectPlane(sizerPlane);
+
+                    if (intersectPoint !== undefined) {
+                        
+                        intersectPoint.subSelf(SCALING.matrixWorld.getPosition());
+
+                        var len = dir.dot(intersectPoint);   
+                         SCALING.setScale(len);
+                           
+                        
+                    }
+                    
                 }
                 else if ( ROTATING ) {
                     
@@ -221,11 +255,9 @@
                     var vector = projector.projectVector( ROTATING.matrixWorld.getPosition().clone(), camera );
 
                     vector.x = ( vector.x * SCREEN_WIDTH/2 ) + SCREEN_WIDTH/2;
-                    vector.y = - ( vector.y * SCREEN_HEIGHT/2 ) + SCREEN_HEIGHT/2;
+                    vector.y = - ( vector.y * SCREEN_HEIGHT/2 ) + SCREEN_HEIGHT/2;                 
                     var currentVector = new THREE.Vector2(-(vector.x-mouseX), vector.y-mouseY).normalize();
-                    /*console.log (mouseX, mouseY, vector.x, vector.y);
-                    console.log (currentVector);
-                    console.log ("check");*/
+
                      ROTATING.setAngle(ROTATION_VECTOR, currentVector);
                        
                 }
@@ -279,9 +311,21 @@
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(SIZING.dir);  
                             var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
-  
                             sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
+                        }
+                        else if ( pickRef instanceof OSMEX.ScaleCube ) {
+                            
+                            SCALING = pickRef;
+                            
+                            var dir = new THREE.Vector3(1, 0, 0);
+                            var sizingPos = SCALING.matrixWorld.getPosition();
+                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
+                            var rightDir = cameraDir.clone().crossSelf(dir);  
+                            var forwardDir = dir.clone().crossSelf(rightDir);
+                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+
+                                                       
                         }
                         else if ( pickRef instanceof OSMEX.RotationTorus ) {
                             ROTATING = pickRef;
@@ -304,8 +348,7 @@
                         
                         SELECTED = null;
                     }
-                    
-                    sizerGizmo.setTarget(SELECTED);
+                    if(arrowMode) sizerGizmo.setTarget(SELECTED);
                     rotationGizmo.setTarget(SELECTED);
                 }
 
@@ -321,6 +364,7 @@
                     
                     DRAGGING = null;
                     SIZING = null;
+                    SCALING = null;
                     ROTATING = null;
                     ROTATION_VECTOR = null;
                 }
