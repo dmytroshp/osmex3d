@@ -3,7 +3,7 @@ var OSMEX = OSMEX || { REVISION: '1' };
 OSMEX.ScaleCube = function (  ) {
     
     OSMEX.Cube.call( this );
-    this.name = "ScaleArrow";
+    this.name = "ScaleCube";
 	
     this.cube.pickable = true;
     this.cube.pickRef = this;

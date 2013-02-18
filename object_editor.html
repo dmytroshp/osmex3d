@@ -230,22 +230,14 @@
                     }
                 }
                 else if ( SCALING ) {
-                    
-                    var dir = new THREE.Vector3(1, 0, 0);
-                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-                    projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersectPoint = ray.intersectPlane(sizerPlane);
-
-                    if (intersectPoint !== undefined) {
+                    var mouseX = (mouse.x* SCREEN_WIDTH/2)/10;
                         
-                        intersectPoint.subSelf(SCALING.matrixWorld.getPosition());
+                    var sizingPos = projector.projectVector( SCALING.matrixWorld.getPosition().clone(), camera );
+                    sizingPos.x = (sizingPos.x * SCREEN_WIDTH/2)/10;
+                    var len = mouseX - sizingPos.x;
 
-                        var len = dir.dot(intersectPoint);   
-                         SCALING.setScale(len);
-                           
-                        
-                    }
+                    SCALING.setScale(len);
+
                     
                 }
                 else if ( ROTATING ) {
@@ -306,7 +298,6 @@
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
                             
                             SIZING = pickRef;
-                            
                             var sizingPos = SIZING.matrixWorld.getPosition();
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(SIZING.dir);  
@@ -317,14 +308,6 @@
                         else if ( pickRef instanceof OSMEX.ScaleCube ) {
                             
                             SCALING = pickRef;
-                            
-                            var dir = new THREE.Vector3(1, 0, 0);
-                            var sizingPos = SCALING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(dir);  
-                            var forwardDir = dir.clone().crossSelf(rightDir);
-                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
-
                                                        
                         }
                         else if ( pickRef instanceof OSMEX.RotationTorus ) {

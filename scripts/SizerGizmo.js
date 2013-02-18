@@ -151,7 +151,7 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
     
         this.Cube.sizeFunc = function(target) { return function(scale) {
                 
-               if (Math.abs(scale-SCALE_PREV_CUBE) < 0.6 ){
+               if (Math.abs(scale-SCALE_PREV_CUBE) < 1 ){
                    ABS = Math.abs(scale-SCALE_PREV_CUBE);
                     if(scale-SCALE_PREV_CUBE > 0) {                       
                         target.scale.x += ABS;
