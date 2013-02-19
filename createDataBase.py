@@ -10,9 +10,9 @@ CREATE_TABLE_TYPE = "CREATE TABLE IF NOT EXISTS type (" \
                     ");"
 CREATE_TABLE_INSTANCE = "CREATE TABLE IF NOT EXISTS instance (" \
                         "   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," \
-                        "   scaleX INT," \
-                        "   scaleY INT," \
-                        "   scaleZ INT," \
+                        "   scaleX DOUBLE," \
+                        "   scaleY DOUBLE," \
+                        "   scaleZ DOUBLE," \
                         "   rotationX DOUBLE," \
                         "   rotationY DOUBLE," \
                         "   rotationZ DOUBLE," \
