@@ -2,8 +2,6 @@ var OSMEX = OSMEX || { REVISION: '1' };
 
 OSMEX.Arrow = function ( dir, origin, length, hex ) {
     
-   
-    
     THREE.Object3D.call( this );
     this.name = "Arrow";
     
@@ -11,11 +9,6 @@ OSMEX.Arrow = function ( dir, origin, length, hex ) {
     
     this.dir = null;
     this.setDirection( dir );
-    
-    angle1 = null;
-    angle2 = null;
-    axis = null;
-    this.setAngle(axis, angle1, angle2);
 
     if ( hex === undefined ) hex = 0xffff00;
     if ( length === undefined ) length = 20;
@@ -87,14 +80,6 @@ OSMEX.Arrow.prototype.setBasicArrowLength = function ( ) {
     this.len = 30;
     this.line.scale.y = 30;
     this.cone.position.y = 30;    
-    
-};
-
-OSMEX.Arrow.prototype.setAngle = function ( axis, angle1, angle2 ) {
-    
-    if (axis === "x") { this.line.rotation.x = -angle1; this.cone.rotation.x = -angle1;    this.line.rotation.z = angle2; this.cone.rotation.z = angle2; }
-    if (axis === "y") { this.line.rotation.x = angle1; this.cone.rotation.y = angle2;}
-    if (axis === "z") this.torus.rotation.z = angle; 
     
 };
 

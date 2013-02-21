@@ -46,7 +46,6 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
         var SCALE_PREV_CUBE=0;
         var ABS = null;
         
-        this.position = target.position;
         this.traverse( function( object ) { object.visible = true } );
         
         this.AxisPositiveX.sizeFunc = function(target) { return function(scale) {
@@ -171,7 +170,6 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
     }
     else {
         
-        
         this.traverse( function( object ) { object.visible = false } );
         
         this.AxisPositiveX.sizeFunc = null;
@@ -184,7 +182,6 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
         this.AxisNegativeZ.sizeFunc = null;
         
         this.Cube.sizeFunc = null;
-        
     }
 }
 
@@ -192,12 +189,7 @@ OSMEX.SizerGizmo.prototype.update = function ( ) {
     
     if(this.target){  
         
-        this.AxisPositiveX.setAngle("x", this.target.rotation.y, this.target.rotation.z);
-        this.AxisPositiveY.setAngle("y", this.target.rotation.x, this.target.rotation.z);
+        this.position.copy(this.target.position);
+        this.rotation.copy(this.target.rotation);
     }
-    
-  /*  var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
-    var shiftedPos = this.position.clone().addSelf(shift);
-    this.overlay.position = this.target.position;*/
-
 }
