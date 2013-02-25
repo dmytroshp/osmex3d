@@ -8,9 +8,16 @@ OSMEX.RotationTorus = function ( dir, hex ) {
     this.torus.pickRef = this;
     
     this.rotationFunc = null;
+    this.sizeFunc = null;
 };
 
 OSMEX.RotationTorus.prototype = Object.create( OSMEX.Torus.prototype );
+
+OSMEX.RotationTorus.prototype.setAngle = function ( BasisVector, CurrentVector ) {
+    
+    if (this.rotationFunc) this.rotationFunc(BasisVector, CurrentVector );
+    
+};
 
 OSMEX.RotationTorus.prototype.setAngle = function ( BasisVector, CurrentVector ) {
     
