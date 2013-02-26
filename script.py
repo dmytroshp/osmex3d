@@ -129,7 +129,7 @@ def checkNodeAngle(firstNode, secondNode):
     return (angle * 180) / pi
 
 def calculateDistance(firstNode, secondNode):
-    return round(111.2 * sqrt(pow((firstNode[1]-secondNode[1]),2)\
+    return (111.2 * sqrt(pow((firstNode[1]-secondNode[1]),2)
                          + pow((firstNode[2]-secondNode[2])*cos(pi*firstNode[1]/180),2))*1000)
 
 def searchLeftVector(rectangle):
@@ -143,6 +143,23 @@ def searchLeftVector(rectangle):
     del rectangle_n[index]
     for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1 ????? its very strange
         if (rectangle_n[i][2] < rectangle_n[last_index][2]):
+            last_index = i
+    if rectangle[index][1] < rectangle_n[last_index][1]:
+        return [rectangle[index], rectangle_n[last_index]]
+    else:
+        return [rectangle_n[last_index], rectangle[index]]
+
+def searchRightVector(rectangle):
+    index = 0
+    print "rectangle: ",rectangle
+    for i in range(0, len(rectangle) - 1):
+        if rectangle[i][2] > rectangle[index][2]:
+            index = i
+    last_index = 0
+    rectangle_n = copy(rectangle)
+    del rectangle_n[index]
+    for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1 ????? its very strange
+        if (rectangle_n[i][2] > rectangle_n[last_index][2]):
             last_index = i
     if rectangle[index][1] < rectangle_n[last_index][1]:
         return [rectangle[index], rectangle_n[last_index]]
@@ -178,15 +195,24 @@ def calculateAngleOffset(boundbox, rectangle):
         angleNew *= -1
     verticalAngle = (angleNew*180)/pi
     print "vertical angle", verticalAngle
+    return angleNew
 
-def createRectangle(boundbox, building):
+def createRectangle(boundBox, building, database):
     print building
     BGN = building[0]
     END = building[2]
-    cx = BGN[1] + ((END[1] - BGN[1]) / 2)
-    cy = BGN[2] + ((END[2] - BGN[2]) / 2)
-    print calculateDistance(building[0], building[1])
-    calculateAngleOffset(boundbox, building)
+    center_x = BGN[1] + ((END[1] - BGN[1]) / 2)
+    center_y = BGN[2] + ((END[2] - BGN[2]) / 2)
+    leftLine = searchLeftVector(building)
+    topLine = [leftLine[1], searchRightVector(building)[1]]
+    Z_COORD = calculateDistance(leftLine[0], leftLine[1]) / 2
+    Y_COORD = 20
+    X_COORD = calculateDistance(topLine[0], topLine[1]) / 2
+    angleOffset = calculateAngleOffset(boundBox, building)
+    INSERT_RECTANGLE = "INSERT INTO instance VALUES (null, %f, %f, %f, \
+    %f, %f, %f, %f, %f, %d);" % (X_COORD, Y_COORD, Z_COORD, 0.0, angleOffset, 0.0,
+        center_x, center_y, 1)
+    database.execute(INSERT_RECTANGLE)
 
 def parseBuildingsData(nodes, ways):
     buildingArray = []
@@ -230,7 +256,11 @@ print("[%s] Parse ways...Done!\n" % datetime.today().strftime('%H:%M:%S'))
 print("[%s] Start parsing file" % datetime.today().strftime('%H:%M:%S'))
 buildingArray = parseBuildingsData(node_list, way_list)
 print("[%s] End parsing file" % datetime.today().strftime('%H:%M:%S'))
-createRectangle(bounds, buildingArray[14])
+db = MySQLdb.connect(host="127.0.0.1", user="root", port = 3306, passwd="vertrigo", charset='utf8')
+connection = db.cursor()
+connection.execute("USE osmex3d;")
+createRectangle(bounds, buildingArray[14], connection)
+db.close()
 
 coord_start = []
 coord_second = []
