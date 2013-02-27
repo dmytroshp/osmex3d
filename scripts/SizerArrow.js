@@ -2,7 +2,7 @@ var OSMEX = OSMEX || { REVISION: '1' };
 
 OSMEX.SizerArrow = function ( dir, hex ) {
     
-    OSMEX.Arrow.call( this, dir, new THREE.Vector3( 0, 0, 0 ), 40, hex );
+    OSMEX.Arrow.call( this, dir, new THREE.Vector3( 0, 0, 0 ), 30, hex, "sizing" );
     this.name = "SizeArrow";
     
     this.minLength = 5;

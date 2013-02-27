@@ -39,7 +39,6 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
         this.traverse( function( object ) { object.visible = true } );
         this.overlay.position = this.AxisX.position;
         
-        this.AxisFront.scale.x = this.AxisFront.scale.y = this.AxisFront.scale.z = 1.2;
         
         this.AxisX.rotationFunc = function(target) { return function(BV, CV) { 
            

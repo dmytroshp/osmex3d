@@ -28,6 +28,8 @@
         <script src="scripts/Arrow.js"></script>
         <script src="scripts/SizerArrow.js"></script>
         <script src="scripts/SizerGizmo.js"></script>
+        <script src="scripts/MovingGizmo.js"></script>
+        <script src="scripts/MovingArrow.js"></script>
         <script src="scripts/Torus.js"></script>
         <script src="scripts/RotationTorus.js"></script>
         <script src="scripts/RotationGizmoOverlay.js"></script>
@@ -47,12 +49,12 @@
 
             var mouse = new THREE.Vector2(0, 0);
 			
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
             var offsetVector = new THREE.Vector3();
             
             var groundGrid;
 			
-            var sizerGizmo, rotationGizmo, sizerPlane;
+            var sizerGizmo, rotationGizmo, movingGizmo, sizerPlane;
             
             var arrowMode = false;
             
@@ -125,6 +127,9 @@
                 
                 rotationGizmo = new OSMEX.RotationGizmo();
                 interfaceScene.add(rotationGizmo);
+                
+                movingGizmo = new OSMEX.MovingGizmo();
+                interfaceScene.add(movingGizmo);
                 
    
                 sizerPlane = new THREE.Plane();
@@ -230,6 +235,19 @@
                         }
                     }
                 }
+                else if ( MOVING ) {
+                    
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+	            projector.unprojectVector( vector, camera );
+                    var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersects = raycaster.intersectObject(groundGrid);
+                 
+                    if ( intersects.length > 0 ) {
+
+                        var position = intersects[0].point.subSelf( offsetVector );
+                        MOVING.setPosition (position);
+                    }
+                }
                 else if ( SCALING ) {
                     var mouseX = (mouse.x* SCREEN_WIDTH/2)/10;
                         
@@ -306,6 +324,15 @@
                             sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                         }
+                        else if ( pickRef instanceof OSMEX.MovingArrow ) {
+                            
+                            MOVING = pickRef;
+                            var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+                            projector.unprojectVector( vector, camera );
+                            var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var intersects = raycaster.intersectObject( groundGrid );
+                            offsetVector.copy( intersects[ 0 ].point ).subSelf( MOVING.position );                 
+                        }
                         else if ( pickRef instanceof OSMEX.ScaleCube ) {
                             
                             SCALING = pickRef;
@@ -332,7 +359,7 @@
                         
                         SELECTED = null;
                     }
-                    if(arrowMode) sizerGizmo.setTarget(SELECTED);
+                    if(arrowMode) sizerGizmo.setTarget(SELECTED); else movingGizmo.setTarget(SELECTED);
                     rotationGizmo.setTarget(SELECTED);
                 }
 
@@ -351,6 +378,7 @@
                     SIZING = null;
                     SCALING = null;
                     ROTATING = null;
+                    MOVING = null;
                     ROTATION_VECTOR = null;
                 }
             }
@@ -368,6 +396,7 @@
                 cameraController.update();
                 rotationGizmo.update(camera);
                 sizerGizmo.update();
+                movingGizmo.update();
             } 
 			
             function render() {
