@@ -114,9 +114,10 @@
                 groundGrid = new THREE.Mesh( groundGeometry, groundMaterial );
                 objectScene.add( groundGrid );        
                 
-                var blockGeometry = new THREE.CubeGeometry( 10, 10, 10 );
+                var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
                 var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );//new THREE.MeshBasicMaterial( { color: 0xffffff } );//vertexColors: THREE.FaceColors } );
                 var cubeBlock = new OSMEX.Block( blockGeometry, blockMaterial );
+                cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
                 objectScene.add( cubeBlock );	
 				
                 sizerGizmo = new OSMEX.SizerGizmo();
@@ -343,7 +344,8 @@
 				
                 if (event.button == 0) {
                     
-                    if (SIZING) SIZING.setBasicArrowLength();
+                    if (SIZING) SIZING.restoreDefaultLength();
+                    if (SCALING) SCALING.restoreDefaultScale();
                     
                     DRAGGING = null;
                     SIZING = null;

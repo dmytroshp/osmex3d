@@ -35,8 +35,8 @@ OSMEX.Arrow = function ( dir, origin, length, hex ) {
     if ( origin instanceof THREE.Vector3 ) this.position = origin;
 	
     this.len = 0;
+    this.defaultLength = length;
     this.setLength( length );
-    this.setBasicArrowLength( );
  
 };
 
@@ -75,11 +75,11 @@ OSMEX.Arrow.prototype.setLength = function ( length ) {
     
 };
 
-OSMEX.Arrow.prototype.setBasicArrowLength = function ( ) {
+OSMEX.Arrow.prototype.restoreDefaultLength = function ( ) {
     
-    this.len = 30;
-    this.line.scale.y = 30;
-    this.cone.position.y = 30;    
+    this.len = this.defaultLength;
+    this.line.scale.y = this.defaultLength;
+    this.cone.position.y = this.defaultLength;    
     
 };
 
