@@ -1,11 +1,11 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-MIN_OBJ_SCALE = 0.33;
-//MAX_OBJ_SCALE = 20; /*not used for now*/
 
 OSMEX.MovingGizmo = function ( ) {
     
     THREE.Object3D.call( this );
+    
+    scale = this.scale;
     
     this.target = null;
 	
@@ -34,27 +34,25 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
     
     if ( target ) {
         
-        var POSITION_PREV=1;
-        
         this.traverse( function( object ) { object.visible = true } );
         
         this.AxisX.sizeFunc = function(target) { return function(position) {
                 
-                    target.position.x = position.x;
+                    target.position.x = position.x - scale.x*this.line.scale.y;
                           
         } }(this.target);
    
         
         this.AxisY.sizeFunc = function(target) { return function(position) { 
-
-                    target.position.y = position.y;
+                    
+                    target.position.y = position.y - scale.y*this.line.scale.y;
               
         } }(this.target);
                 
         
         this.AxisZ.sizeFunc = function(target) { return function(position) {
-                                                
-                    target.position.z = position.z;                                                
+                
+                    target.position.z = position.z - scale.z*this.line.scale.y;                                                
               
         } }(this.target);
                 
