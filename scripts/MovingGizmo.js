@@ -32,44 +32,40 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
     
     this.target = target;
     
+    var arrowMoveFunc = null;
+    
+    var visibility = false;
+    
     if ( target ) {
         
-        this.traverse( function( object ) { object.visible = true } );
+        visibility = true;
         
-        this.AxisX.sizeFunc = function(target) { return function(position) {
-                
-                    target.position.x = position.x - scale.x*this.line.scale.y;
+        arrowMoveFunc = function(target) { return function(delta) {
+                          
+            if (delta < 2 && delta > -2){
+                var deltaScale = delta ;
+                var shiftPos = this.dir.clone();
+                target.matrix.rotateAxis(shiftPos);
+                console.log("delta",deltaScale);
+                shiftPos.multiplyScalar(deltaScale * 1.5 );
+                console.log("shiftPos",shiftPos);            
+                target.position.addSelf(shiftPos);
+            }          
+                 
                           
         } }(this.target);
-   
-        
-        this.AxisY.sizeFunc = function(target) { return function(position) { 
-                    
-                    target.position.y = position.y - scale.y*this.line.scale.y;
-              
-        } }(this.target);
-                
-        
-        this.AxisZ.sizeFunc = function(target) { return function(position) {
-                
-                    target.position.z = position.z - scale.z*this.line.scale.y;                                                
-              
-        } }(this.target);
-                
-                
-       
+                        
     }
-    else {
-        
-        this.traverse( function( object ) { object.visible = false } );
-        
-        this.AxisX.sizeFunc = null;
-        
-        this.AxisY.sizeFunc = null;
-        
-        this.AxisZ.sizeFunc = null;
-        
-    }
+    
+    
+    this.traverse( function( object ) { object.visible = visibility } );
+    
+    this.AxisX.moveFunc = arrowMoveFunc;
+    
+    this.AxisY.moveFunc = arrowMoveFunc;
+    
+    this.AxisZ.moveFunc = arrowMoveFunc;
+      
 }
 
 OSMEX.MovingGizmo.prototype.update = function ( ) {
@@ -77,7 +73,7 @@ OSMEX.MovingGizmo.prototype.update = function ( ) {
     if(this.target){  
         
         this.position.copy(this.target.position);
-        this.rotation.y = this.target.rotation.y;
+        this.rotation.copy(this.target.rotation);
         
     }
 }

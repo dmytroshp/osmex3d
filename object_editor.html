@@ -12,12 +12,54 @@
                 margin: 0px;
                 overflow: hidden;
             }
+            .selected {
+                background-color:yellow;
+            }
+            #topbar {
+                position:absolute; 
+                top:10px;               
+            }
+            #rightbar {
+                position:absolute;
+            }
         </style>
     </head>
     <body>
+        
+	<div id="topbar" style="visibility:hidden;display:inline;float:right;">
+		<div id="scaling" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/scaling.png'>
+		</div>
+		<div id="moving" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/moving.png'>
+		</div>
+		<div id="rotating" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/rotating.png'>
+		</div>
+		<div id="noarrows" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/noarrows.png'>
+		</div>
+
+	</div>
+	<div id="rightbar" style="visibility:hidden;width:40px;display:block;">
+		<div id="cube" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/cube.png'>
+		</div>
+		<br/>
+		<div id="cylinder" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/cylinder.png'>
+		</div>
+		<br/>
+		<div id="sphere" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+			<img src='images/sphere.png'>
+		</div>
+
+	</div>
 
         <script src="threejs/three.js"></script>
+        <script src="jquery/jquery-1.9.1.js"></script>
 
+        <script src="scripts/SketchBuilder.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
         <script src="scripts/GridGeometry.js"></script>
@@ -35,7 +77,7 @@
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
 
-        <script>
+        <script type="text/javascript">
             
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
@@ -44,41 +86,59 @@
             var container;
 
             var renderer;
-            var camera, cameraController, projector;
-            var objectScene, interfaceScene;
+            var camera = new THREE.PerspectiveCamera( SCREEN_FOV, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 1000 ), cameraController, projector;
+            var objectScene = new OSMEX.ObjectScene(), interfaceScene = new OSMEX.InterfaceScene(camera);
 
             var mouse = new THREE.Vector2(0, 0);
 			
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
             var offsetVector = new THREE.Vector3();
             
-            var groundGrid;
+            var groundGrid, groundPlane;
 			
             var sizerGizmo, rotationGizmo, movingGizmo, sizerPlane, movingPlane;
             
-            var arrowMode = false;
+            var arrowMode, objectType;
             
-            var ROTATION_VECTOR, SCALING_VECTOR;
+            var ROTATION_VECTOR;
             
-            function setArrowsType() {
-                arrowMode = document.getElementById('arrowMode').checked;
-            }
 
+            
             init();
             animate();
 
             function init() {
                 
                 container = document.createElement( 'div' );
-                document.body.appendChild( container );
+                document.body.appendChild( container );                
                 
-                var info = document.createElement('div');
-                info.style.position = 'absolute';
-		info.style.top = '10px';
-		info.style.width = '100%';
-		info.style.textAlign = 'center';
-                info.innerHTML += '<br/>Scale arrows: <input id="arrowMode" onchange="setArrowsType()" type="checkbox" /> ';
-                document.body.appendChild( info );
+		$(document).ready(function(){
+                    $("#topbar").css({
+                        "left":(window.innerWidth/2)-($("#topbar").width()/2)+"px",
+                        "visibility":"visible"
+                    });
+                    
+                    $("#rightbar").css({
+                        "left":window.innerWidth-($("#topbar").width()/2)+"px",
+                        "top":(window.innerHeight/2)-($("#topbar").height()/2*5)+"px",
+                        "visibility":"visible"
+                    });
+                    
+                    $("#rightbar").show();
+			$(".group1").click(function(){
+				$(".selected").removeClass("selected");
+				$(this).addClass("selected");
+				setArrowsType(this);
+			});
+			$(".group2").click(function(){
+				$(".selected").removeClass("selected");
+				$(this).addClass("selected");
+				addObject(this);
+			});
+		});                
+                     
+               
+                  
                 
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
 
@@ -89,10 +149,10 @@
 				
                 cameraController = new OSMEX.CameraController( camera );
                 cameraController.userZoomSpeed = 2.0;
-                //cameraController.addEventListener( 'change', render );
+                cameraController.addEventListener( 'change', render );
 				
-                objectScene = new OSMEX.ObjectScene();
-                interfaceScene = new OSMEX.InterfaceScene(camera);
+               objectScene = new OSMEX.ObjectScene();
+               interfaceScene = new OSMEX.InterfaceScene(camera);
 
                 objectScene.fog = new THREE.Fog( 0xffffff, 1, 1500 );
                 objectScene.fog.color.setHSV( 0.6, 0.05, 1 );
@@ -114,13 +174,19 @@
                 groundMaterial.side = THREE.DoubleSide;
                 var groundGeometry = new OSMEX.GridGeometry( 100, 100, 20, 20 );
                 groundGrid = new THREE.Mesh( groundGeometry, groundMaterial );
-                objectScene.add( groundGrid );        
+                objectScene.add( groundGrid );           
+                
                 
                 var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
                 var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );//new THREE.MeshBasicMaterial( { color: 0xffffff } );//vertexColors: THREE.FaceColors } );
                 var cubeBlock = new OSMEX.Block( blockGeometry, blockMaterial );
                 cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
-                objectScene.add( cubeBlock );	
+                objectScene.add( cubeBlock );
+                
+                
+                groundPlane = new THREE.Plane( new THREE.Vector3(0, 1, 0));
+                objectScene.add (groundPlane);
+                
 				
                 sizerGizmo = new OSMEX.SizerGizmo();
                 interfaceScene.add(sizerGizmo);
@@ -131,7 +197,6 @@
                 movingGizmo = new OSMEX.MovingGizmo();
                 interfaceScene.add(movingGizmo);
                 
-   
                 sizerPlane = new THREE.Plane();
                 movingPlane = new THREE.Plane();
 						
@@ -150,6 +215,22 @@
                 document.addEventListener( 'mouseup', onDocumentMouseUp, false );
                 window.addEventListener( 'resize', onWindowResize, false );
             }
+            
+          function setArrowsType(element)
+		{
+                    //alert($(element).attr('id'));
+                     arrowMode = $(element).attr('id');
+		}
+            function addObject(element)
+		{
+                    //alert($(element).attr('id'));
+                    if($(element).attr('id') != "noarrows"){
+                    BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
+                    BUILDING.Sketch.pickable = false;
+                    BUILDING.position.set(-1000,-1000,-1000);
+                    objectScene.add (BUILDING);                    
+                    }                       
+		}
 			
             function onWindowResize() {
 
@@ -204,9 +285,22 @@
                 mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
                 mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
                 
+                if ( BUILDING ) {       
+                 
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+	            projector.unprojectVector( vector, camera );
+                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersectPoint = ray.intersectPlane(groundPlane);
+                 
+                    if ( intersectPoint !== undefined ) {
+    
+                        BUILDING.position.copy(intersectPoint);                    
+                    }               
+                }
+                
                 if ( DRAGGING ) {
                     
-                    var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
 	            projector.unprojectVector( vector, camera );
                     var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
                     var intersects = raycaster.intersectObject(groundGrid);
@@ -227,12 +321,13 @@
                         
                         intersectPoint.subSelf(SIZING.matrixWorld.getPosition());
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
-                         //console.log (intersectPoint);
                         var len = SIZING.dir.dot(intersectPoint);
                         // TODO: workaround should be reimplemented
                         if (Math.abs(SIZING.len - len) < (SIZING.maxLength - SIZING.minLength)) {
                             
+                           // console.log ("length=",len);
                             SIZING.setLength(len);
+                            
                         }
                     }
                 }
@@ -245,7 +340,7 @@
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        var position = intersectPoint.subSelf( movingPlane.normal )
+                        var position = intersectPoint.subSelf( movingPlane.normal );
                         MOVING.setPosition (position);
                     }
                 }
@@ -256,9 +351,7 @@
                     sizingPos.x = (sizingPos.x * SCREEN_WIDTH/2)/10;
                     var len = mouseX - sizingPos.x;
 
-                    SCALING.setScale(len);
-
-                    
+                    SCALING.setScale(len);                
                 }
                 else if ( ROTATING ) {
                     
@@ -299,6 +392,26 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
+                    
+                    if (BUILDING){
+
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+	            projector.unprojectVector( vector, camera );
+                    var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersects = raycaster.intersectObject(groundGrid);
+                 
+                    if ( intersects.length > 0 ) {
+                        
+                        var object = new OSMEX.SketchBuilder(BUILDING.name);
+                        object.Sketch.position.copy(intersects[0].point);
+                        object.Sketch.material.color.setHex(0xffffff);                        
+                        objectScene.add (object.Sketch);
+                        
+                        }
+                        
+                    objectScene.remove (BUILDING);
+                    
+                    }
                                      
                     if ( PICKED ) {
                         
@@ -309,20 +422,26 @@
                             SELECTED = pickRef;
                             DRAGGING = pickRef;
 
-                            var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+
+                            var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                             projector.unprojectVector( vector, camera );
-                            var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
-                            var intersects = raycaster.intersectObject( groundGrid );
-                            offsetVector.copy( intersects[ 0 ].point ).subSelf( DRAGGING.position );
+                            var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var intersectPoint = ray.intersectPlane(groundPlane);                         
+                            offsetVector.copy( intersectPoint ).subSelf( DRAGGING.position );
                         }
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
                             
                             SIZING = pickRef;
+                            console.log("SIZING before",SIZING.dir);
+                            SELECTED.matrix.rotateAxis(SIZING.dir);
+                            console.log("SIZING after",SIZING.dir);
                             var sizingPos = SIZING.matrixWorld.getPosition();
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(SIZING.dir);  
+                            var rightDir = cameraDir.clone().crossSelf(SIZING.dir);
                             var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
-                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            
+                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos); 
+                            //SELECTED.matrix.rotateAxis(sizerPlane.normal);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                         }
                         else if ( pickRef instanceof OSMEX.MovingArrow ) {
@@ -332,7 +451,9 @@
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(MOVING.dir);  
                             var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
-                            movingPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);                
+                            movingPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            
+                            
                         }
                         else if ( pickRef instanceof OSMEX.ScaleCube ) {
                             
@@ -360,8 +481,10 @@
                         
                         SELECTED = null;
                     }
-                    if(arrowMode) sizerGizmo.setTarget(SELECTED); else movingGizmo.setTarget(SELECTED);
-                    rotationGizmo.setTarget(SELECTED);
+                    if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
+                        else if(arrowMode == "moving") movingGizmo.setTarget(SELECTED);
+                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED);;
+                    
                 }
 
             }
@@ -375,6 +498,7 @@
                     if (SIZING) SIZING.restoreDefaultLength();
                     if (SCALING) SCALING.restoreDefaultScale();
                     
+                    BUILDING = null;
                     DRAGGING = null;
                     SIZING = null;
                     SCALING = null;

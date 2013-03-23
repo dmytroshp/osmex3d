@@ -50,7 +50,8 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
         visibility = true;
         
         arrowSizeFunc = function(target) { return function(delta) {
-                    
+            
+            
             var deltaScale = delta * 40.0;
 
             var scaleAxis = new THREE.Vector3( Math.abs(this.dir.x), Math.abs(this.dir.y), Math.abs(this.dir.z) );
@@ -61,7 +62,6 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
                 
                 var deltaScaleVec = scaleAxis.clone().multiplyScalar(deltaScale);
                 target.scale.addSelf(deltaScaleVec);
-                
                 var shiftPos = this.dir.clone();
                 target.matrix.rotateAxis(shiftPos);
                 shiftPos.multiplyScalar(deltaScale / 2);
