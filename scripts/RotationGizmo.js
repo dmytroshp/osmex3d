@@ -1,24 +1,23 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-var VECTOR_PREV = null;
-
 OSMEX.RotationGizmo = function (  ) {
     
     THREE.Object3D.call( this );
+    this.name = "RotationGizmo";
     
     this.target = null;
 	
-    this.AxisX = new OSMEX.RotationTorus( new THREE.Vector3( 1, 0, 0 ), 0xff0000 );  
-	
-    this.AxisY = new OSMEX.RotationTorus( new THREE.Vector3( 0, 1, 0 ), 0x00ff00 );
-	
-    this.AxisZ = new OSMEX.RotationTorus( new THREE.Vector3( 0, 0, 1 ), 0x0000ff );
+    this.AxisX     = new OSMEX.RotationTorus( 15, 0.5, new THREE.Vector3( 1, 0, 0 ), 0xff0000, true );  
+    this.AxisY     = new OSMEX.RotationTorus( 15, 0.5, new THREE.Vector3( 0, 1, 0 ), 0x00ff00, true );
+    this.AxisZ     = new OSMEX.RotationTorus( 15, 0.5, new THREE.Vector3( 0, 0, 1 ), 0x0000ff, true );
+    this.AxisFront = new OSMEX.RotationTorus( 15, 0.7, new THREE.Vector3( 1, 0, 0 ), 0xffffff, false );
     
-    this.AxisFront = new OSMEX.RotationTorus( new THREE.Vector3( 0, 0, 0 ), 0x00ffff );
-	
-    this.add(this.AxisX);	
-    this.add(this.AxisY);	
-    this.add(this.AxisZ);
+    this.globeContainer = new THREE.Object3D();
+    this.globeContainer.add(this.AxisX);	
+    this.globeContainer.add(this.AxisY);	
+    this.globeContainer.add(this.AxisZ);
+    this.add(this.globeContainer);
+    
     this.add(this.AxisFront);
     
     this.overlay = new OSMEX.RotationGizmoOverlay(new THREE.Vector3( 1, 0, 0 ));
@@ -33,50 +32,29 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
     
     this.target = target;
     
+    var visibility = false;
+    var rotationFunc = null;
+    
     if ( target ) {
         
-        this.position = target.position;
-        this.traverse( function( object ) { object.visible = true } );
-        this.overlay.position = this.AxisX.position;
-        
-        
-        this.AxisX.rotationFunc = function(target) { return function(BV, CV) { 
+        visibility = true;
+ 
+        rotationFunc = function(target) { return function(radians) {
            
-           var angle = Math.acos ((BV.x * CV.x + BV.y * CV.y) / (Math.sqrt(Math.pow(BV.x,2) + Math.pow(BV.y,2))*Math.sqrt(Math.pow(CV.x,2) + Math.pow(CV.y,2))));
-      //     console.log (angle*180/Math.PI)
-           target.rotation.x = angle;
-             
-                
+           var matr = new THREE.Matrix4().extractRotation( target.matrix );
+           matr.rotateByAxis(this.dir, radians);
+           target.rotation.setEulerFromRotationMatrix( matr, target.eulerOrder );
+ 
         } }(this.target);
         
-        this.AxisY.rotationFunc = function(target) { return function(BV, CV) { 
-                
-            var angle = Math.acos ((BV.x * CV.x + BV.y * CV.y) / (Math.sqrt(Math.pow(BV.x,2) + Math.pow(BV.y,2))*Math.sqrt(Math.pow(CV.x,2) + Math.pow(CV.y,2))));
-      //     console.log (angle*180/Math.PI)
-           target.rotation.y = angle; 
-        } }(this.target);
-        
-        this.AxisZ.rotationFunc = function(target) { return function(BV, CV) { 
-                
-            var angle = Math.acos ((BV.x * CV.x + BV.y * CV.y) / (Math.sqrt(Math.pow(BV.x,2) + Math.pow(BV.y,2))*Math.sqrt(Math.pow(CV.x,2) + Math.pow(CV.y,2))));
-      //     console.log (angle*180/Math.PI)
-           target.rotation.z = -angle;
-        } }(this.target);
-        
-        this.AxisFront.rotationFunc = function(target) { return function(BV, CV) { target.rotation.z += 1 } }(this.target);
     }
-    else {
-        
-        this.traverse( function( object ) { object.visible = false } );
-        
-        this.AxisX.rotationFunc = null;
-        
-        this.AxisY.rotationFunc = null;
-        
-        this.AxisZ.rotationFunc = null;
-        
-        this.AxisFront.rotationFunc = null;
-    }
+    
+    this.traverse( function( object ) { object.visible = visibility } );
+
+    this.AxisX.rotationFunc = rotationFunc;
+    this.AxisY.rotationFunc = rotationFunc;
+    this.AxisZ.rotationFunc = rotationFunc;
+    this.AxisFront.rotationFunc = rotationFunc;
 }
 
 OSMEX.RotationGizmo.prototype.update = function ( camera ) {
@@ -84,14 +62,14 @@ OSMEX.RotationGizmo.prototype.update = function ( camera ) {
     if(this.target){  
         
         var vector = camera.position.clone().subSelf(this.position);
-    
+        
         this.overlay.setDirection(vector);
     
-        this.AxisFront.setDirection(vector);  
+        this.AxisFront.setDirection(vector);
+        
+        this.AxisFront.position = vector.clone().normalize().multiplyScalar(2.0);
+        
+        this.position.copy(this.target.position);
+        this.globeContainer.rotation.copy(this.target.rotation);
     }
-    
-  /*  var shift = this.overlay.dir.clone().multiplyScalar(-1.5);
-    var shiftedPos = this.position.clone().addSelf(shift);
-    this.overlay.position = this.target.position;*/
-
 }

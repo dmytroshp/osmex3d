@@ -96,11 +96,9 @@
             
             var groundGrid, groundPlane;
 			
-            var sizerGizmo, rotationGizmo, movingGizmo, sizerPlane, movingPlane;
+            var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
             
-            var arrowMode, objectType;
-            
-            var ROTATION_VECTOR;
+            var arrowMode = false;
             
 
             
@@ -197,8 +195,8 @@
                 movingGizmo = new OSMEX.MovingGizmo();
                 interfaceScene.add(movingGizmo);
                 
-                sizerPlane = new THREE.Plane();
-                movingPlane = new THREE.Plane();
+   
+                actionPlane = new THREE.Plane();
 						
                 projector = new THREE.Projector();	
 
@@ -315,7 +313,7 @@
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                     projector.unprojectVector( vector, camera );
                     var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersectPoint = ray.intersectPlane(sizerPlane);
+                    var intersectPoint = ray.intersectPlane(actionPlane);
 
                     if (intersectPoint !== undefined) {
                         
@@ -345,26 +343,29 @@
                     }
                 }
                 else if ( SCALING ) {
+                    
                     var mouseX = (mouse.x* SCREEN_WIDTH/2)/10;
                         
                     var sizingPos = projector.projectVector( SCALING.matrixWorld.getPosition().clone(), camera );
                     sizingPos.x = (sizingPos.x * SCREEN_WIDTH/2)/10;
                     var len = mouseX - sizingPos.x;
 
-                    SCALING.setScale(len);                
+                    SCALING.setScale(len);     
                 }
                 else if ( ROTATING ) {
                     
-                    var mouseX = (mouse.x* SCREEN_WIDTH/2) + SCREEN_WIDTH/2;
-                    var mouseY = -(mouse.y* SCREEN_HEIGHT/2)+ SCREEN_HEIGHT/2;
-                    var vector = projector.projectVector( ROTATING.matrixWorld.getPosition().clone(), camera );
+                    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+                    projector.unprojectVector( vector, camera );
+                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersectPoint = ray.intersectPlane(actionPlane);
 
-                    vector.x = ( vector.x * SCREEN_WIDTH/2 ) + SCREEN_WIDTH/2;
-                    vector.y = - ( vector.y * SCREEN_HEIGHT/2 ) + SCREEN_HEIGHT/2;                 
-                    var currentVector = new THREE.Vector2(-(vector.x-mouseX), vector.y-mouseY).normalize();
+                    if (intersectPoint === undefined) {
+                        alert("RotationEnd plane intersection problem!");
+                    }
 
-                     ROTATING.setAngle(ROTATION_VECTOR, currentVector);
-                       
+                    intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
+
+                    ROTATING.finishRotation(intersectPoint.clone().normalize());   
                 }
                 else {
                     
@@ -439,9 +440,7 @@
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(SIZING.dir);
                             var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
-                            
-                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos); 
-                            //SELECTED.matrix.rotateAxis(sizerPlane.normal);
+                            actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                         }
                         else if ( pickRef instanceof OSMEX.MovingArrow ) {
@@ -461,15 +460,28 @@
                                                        
                         }
                         else if ( pickRef instanceof OSMEX.RotationTorus ) {
+                            
                             ROTATING = pickRef;
                             
-                            var mouseX = (mouse.x* SCREEN_WIDTH/2) + SCREEN_WIDTH/2;
-                            var mouseY = -(mouse.y* SCREEN_HEIGHT/2)+ SCREEN_HEIGHT/2;
-                            var vector = projector.projectVector( ROTATING.matrixWorld.getPosition().clone(), camera );
+                            ROTATING.matrixRotationWorld.extractRotation( ROTATING.matrixWorld );
+                            var normal = ROTATING.matrixRotationWorld.multiplyVector3( ROTATING.dir.clone() ).normalize();
+                            
+                            var rotationPos = ROTATING.matrixWorld.getPosition();
+                            actionPlane.setFromNormalAndCoplanarPoint(normal, rotationPos);
+                            // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
+                            
+                            var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+                            projector.unprojectVector( vector, camera );
+                            var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var intersectPoint = ray.intersectPlane(actionPlane);
 
-                            vector.x = ( vector.x * SCREEN_WIDTH/2 ) + SCREEN_WIDTH/2;
-                            vector.y = - ( vector.y * SCREEN_HEIGHT/2 ) + SCREEN_HEIGHT/2;
-                            ROTATION_VECTOR = new THREE.Vector2(-(vector.x-mouseX), vector.y-mouseY).normalize();
+                            if (intersectPoint === undefined) {
+                                alert("RotationStart plane intersection problem!");
+                            }
+                            
+                            intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
+
+                            ROTATING.setStartRotationVector(intersectPoint.clone().normalize());
                            
                         }
                         else {
@@ -504,7 +516,6 @@
                     SCALING = null;
                     ROTATING = null;
                     MOVING = null;
-                    ROTATION_VECTOR = null;
                 }
             }
 

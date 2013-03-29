@@ -1,6 +1,6 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-OSMEX.Torus = function ( dir, origin, hex ) {
+OSMEX.Torus = function ( radius, width, dir, hex, useDepth ) {
     
     THREE.Object3D.call( this );
     this.name = "Torus";
@@ -8,7 +8,6 @@ OSMEX.Torus = function ( dir, origin, hex ) {
     this.pickable = false;
     
     this.dir = null;
-    this.setDirection( dir );
 
     if ( hex === undefined ) hex = 0xffff00;
 
@@ -17,14 +16,18 @@ OSMEX.Torus = function ( dir, origin, hex ) {
         color: hex, 
         shading: THREE.SmoothShading, 
         ambient: 0xffffff,
-        opacity: 1.0
-    } );    
+        opacity: 1.0,
+        depthTest: useDepth
+    } );
+    
+    var r = radius || 15;
+    var w = width || 0.5;
    
-    var torusGeometry = new THREE.TorusGeometry( 15, 0.5, 10, 10);
+    var torusGeometry = new THREE.TorusGeometry( r, w, 30, 30);
     this.torus = new THREE.Mesh ( torusGeometry, meshMaterial );
     this.add( this.torus );
-
-    if ( origin instanceof THREE.Vector3 ) this.position = origin;
+    
+    this.setDirection( dir );
 };
 
 OSMEX.Torus.prototype = Object.create( THREE.Object3D.prototype );
@@ -45,23 +48,16 @@ OSMEX.Torus.prototype.setDirection = function ( dir ) {
     }
     else
     {
-        axis = upVector.crossSelf( this.dir );
+        axis = upVector.crossSelf( this.dir ).normalize();
     }
 	
     var radians = Math.acos( cosa );
 	
-    this.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
-    this.rotation.setEulerFromRotationMatrix( this.matrix, this.eulerOrder );
+    this.torus.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
+    this.torus.rotation.setEulerFromRotationMatrix( this.torus.matrix, this.torus.eulerOrder );
 };
 
 OSMEX.Torus.prototype.setColor = function ( hex ) {
     
     this.torus.material.color.setHex( hex );
 };
-
-/*OSMEX.Torus.prototype.setAngle = function (axis, angle ) {
-    
-    if (axis === "x") this.torus.rotation.z = -angle;
-    if (axis === "y") this.torus.rotation.x = angle;
-    if (axis === "z") this.torus.rotation.z = angle;
-};*/
