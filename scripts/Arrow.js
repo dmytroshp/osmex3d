@@ -68,7 +68,7 @@ OSMEX.Arrow.prototype.setDirection = function ( dir ) {
     }
     else
     {
-        axis = upVector.crossSelf( this.dir );
+        axis = new THREE.Vector3().cross( upVector, this.dir );
     }
 	
     var radians = Math.acos( cosa );
