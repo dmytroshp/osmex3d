@@ -39,7 +39,7 @@
             </div>
             <br/>
             <div class="button1" style="width:200px;float:left;">
-                <input type="button" name="remove" value="Remove" style="width:200px" onclick=""> 
+                <input type="button" name="remove" value="Remove" style="width:200px" onclick="removeOptionFromListOfOperations()"> 
             </div>
         </div>
         <div id="topbar" style="visibility:hidden;display:inline;float:right;">
@@ -81,7 +81,7 @@
             </div>
         </div>
 
-
+        <script src="csgjs/csg.js"></script>
         <script src="threejs/three.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
 
@@ -146,7 +146,7 @@
                     });
 
                     $("#leftbar").css({
-                        "visibility": "visible"
+                        "visibility": "visible"                      
                     });
                     
                     $("#bottombar").css({
@@ -281,7 +281,7 @@
 
             function buildNewGeometryElement(element) {
                  if (!CLICKED[0] || !CLICKED[1]) {
-                     alert("Error: select figures");
+                     alert("Error");
                  } else {
                      var nameOfOperation;
                      if ($(element).attr('id') == "union") {
@@ -291,9 +291,16 @@
                      } else if ($(element).attr('id') == "complement") {
                          nameOfOperation = "complement";
                      }
-                     //alert(nameOfOperation);
                      saveAtListOfOperations(nameOfOperation);
+                     removeObject();
                  }
+            }
+            
+            function removeObject() {
+                objectScene.remove(CLICKED[0]);
+                objectScene.remove(CLICKED[1]);
+                CLICKED[0] = null;
+                CLICKED[1] = null;
             }
             
             function saveAtListOfOperations(nameOfOperation) {
@@ -303,6 +310,7 @@
             
             function removeOptionFromListOfOperations(){
                 var objSelect = document.getElementById("listOfDeletedNodes");
+                //
             }
             
             function onWindowResize() {
