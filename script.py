@@ -141,7 +141,7 @@ def searchLeftVector(rectangle):
     last_index = 0
     rectangle_n = copy(rectangle)
     del rectangle_n[index]
-    for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1 ????? its very strange
+    for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1
         if (rectangle_n[i][2] < rectangle_n[last_index][2]):
             last_index = i
     if rectangle[index][1] < rectangle_n[last_index][1]:
@@ -158,7 +158,7 @@ def searchRightVector(rectangle):
     last_index = 0
     rectangle_n = copy(rectangle)
     del rectangle_n[index]
-    for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1 ????? its very strange
+    for i in range(0, len(rectangle_n) ): #MAGIC! why not for len(rectangle_n) -1
         if (rectangle_n[i][2] > rectangle_n[last_index][2]):
             last_index = i
     if rectangle[index][1] < rectangle_n[last_index][1]:
@@ -256,10 +256,13 @@ print("[%s] Parse ways...Done!\n" % datetime.today().strftime('%H:%M:%S'))
 print("[%s] Start parsing file" % datetime.today().strftime('%H:%M:%S'))
 buildingArray = parseBuildingsData(node_list, way_list)
 print("[%s] End parsing file" % datetime.today().strftime('%H:%M:%S'))
+
 db = MySQLdb.connect(host="127.0.0.1", user="root", port = 3306, passwd="vertrigo", charset='utf8')
 connection = db.cursor()
 connection.execute("USE osmex3d;")
-createRectangle(bounds, buildingArray[14], connection)
+for building in buildingArray:
+    if len(building) <= 5:
+        createRectangle(bounds, building, connection)
 db.close()
 
 coord_start = []

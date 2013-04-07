@@ -5,6 +5,7 @@ connection = db.cursor()
 CREATE_DATABASE = "CREATE DATABASE IF NOT EXISTS osmex3d;"
 CREATE_TABLE_TYPE = "CREATE TABLE IF NOT EXISTS objectType (" \
                     "   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," \
+                    "   preview TEXT," \
                     "   vertexes TEXT," \
                     "   indexes TEXT" \
                     ");"
@@ -18,8 +19,8 @@ CREATE_TABLE_INSTANCE = "CREATE TABLE IF NOT EXISTS instance (" \
                         "   rotationZ DOUBLE," \
                         "   positionLat DOUBLE," \
                         "   positionLon DOUBLE," \
-                        "   typeObject INT," \
-                        "   FOREIGN KEY (typeObject) REFERENCES objectType (id)" \
+                        "   ObjectID INT," \
+                        "   FOREIGN KEY (ObjectID) REFERENCES objectType (id)" \
                         ");"
 CUBE_VERTEXES = "-1.0 -1.0 1.0 1.0 -1.0 1.0 1.0 1.0 1.0 -1.0 1.0 1.0 -1.0 -1.0 -1.0 \
 -1.0 1.0 -1.0 1.0 1.0 -1.0 1.0 -1.0 -1.0 -1.0 1.0 -1.0 -1.0 1.0 1.0 1.0 1.0 1.0 1.0 \
@@ -27,7 +28,10 @@ CUBE_VERTEXES = "-1.0 -1.0 1.0 1.0 -1.0 1.0 1.0 1.0 1.0 -1.0 1.0 1.0 -1.0 -1.0 -
 1.0 -1.0 1.0 1.0 1.0 1.0 -1.0 1.0 -1.0 -1.0 -1.0 -1.0 -1.0 1.0 -1.0 1.0 1.0 -1.0 1.0 -1.0"
 CUBE_INDEXES = "0 1 2 0 2 3 4 5 6 4 6 7 8 9 10 8 10 11 12 13 14 12 14 15 16 17 18 \
 16 18 19 20 21 22 20 22 23"
-INSERT_CUBE_GEOMETRY = "INSERT INTO objectType VALUES (null, '%s', '%s');" % (CUBE_VERTEXES, CUBE_INDEXES)
+CUBE_PREVIEW = "/default/path/image.png"
+
+INSERT_CUBE_GEOMETRY = "INSERT INTO objectType VALUES (null, '%s', '%s', '%s');" %\
+                       (CUBE_PREVIEW, CUBE_VERTEXES, CUBE_INDEXES)
 
 connection.execute(CREATE_DATABASE)
 db.commit()
