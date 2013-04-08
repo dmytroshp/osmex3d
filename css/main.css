@@ -1,0 +1,54 @@
+#searchDiv {
+    border: #cccccc solid 2px;
+    width: 505px;
+    height: 42px;
+    float: left;
+}
+#search {
+    width: 400px;
+    margin-left: 10px;
+    margin-top: 10px;
+    float: left;
+}
+table  {
+    font-size: 1em;
+}
+
+body {
+	font-family: "Trebuchet MS", "Arial", "Helvetica", "Verdana", "sans-serif";
+}
+.ui-helper-reset
+{
+    font-size: 15px !important;
+}
+.contentContainer
+{
+    word-wrap:break-word;
+    overflow-y: auto;
+    direction: rtl;
+    height: 150px;
+}
+.content
+{
+    direction: ltr;
+}
+#accordionContainer
+{
+     overflow-y: scroll;
+     position: absolute;
+     height: 85%;
+     width: 29%;
+     margin-top: 10px;
+     margin-right: 10px;
+}
+#objectEditor {
+    position: absolute;
+    height: 90%;
+    border: #cccccc solid 2px;
+    overflow-y: scroll;
+    margin-right: 10px;
+}
+#acctd{
+    vertical-align: top;
+    width: 30%;
+}
