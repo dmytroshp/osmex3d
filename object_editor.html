@@ -430,7 +430,7 @@
                             projector.unprojectVector( vector, camera );
                             var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
                             var intersectPoint = ray.intersectPlane(groundPlane);                         
-                            
+                            offsetVector.copy( intersectPoint ).subSelf( DRAGGING.position );
                         }
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
                             
