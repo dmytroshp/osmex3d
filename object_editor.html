@@ -96,7 +96,7 @@
             
             var groundGrid, groundPlane;
 			
-            var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
+            var sizerGizmo, rotationGizmo, movingGizmo, actionPlane, movingPlane;
             
             var arrowMode, objectType;
             
@@ -144,7 +144,7 @@
                 camera.position.y = 100;
 				
                 cameraController = new OSMEX.CameraController( camera );
-                cameraController.userZoomSpeed = 2.0;
+                cameraController.ZoomSpeed = 2.0;
                 cameraController.addEventListener( 'change', render );
 				
                objectScene = new OSMEX.ObjectScene();
@@ -195,6 +195,7 @@
                 
    
                 actionPlane = new THREE.Plane();
+                movingPlane = new THREE.Plane();
 						
                 projector = new THREE.Projector();	
 
@@ -280,6 +281,7 @@
 
                 mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
                 mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
                 
                 if ( BUILDING ) {       
                  
@@ -391,7 +393,8 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
-                    
+ 
+ 
                     if (BUILDING){
 
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
@@ -415,6 +418,7 @@
                     if ( PICKED ) {
                         
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
+                        cameraController.enabled = false;
                         
                         if ( pickRef instanceof OSMEX.Block ) {
 
@@ -426,7 +430,7 @@
                             projector.unprojectVector( vector, camera );
                             var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
                             var intersectPoint = ray.intersectPlane(groundPlane);                         
-                            offsetVector.copy( intersectPoint ).subSelf( DRAGGING.position );
+                            
                         }
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
                             
@@ -504,6 +508,8 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
+                   
+                    cameraController.enabled = true;
                     
                     if (SIZING) SIZING.restoreDefaultLength();
                     if (SCALING) SCALING.restoreDefaultScale();
