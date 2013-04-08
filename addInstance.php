@@ -26,12 +26,10 @@
             .$object_rotationZ.", ".$object_positionLat.", ".$object_positionLon.", ".$object_referID.");";
         $db->exec($INSERT_OBJECT);
     } else {
-        $x = "UPDATE objectInstance SET scaleX=".$object_scaleX.", scaleY=".$object_scaleY.", scaleZ="
+        $db->exec("UPDATE objectInstance SET scaleX=".$object_scaleX.", scaleY=".$object_scaleY.", scaleZ="
             .$object_scaleZ.", rotationX=".$object_rotationX.", rotationY=".$object_rotationY.", rotationZ="
             .$object_rotationZ.", positionLat=".$object_positionLat.", positionLon=".$object_positionLon
-            .", ObjectID=".$object_referID." WHERE id=".$object_uid.";";
-        echo $x;
-        $db->exec($x);
+            .", ObjectID=".$object_referID." WHERE id=".$object_uid.";");
     }
 
     $db = NULL;
