@@ -28,7 +28,7 @@ HTML_FILE_BEGIN = """<html>
         fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
         toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
         var position       = new OpenLayers.LonLat(30.6977847,46.4409529).transform( fromProjection, toProjection);
-        var zoom           = 15;
+        var zoom           = 10;
 
         map.addLayer(mapnik);
         map.setCenter(position, zoom );
@@ -209,7 +209,7 @@ def createRectangle(boundBox, building, database):
     Y_COORD = 20
     X_COORD = calculateDistance(topLine[0], topLine[1]) / 2
     angleOffset = calculateAngleOffset(boundBox, building)
-    INSERT_RECTANGLE = "INSERT INTO instance VALUES (null, %f, %f, %f, \
+    INSERT_RECTANGLE = "INSERT INTO objectInstance VALUES (null, %f, %f, %f, \
     %f, %f, %f, %f, %f, %d);" % (X_COORD, Y_COORD, Z_COORD, 0.0, angleOffset, 0.0,
         center_x, center_y, 1)
     database.execute(INSERT_RECTANGLE)
@@ -263,6 +263,7 @@ connection.execute("USE osmex3d;")
 for building in buildingArray:
     if len(building) <= 5:
         createRectangle(bounds, building, connection)
+db.commit()
 db.close()
 
 coord_start = []

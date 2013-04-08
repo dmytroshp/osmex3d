@@ -9,7 +9,7 @@ CREATE_TABLE_TYPE = "CREATE TABLE IF NOT EXISTS objectType (" \
                     "   vertexes TEXT," \
                     "   indexes TEXT" \
                     ");"
-CREATE_TABLE_INSTANCE = "CREATE TABLE IF NOT EXISTS instance (" \
+CREATE_TABLE_INSTANCE = "CREATE TABLE IF NOT EXISTS objectInstance (" \
                         "   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," \
                         "   scaleX DOUBLE," \
                         "   scaleY DOUBLE," \

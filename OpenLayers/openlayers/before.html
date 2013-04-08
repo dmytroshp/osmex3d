@@ -22,7 +22,7 @@
         fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
         toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
         var position       = new OpenLayers.LonLat(30.6977847,46.4409529).transform( fromProjection, toProjection);
-        var zoom           = 15;
+        var zoom           = 10;
 
         map.addLayer(mapnik);
         map.setCenter(position, zoom );
