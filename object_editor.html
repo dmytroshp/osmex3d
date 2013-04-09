@@ -96,7 +96,7 @@
             
             var groundGrid, groundPlane;
 			
-            var sizerGizmo, rotationGizmo, movingGizmo, actionPlane, movingPlane;
+            var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
             
             var arrowMode, objectType;
             
@@ -195,7 +195,6 @@
                 
    
                 actionPlane = new THREE.Plane();
-                movingPlane = new THREE.Plane();
 						
                 projector = new THREE.Projector();	
 
@@ -334,11 +333,11 @@
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
                     var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersectPoint = ray.intersectPlane(movingPlane);
+                    var intersectPoint = ray.intersectPlane(actionPlane);
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        var position = intersectPoint.subSelf( movingPlane.normal );
+                        var position = intersectPoint.subSelf( actionPlane.normal );
                         MOVING.setPosition (position);
                     }
                 }
@@ -452,7 +451,7 @@
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(MOVING.dir);  
                             var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
-                            movingPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             
                             
                         }
