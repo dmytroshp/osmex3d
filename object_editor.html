@@ -247,17 +247,18 @@
 
                         for( i = 0; i < intersects.length; i++ ) {
                             
+                            
+                            
+                            if (intersects[i].object.parent.name === "RotationGizmoOverlay"){
+                                if (i+1 < intersects.length && intersects[i+1].object.parent.name === "RotationTorus")
+                                    i+=1;
+                                else if (i+1 < intersects.length) continue;
+                                                                                               
+                                return null;                               
+                            }
+                        
                             var intersector = intersects[i];
                             
-                          /*  if (intersector.object.parent.name === "RotationGizmoOverlay" && intersects[i+1].object.parent.name !== "RotationTorus")
-                                    intersector = intersects[i+1];
-                                
-                            if (intersector.object.parent.name === "RotationGizmoOverlay" && intersects[i+1].object.parent.name === "RotationTorus")
-                                    intersector = intersects[i+2];*/
-                            if (intersector.object.parent.name === "RotationGizmoOverlay")
-                                return null;
-                       
-
                             if ( intersector.object.pickable && intersector.object.visible ) {
                                 
                                 
