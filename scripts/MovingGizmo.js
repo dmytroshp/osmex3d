@@ -45,7 +45,7 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
             if (delta < 2 && delta > -2){
                 var deltaScale = delta ;
                 var shiftPos = this.dir.clone();
-                target.matrix.rotateAxis(shiftPos);
+               // target.matrix.rotateAxis(shiftPos);
                 console.log("delta",deltaScale);
                 shiftPos.multiplyScalar(deltaScale * 1.5 );
                 console.log("shiftPos",shiftPos);            
@@ -73,7 +73,7 @@ OSMEX.MovingGizmo.prototype.update = function ( ) {
     if(this.target){  
         
         this.position.copy(this.target.position);
-        this.rotation.copy(this.target.rotation);
+       // this.rotation.copy(this.target.rotation);
         
     }
 }

@@ -46,8 +46,6 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
         
-        //this.startPoint = new THREE.Vector3();
-        //this.endPoint = new THREE.Vector3();
 
 	// internals
 
@@ -146,17 +144,6 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 	};
 
-    /*    this.getStartPointOnGrid = function ( ) {
-
-		return _this.startPoint;
-
-	};
-        
-        this.getEndPointOnGrid = function ( ) {
-
-		return _this.endPoint;
-
-	};*/
         
 	this.getMouseOnScreen = function ( clientX, clientY ) {
 
@@ -228,26 +215,16 @@ OSMEX.CameraController = function ( object, domElement ) {
 		if ( mouseChange.lengthSq() ) {
                     
 			mouseChange.multiplyScalar( _eye.length() * _this.panSpeed );
-                        
-                        var vec1 = new THREE.Vector3(0,1,0);
-                        var vec2 = new THREE.Vector3(1,0,0);
-			var pan1 = _eye.clone().crossSelf( vec1 ).setLength( mouseChange.x );
-                        var pan2 = _eye.clone().crossSelf( vec2 ).setLength( mouseChange.y );
-                        var pan = pan1.clone().addSelf(pan2);
-                        //pan.setZ(-pan.y);
+
+                        var cameraDir = _this.object.position.clone().subSelf(_this.target).normalize();
+                        var rightDir = cameraDir.clone().crossSelf(_this.object.up);
+			var pan = _eye.clone().crossSelf( _this.object.up ).setLength( mouseChange.x )
+                        pan.subSelf(_eye.clone().crossSelf( rightDir ).setLength( mouseChange.y ));
                         pan.setY(0);
-                        // var pan2 = _eye.clone().crossSelf( _this.object.up )
-                       // console.log ("_this.object.up",_this.object.up);
-			//pan.addSelf( _this.object.up.clone().setLength( mouseChange.y ) );
-                        console.log ("_this.object.up",_this.object.up);
-                        //console.log ("pan2",pan);
-                        //pan.setZ(-mouseChange.y);
-                       // pan.setY(0);
                         
 
 			_this.object.position.addSelf( pan );
-			_this.target.addSelf( pan );
-                        
+			_this.target.addSelf( pan );                
                         
 			if ( _this.staticMoving ) {
 
@@ -417,7 +394,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		} else if ( _state === STATE.PAN && !_this.noPan ) {
 
-			_panStart = _panEnd = _this.getMouseOnScreen( event.clientX, event.clientY );//_this.getStartPointOnGrid( );
+			_panStart = _panEnd = _this.getMouseOnScreen( event.clientX, event.clientY );
 
 		}
 
@@ -446,7 +423,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		} else if ( _state === STATE.PAN && !_this.noPan ) {
                         
-			_panEnd = _this.getMouseOnScreen( event.clientX, event.clientY );//_this.getEndPointOnGrid( );
+			_panEnd = _this.getMouseOnScreen( event.clientX, event.clientY );
 
 		}
 

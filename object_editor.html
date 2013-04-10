@@ -174,7 +174,7 @@
                 
                 
                 var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
-                var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );//new THREE.MeshBasicMaterial( { color: 0xffffff } );//vertexColors: THREE.FaceColors } );
+                var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
                 var cubeBlock = new OSMEX.Block( blockGeometry, blockMaterial );
                 cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
                 objectScene.add( cubeBlock );
@@ -248,9 +248,20 @@
                         for( i = 0; i < intersects.length; i++ ) {
                             
                             var intersector = intersects[i];
-                            if (intersector.object.parent.name === "RotationGizmoOverlay") return null;
+                            
+                          /*  if (intersector.object.parent.name === "RotationGizmoOverlay" && intersects[i+1].object.parent.name !== "RotationTorus")
+                                    intersector = intersects[i+1];
+                                
+                            if (intersector.object.parent.name === "RotationGizmoOverlay" && intersects[i+1].object.parent.name === "RotationTorus")
+                                    intersector = intersects[i+2];*/
+                            if (intersector.object.parent.name === "RotationGizmoOverlay")
+                                return null;
+                       
 
                             if ( intersector.object.pickable && intersector.object.visible ) {
+                                
+                                
+                                
                                 return intersector.object;
                             }
                         }
@@ -449,7 +460,7 @@
                             MOVING = pickRef;
                             var sizingPos = MOVING.matrixWorld.getPosition();
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(MOVING.dir);  
+                            var rightDir = cameraDir.clone().crossSelf(MOVING.dir); 
                             var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
                             actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             
@@ -494,9 +505,14 @@
                         
                         SELECTED = null;
                     }
-                    if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
+                  /*  if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
                         else if(arrowMode == "moving") movingGizmo.setTarget(SELECTED);
-                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED);;
+                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED);*/
+                    if(arrowMode == "moving") movingGizmo.setTarget(SELECTED) 
+                    else {
+                        rotationGizmo.setTarget(SELECTED);
+                        sizerGizmo.setTarget(SELECTED);
+                    }   
                     
                 }
 
