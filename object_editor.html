@@ -63,6 +63,7 @@
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
         <script src="scripts/GridGeometry.js"></script>
+        <script src="scripts/Camera.js"></script>
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/Block.js"></script>
         <script src="scripts/Cube.js"></script>
@@ -86,8 +87,9 @@
             var container;
 
             var renderer;
-            var camera = new THREE.PerspectiveCamera( SCREEN_FOV, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 1000 ), cameraController, projector;
-            var objectScene = new OSMEX.ObjectScene(), interfaceScene = new OSMEX.InterfaceScene(camera);
+            var camera;
+            var cameraController, projector;
+            var objectScene, interfaceScene;
 
             var mouse = new THREE.Vector2(0, 0);
 			
@@ -133,12 +135,9 @@
 			});
 		});                
                      
-               
-                  
-                
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
-
-                camera = new THREE.PerspectiveCamera( SCREEN_FOV, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 1000 );
+                
+                camera = new OSMEX.Camera( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 1000, 1, 1000 );
                 camera.rotation.x -= Math.PI / 4;
                 camera.position.z = 100;
                 camera.position.y = 100;
@@ -147,12 +146,11 @@
                 cameraController.userZoomSpeed = 2.0;
                 cameraController.addEventListener( 'change', render );
 				
-               objectScene = new OSMEX.ObjectScene();
-               interfaceScene = new OSMEX.InterfaceScene(camera);
+                objectScene = new OSMEX.ObjectScene();
+                interfaceScene = new OSMEX.InterfaceScene(camera);
 
                 objectScene.fog = new THREE.Fog( 0xffffff, 1, 1500 );
                 objectScene.fog.color.setHSV( 0.6, 0.05, 1 );
-                interfaceScene.fog = objectScene.fog;
 
                 objectScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
                 interfaceScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
@@ -171,19 +169,16 @@
                 var groundGeometry = new OSMEX.GridGeometry( 100, 100, 20, 20 );
                 groundGrid = new THREE.Mesh( groundGeometry, groundMaterial );
                 objectScene.add( groundGrid );           
-                
-                
+                  
                 var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
                 var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );//new THREE.MeshBasicMaterial( { color: 0xffffff } );//vertexColors: THREE.FaceColors } );
                 var cubeBlock = new OSMEX.Block( blockGeometry, blockMaterial );
                 cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
                 objectScene.add( cubeBlock );
-                
-                
+                   
                 groundPlane = new THREE.Plane( new THREE.Vector3(0, 1, 0));
                 objectScene.add (groundPlane);
-                
-				
+                		
                 sizerGizmo = new OSMEX.SizerGizmo();
                 interfaceScene.add(sizerGizmo);
                 
@@ -193,13 +188,11 @@
                 movingGizmo = new OSMEX.MovingGizmo();
                 interfaceScene.add(movingGizmo);
                 
-   
                 actionPlane = new THREE.Plane();
 						
                 projector = new THREE.Projector();	
 
                 // RENDERER
-
                 renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
                 renderer.setClearColor( objectScene.fog.color, 1 );
                 renderer.autoClear = false;
@@ -230,7 +223,7 @@
 			
             function onWindowResize() {
 
-                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.setSize( window.innerWidth, window.innerHeight );
                 camera.updateProjectionMatrix();
 
                 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -317,14 +310,7 @@
                         
                         intersectPoint.subSelf(SIZING.matrixWorld.getPosition());
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
-                        var len = SIZING.dir.dot(intersectPoint);
-                        // TODO: workaround should be reimplemented
-                        if (Math.abs(SIZING.len - len) < (SIZING.maxLength - SIZING.minLength)) {
-                            
-                           // console.log ("length=",len);
-                            SIZING.setLength(len);
-                            
-                        }
+                        SIZING.trackSizing(intersectPoint);
                     }
                 }
                 else if ( MOVING ) {
@@ -332,11 +318,11 @@
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
                     var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersectPoint = ray.intersectPlane(movingPlane);
+                    var intersectPoint = ray.intersectPlane(actionPlane);
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        var position = intersectPoint.subSelf( movingPlane.normal );
+                        var position = intersectPoint.subSelf( actionPlane.normal );
                         MOVING.setPosition (position);
                     }
                 }
@@ -421,7 +407,6 @@
                             SELECTED = pickRef;
                             DRAGGING = pickRef;
 
-
                             var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                             projector.unprojectVector( vector, camera );
                             var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
@@ -431,6 +416,7 @@
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
                             
                             SIZING = pickRef;
+                            
                             console.log("SIZING before",SIZING.dir);
                             SELECTED.matrix.rotateAxis(SIZING.dir);
                             console.log("SIZING after",SIZING.dir);
@@ -440,15 +426,18 @@
                             var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
                             actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
+                            
+                            sizerGizmo.setSizing(true);
                         }
                         else if ( pickRef instanceof OSMEX.MovingArrow ) {
                             
                             MOVING = pickRef;
+                            
                             var sizingPos = MOVING.matrixWorld.getPosition();
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
                             var rightDir = cameraDir.clone().crossSelf(MOVING.dir);  
                             var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
-                            movingPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             
                             
                         }
@@ -505,7 +494,11 @@
 				
                 if (event.button == 0) {
                     
-                    if (SIZING) SIZING.restoreDefaultLength();
+                    if (SIZING) {
+                        
+                        SIZING.restoreDefaultLength();
+                        sizerGizmo.setSizing(false);
+                    }
                     if (SCALING) SCALING.restoreDefaultScale();
                     
                     BUILDING = null;

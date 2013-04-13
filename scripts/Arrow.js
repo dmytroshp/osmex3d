@@ -86,10 +86,7 @@ OSMEX.Arrow.prototype.setLength = function ( length ) {
 
 OSMEX.Arrow.prototype.restoreDefaultLength = function ( ) {
     
-    this.len = this.defaultLength;
-    this.line.scale.y = this.defaultLength;
-    if (this.type == "sizing") this.cube.position.y = this.defaultLength;    
-    
+    this.setLength(this.defaultLength);
 };
 
 OSMEX.Arrow.prototype.setColor = function ( hex ) {

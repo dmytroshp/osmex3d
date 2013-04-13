@@ -6,9 +6,7 @@ OSMEX.SizerArrow = function ( dir, hex ) {
     this.name = "SizeArrow";
     
     this.minLength = 5;
-    this.maxLength = 75;
-    
-    this.prevSize = 0.5;
+    this.maxLength = 120;
 	
     this.cube.pickable = true;
     this.cube.pickRef = this;
@@ -18,30 +16,30 @@ OSMEX.SizerArrow = function ( dir, hex ) {
 
 OSMEX.SizerArrow.prototype = Object.create( OSMEX.Arrow.prototype );
 
-OSMEX.SizerArrow.prototype.setLength = function ( length ) {
+OSMEX.SizerArrow.prototype.trackSizing = function ( sizingVector ) {
     
-    if (length < this.minLength) {
+    var newLen = this.dir.dot(sizingVector);
+    
+    console.log ("newLen=" + newLen);
+    
+    // TODO: workaround should be reimplemented
+    if (Math.abs(this.len - newLen) < (this.maxLength - this.minLength)) {
         
-        length = this.minLength;
-    }
-    else if (length > this.maxLength) {
+        if (newLen < this.minLength) {
         
-        length = this.maxLength;
-    }
-    
-    if (this.sizeFunc) {
+            newLen = this.minLength;
+        }
+        else if (newLen > this.maxLength) {
         
-        var size = (length - this.minLength) / (this.maxLength - this.minLength); // converting to range [0; 1]
-        this.sizeFunc(size - this.prevSize);
-        this.prevSize = size;
+            newLen = this.maxLength;
+        }
+    
+        if (this.sizeFunc) {
+        
+            var delta = newLen - this.len;
+            this.sizeFunc(delta);
+        }
+        
+        SIZING.setLength(newLen);                    
     }
-
-    OSMEX.Arrow.prototype.setLength.call(this, length);
-};
-
-OSMEX.SizerArrow.prototype.restoreDefaultLength = function ( ) {
-    
-    this.prevSize = 0.5;  
-    
-    OSMEX.Arrow.prototype.restoreDefaultLength.call(this);
-};
+}
