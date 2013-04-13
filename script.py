@@ -44,15 +44,15 @@ HTML_FILE_BEGIN = """<html>
 		var icon_second = new OpenLayers.Icon('http://s45.radikal.ru/i108/1212/0d/b2cbfeb346ac.png',size,offset);
 		"""
 HTML_FILE_END = """
-	for ( i = 0; i < 500; i+=2){
+	for ( i = 0; i < 1500; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(s_x[i+1], s_x[i]).transform( fromProjection, toProjection),icon_start.clone());
 		markers.addMarker(marker_tmp);
 	}
-	for ( i = 0; i < 500; i+=2){
+	for ( i = 0; i < 0; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(t_x[i+1], t_x[i]).transform( fromProjection, toProjection),icon_second.clone());
 		markers.addMarker(marker_tmp);
 	}
-	for ( i = 0; i < 500; i+=2){
+	for ( i = 0; i < 0; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(x[i+1], x[i]).transform( fromProjection, toProjection),icon.clone());
 		markers.addMarker(marker_tmp);
 	}
@@ -134,7 +134,7 @@ def calculateDistance(firstNode, secondNode):
 
 def searchLeftVector(rectangle):
     index = 0
-    print "rectangle: ",rectangle
+    #print "rectangle: ",rectangle
     for i in range(0, len(rectangle) - 1):
         if rectangle[i][2] < rectangle[index][2]:
             index = i
@@ -151,7 +151,7 @@ def searchLeftVector(rectangle):
 
 def searchRightVector(rectangle):
     index = 0
-    print "rectangle: ",rectangle
+    #print "rectangle: ",rectangle
     for i in range(0, len(rectangle) - 1):
         if rectangle[i][2] > rectangle[index][2]:
             index = i
@@ -171,34 +171,34 @@ def calculateAngleOffset(boundbox, rectangle):
     bottomLine[0][0] -= 0.003
     bottomLine[1][0] -= 0.003
     buildingLine = searchLeftVector(rectangle)
-    print "bottomLine: ", bottomLine
-    print "building: ", buildingLine
+    #print "bottomLine: ", bottomLine
+    #print "building: ", buildingLine
     v1x = bottomLine[1][0] - bottomLine[0][0]
     v1y = bottomLine[1][1] - bottomLine[0][1]
     v2x = buildingLine[1][1] - buildingLine[0][1]
     v2y = buildingLine[1][2] - buildingLine[0][2]
-    print "vectors: ", v1x, v1y, v2x, v2y
+    #print "vectors: ", v1x, v1y, v2x, v2y
     angle = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
     horizontalAngle = (angle*180)/pi
-    print "horizontal angle", horizontalAngle
+    #print "horizontal angle", horizontalAngle
     verticalLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[1]), float(boundbox[2])] ]
     verticalLine[0][1] -= 0.003
     verticalLine[1][1] -= 0.003
-    print "verticalLine: ", verticalLine
+    #print "verticalLine: ", verticalLine
     v1x = verticalLine[1][0] - verticalLine[0][0]
     v1y = verticalLine[1][1] - verticalLine[0][1]
     v2x = buildingLine[1][1] - buildingLine[0][1]
     v2y = buildingLine[1][2] - buildingLine[0][2]
-    print "vectors: ", v1x, v1y, v2x, v2y
+    #print "vectors: ", v1x, v1y, v2x, v2y
     angleNew = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
     if horizontalAngle < 90:
         angleNew *= -1
     verticalAngle = (angleNew*180)/pi
-    print "vertical angle", verticalAngle
+    #print "vertical angle", verticalAngle
     return angleNew
 
 def createRectangle(boundBox, building, database):
-    print building
+    #print building
     BGN = building[0]
     END = building[2]
     center_x = BGN[1] + ((END[1] - BGN[1]) / 2)
@@ -213,6 +213,7 @@ def createRectangle(boundBox, building, database):
     %f, %f, %f, %f, %f, %d);" % (X_COORD, Y_COORD, Z_COORD, 0.0, angleOffset, 0.0,
         center_x, center_y, 1)
     database.execute(INSERT_RECTANGLE)
+    return [center_x, center_y]
 
 def parseBuildingsData(nodes, ways):
     buildingArray = []
@@ -253,102 +254,35 @@ way_list = parseWays(FILE_NAME)
 bounds = way_list[0]
 del way_list[0]
 print("[%s] Parse ways...Done!\n" % datetime.today().strftime('%H:%M:%S'))
-print("[%s] Start parsing file" % datetime.today().strftime('%H:%M:%S'))
+print("[%s] Start parsing file\n" % datetime.today().strftime('%H:%M:%S'))
 buildingArray = parseBuildingsData(node_list, way_list)
-print("[%s] End parsing file" % datetime.today().strftime('%H:%M:%S'))
+print("[%s] End parsing file\n" % datetime.today().strftime('%H:%M:%S'))
 
+buildings_center = []
 db = MySQLdb.connect(host="127.0.0.1", user="root", port = 3306, passwd="vertrigo", charset='utf8')
 connection = db.cursor()
 connection.execute("USE osmex3d;")
 for building in buildingArray:
     if len(building) <= 5:
-        createRectangle(bounds, building, connection)
+        buildings_center.append(createRectangle(bounds, building, connection))
 db.commit()
 db.close()
 
-coord_start = []
-coord_second = []
-some = 0
-file = open("./OpenLayers/openlayers/before.html", "w")
-file.write("%s" % HTML_FILE_BEGIN)
-file.write("x=[")
-for j in range(0, len(way_list)):
-    for i in range(0, len(way_list[j][1])):
-        node = searchNode(way_list[j][1][i], node_list)
-        if (i == len(way_list[j][1])-1) and (way_list[j][1][0] == way_list[j][1][i]):
-            continue
-        if i == 0:
-            coord_start.append(node[1])
-            coord_start.append(node[2])
-        elif i == 1:
-            coord_second.append(node[1])
-            coord_second.append(node[2])
-        elif i == 2 and j == 0:
-            file.write("%s, %s" % (node[1], node[2]))
-        else:
-            file.write(",\n%s, %s" % (node[1], node[2]))
-            some += 1
-file.write("];\n")
-t = 2
-file.write("s_x = [%s, %s " % (coord_start[0], coord_start[1]))
-while t < len(coord_start):
-    file.write(",\n%s, %s" % (coord_start[t], coord_start[t+1]))
-    t += 2
-file.write("];\n")
-t = 2
-file.write("t_x = [%s, %s " % (coord_second[0], coord_second[1]))
-while t < len(coord_second):
-    file.write(",\n%s, %s" % (coord_second[t], coord_second[t+1]))
-    t += 2
-file.write("];\n")
-file.write("%s" % HTML_FILE_END)
-file.close()
-
+print("[%s] End processing data" % datetime.today().strftime('%H:%M:%S'))
 
 coord_start = []
 coord_second = []
-some = 0
 file = open("./OpenLayers/openlayers/result.html", "w")
 file.write("%s" % HTML_FILE_BEGIN)
 file.write("x=[")
-for j in range(0, len(buildingArray)):
-    for i in range(0, len(buildingArray[j])):
-        node = buildingArray[j][i]
-        if i == 0:
-            coord_start.append(node[1])
-            coord_start.append(node[2])
-        elif i == 1:
-            coord_second.append(node[1])
-            coord_second.append(node[2])
-        elif i == 2 and j == 0:
-            file.write("%s, %s" % (node[1], node[2]))
-        else:
-            file.write(",\n%s, %s" % (node[1], node[2]))
-            some += 1
 file.write("];\n")
-t = 2
-file.write("s_x = [%s, %s " % (coord_start[0], coord_start[1]))
-while t < len(coord_start):
-    file.write(",\n%s, %s" % (coord_start[t], coord_start[t+1]))
-    t += 2
-file.write("];\n")
-t = 2
-file.write("t_x = [%s, %s " % (coord_second[0], coord_second[1]))
-while t < len(coord_second):
-    file.write(",\n%s, %s" % (coord_second[t], coord_second[t+1]))
-    t += 2
-file.write("];\n")
+t = 1
+file.write("\t\ts_x = [%s, %s " % (buildings_center[0][0], buildings_center[0][1]))
+while t < len(buildings_center):
+    file.write(",\n\t\t%s, %s" % (buildings_center[t][0], buildings_center[t][1]))
+    t += 1
+file.write("];\n\t\tt_x = [];")
 file.write("%s" % HTML_FILE_END)
 file.close()
 
-
-#print node_list[0]
-#print way_list[0]
-#way_list_3d = setThirdDimension(node_list, way_list)
-
-
-#print "some %i\n" % some
-#print("[%s] Add 3D data...Done!\n" % datetime.today().strftime('%H:%M:%S'))
-#print "Count of nodes:", len(node_list)
-#print "Count of buildings:", len(way_list)
-#print "\n\n[%s] Finished!" % datetime.today().strftime('%H:%M:%S')
+print "\n\n[%s] Finished!" % datetime.today().strftime('%H:%M:%S')

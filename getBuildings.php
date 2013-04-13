@@ -34,7 +34,7 @@
             "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10, "typeObject" => $t11);
     }
 
-    $result_str = json_encode($fullarr);
+    $result_str = json_encode(array('buildings' => $fullarr));
     echo $result_str;
     $db = NULL;
 ?>
