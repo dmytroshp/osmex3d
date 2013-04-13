@@ -27,10 +27,10 @@
     <body>
         
 	<div id="topbar" style="visibility:hidden;display:inline;float:right;">
-		<div id="scaling" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+		<div id="moving" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
 			<img src='images/scaling.png'>
 		</div>
-		<div id="moving" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+		<div id="scaling" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
 			<img src='images/moving.png'>
 		</div>
 		<div id="rotating" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
@@ -432,16 +432,18 @@
                             
                             SIZING = pickRef;
                             
-                            console.log("SIZING before",SIZING.dir);
-                            SELECTED.matrix.rotateAxis(SIZING.dir);
-                            console.log("SIZING after",SIZING.dir);
+                            var rotatedDir = SIZING.dir.clone();
+                            
+                            SIZING.matrixRotationWorld.extractRotation( SIZING.matrixWorld );
+                            var rotatedDir = SIZING.matrixRotationWorld.multiplyVector3( SIZING.dir.clone() ).normalize();   
+                            
                             var sizingPos = SIZING.matrixWorld.getPosition();
                             var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(SIZING.dir);
-                            var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
+                            var rightDir = cameraDir.clone().crossSelf(rotatedDir).normalize();
+                            var forwardDir = rotatedDir.clone().crossSelf(rightDir).normalize();
                             actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
-                            
+                                      
                             sizerGizmo.setSizing(true);
                         }
                         else if ( pickRef instanceof OSMEX.MovingArrow ) {
@@ -495,14 +497,14 @@
                         
                         SELECTED = null;
                     }
-                  /*  if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
+                    if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
                         else if(arrowMode == "moving") movingGizmo.setTarget(SELECTED);
-                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED);*/
-                    if(arrowMode == "moving") movingGizmo.setTarget(SELECTED) 
+                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED);
+                    /*if(arrowMode == "moving") movingGizmo.setTarget(SELECTED) 
                     else {
                         rotationGizmo.setTarget(SELECTED);
                         sizerGizmo.setTarget(SELECTED);
-                    }   
+                    }*/
                     
                 }
 

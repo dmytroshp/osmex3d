@@ -5,6 +5,9 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     THREE.Object3D.call( this );
     this.name = "Arrow";
     
+    this.arrowContainer = new THREE.Object3D();
+    this.add(this.arrowContainer);
+    
     this.pickable = false;
     
     this.dir = null;
@@ -18,7 +21,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     lineGeometry.vertices.push( new THREE.Vector3( 0, 1, 0 ) );
 
     this.line = new THREE.Line( lineGeometry, new THREE.LineBasicMaterial( {color: hex} ) );
-    this.add( this.line );
+    this.arrowContainer.add( this.line );
 
     var meshMaterial = new THREE.MeshPhongMaterial( {
         color: hex, 
@@ -32,7 +35,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
         var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
         this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
         this.cone.position.set( 0, 30, 0 );
-        this.add( this.cone );
+        this.arrowContainer.add( this.cone );
       /*  var planeGeometry = new THREE.PlaneGeometry(8,8,8,8);
         this.plane = new THREE.Mesh( planeGeometry, meshMaterial );
         this.plane.position.set( 0, 4, 0 );
@@ -43,7 +46,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
         var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
         this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
         this.cone.position.set( 0, 30, 0 );
-        this.add( this.cone );
+        this.arrowContainer.add( this.cone );
      }
 
     
@@ -78,8 +81,8 @@ OSMEX.Arrow.prototype.setDirection = function ( dir ) {
 	
     var radians = Math.acos( cosa );
 	
-    this.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
-    this.rotation.setEulerFromRotationMatrix( this.matrix, this.eulerOrder );
+    this.arrowContainer.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
+    this.arrowContainer.rotation.setEulerFromRotationMatrix( this.arrowContainer.matrix, this.arrowContainer.eulerOrder );
 };
 
 OSMEX.Arrow.prototype.setLength = function ( length ) {
