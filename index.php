@@ -1,11 +1,9 @@
-<?php
+﻿<?php
 global $array;
 $db = mysql_connect('localhost', 'root', '');
 if (!$db) {
     die('Ошибка соединения: ' . mysql_error());
 }
-//echo 'Success';
-//echo "<br>";
 mysql_select_db('3d_schema',$db) or die('Could not select database.');
 $sql = "SELECT * FROM figuretype
         INNER JOIN figureinst 
@@ -13,15 +11,10 @@ $sql = "SELECT * FROM figuretype
         ORDER BY nameFigureInst, nameFigureType ASC";
 $query = mysql_query($sql, $db);
 while ($row = mysql_fetch_array($query)) {
-    //echo $row['nameFigureType'];
-    //echo "<br>";
-    $array[$row['nameFigureType']][] = $row['nameFigureInst'];
+    $test['name'] = $row['nameFigureInst'];
+    $test['previewFileName'] = $row['idFigureInst'].'_'.$row['nameFigureInst'];
+    $array[$row['nameFigureType']][]=$test;
 }
-//print_r($array);
-//$sql = "SELECT COUNT(*) FROM figuretype";
-//$query = mysql_query($sql, $db);
-//$row = mysql_fetch_array($query);
-//echo $row[0];
 mysql_close($db);
 ?>
 <!DOCTYPE html>
@@ -34,7 +27,43 @@ mysql_close($db);
         <script src="jquery/jquery-1.9.1.js"></script>
         <script src="jquery/jquery-ui.js"></script>
         <script>
-            $(function()
+            $(document).ready(function(){
+                $();
+            });
+            var bigImg;
+            var isToggled;
+            var isShown;
+            function showBigImg(image){
+                if(isToggled)
+                return;
+                var mask = image.src;
+                mask=mask.substring(0, mask.length-9);
+                mask+=".png";
+                //bigImg = document.createElement('div');
+                //bigImg.style.display='block';
+                //bigImg.className="previewDiv";
+                //bigImg.innerHTML="<img src='"+mask+"'></div>";
+                image.parentElement.parentElement.children[image.parentElement.parentElement.children.length-1].innerHTML="<img src='"+mask+"'>";
+                image.parentElement.parentElement.children[image.parentElement.parentElement.children.length-1].style.display='block';
+            }
+            function hideBigImg(image){
+                    image.parentElement.parentElement.children[image.parentElement.parentElement.children.length-1].style.display='none';
+                    image.parentElement.parentElement.children.removeChild(image.parentElement.parentElement.children.length-1);
+            }
+            function show(image){
+                if(isShown){
+                    image.style.opacity=1.0;
+                    isShown=false;
+                    isToggled=false;
+                    return;
+                }
+                for(var i=0;i<image.parentElement.parentElement.children.length-1;i++)
+                image.parentElement.parentElement.children[i].children[0].style.opacity=1.0;
+                image.style.opacity=0.5;
+                isShown=true;
+                isToggled=true;
+            }
+            $(function ()
             {
                 $("#accordion").accordion({
                     heightStyle: "content",
@@ -43,37 +72,9 @@ mysql_close($db);
             });
         </script>
     </head>
-    <body>
-        <table width="100%">
-            <tr>
-                <td id="acctd">
-                    <div id="searchDivc" style="margin-right: 10px; padding-right: 10px;padding-left: 5px;padding-bottom: 10px;">
-                        <input type="search" style="width: 100%; ">
-                    </div>
-                    <div id ="accordionContainer">
-                        <div id="accordion">
-                            <?php
-                            global $array;
-                            foreach ($array as $nameFigureType => $instances) {
-                                echo '<h3>'.$nameFigureType.'('.sizeof($instances).')</h3>';
-                                echo '<div class="contentContainer">
-                                      <div class="content">
-                                      <ul>';
-                                for($i=0;$i<sizeof($instances);$i++)
-                                {
-                                    echo '<img src="img/facebook.png">';
-                                    echo '<li>'.$instances[$i].'</li>';
-                                }
-                                echo '</ul>
-                                      </div>
-                                      </div>';     
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    
-                </td>
-                <td>
+        <body>
+            <div id="mainContainer">
+                <div id="content">
                     <div id="objectEditor">
                         Developing GUI for 3D-Editor
                         I develop GUI using HTML, CSS, jQuery, AJAX. Main idea is to select some instances and drag them to editor.
@@ -87,11 +88,34 @@ mysql_close($db);
                         Left menu will contain different types of objects, if you choose some object, first 20 instances of this objects will be shown, if you scroll down, next 20 instances will be shown (AJAX). 
                         After selecting the instance, user can drag and drop it to editor field.
                     </div>
-                </td>
-            </tr>
-        </table>
-        <!--<div id="searchDiv">
-            <input id="search" type="search" placeholder="Search...">
-        </div> -->
+                </div>
+                <div id="sidebar">
+                    <div id="searchDivc" style="margin-right: 10px; padding-right: 10px;padding-left: 5px;padding-bottom: 10px;">
+                        Search: <input type="search" style="width:86%">
+                    </div>
+                    <div id ="accordionContainer">
+                    <div id="accordion">
+                        <?php
+                        global $array;
+                        foreach ($array as $nameFigureType => $instances) {
+                            echo '<h3>'.$nameFigureType.'('.sizeof($instances).')</h3>';                           
+                            echo '<div class="contentContainer">';
+                            for($i=0;$i<sizeof($instances);$i++)
+                            {
+                                echo '<div class=imgContainer>';
+                                echo '<img src="previews/'.$instances[$i]['previewFileName'].'_mini.png" onmouseout="hideBigImg(this)" onmouseover="showBigImg(this)" onclick="show(this)">';
+                                echo '<div class=desc>';
+                                echo $instances[$i]['name'];
+                                echo '</div></div>';
+                            }
+                            
+                            echo'<div class="previewDiv"></div>';
+                            echo '</div>';   
+                        }
+                        ?>
+                    </div>
+                </div>
+        </div>
+            </div>
     </body>
 </html>
