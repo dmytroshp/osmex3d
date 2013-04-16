@@ -336,8 +336,8 @@
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        intersectPoint.subSelf(actionPlane.normal);
-                        intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
+                        intersectPoint.subSelf(MOVING.matrixWorld.getPosition());
+                       // intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
                       // var position = intersectPoint.subSelf( actionPlane.normal );
                         if (MOVING instanceof OSMEX.MovingArrow) 
                             MOVING.setPosition (intersectPoint);

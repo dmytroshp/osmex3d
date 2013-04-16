@@ -19,19 +19,13 @@ OSMEX.MovingArrow.prototype = Object.create( OSMEX.Arrow.prototype );
 
 OSMEX.MovingArrow.prototype.setPosition = function ( position ) {
     
+    this.matrixRotationWorld.extractRotation( this.matrixWorld );
+    var rotatedDir = this.matrixRotationWorld.multiplyVector3( this.dir.clone() ).normalize();
+    var newLen = rotatedDir.dot(position);
+    
     if (this.moveFunc) {
   
-        if (this.dir.x == 1){
-            this.moveFunc(position.x - this.prevPos); 
-            this.prevPos = position.x;         
-        }else if (this.dir.y == 1){
-            this.moveFunc(position.y - this.prevPos);
-            this.prevPos = position.y; 
-        }else if (this.dir.z == 1){
-            this.moveFunc(position.z - this.prevPos);
-            this.prevPos = position.z; 
-        }
-
+            this.moveFunc(newLen - this.len + 10); 
     }
 
 };

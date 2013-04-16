@@ -59,7 +59,6 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
             var scaleAxis = new THREE.Vector3( Math.abs(this.dir.x), Math.abs(this.dir.y), Math.abs(this.dir.z) );
             
             var currentScale = scaleAxis.clone().multiplySelf(target.scale).length();
-            console.log (this.parent.scale.x);
             
             if (currentScale + deltaScale > 0.1) {   // 0.1 is minimum possible scale
                 

@@ -56,28 +56,19 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
                           
 
             var deltaScale = delta * this.parent.scale.x;
-
-            //if (deltaScale < 2 && deltaScale > -2) {   // 0.1 is minimum possible scale
-                
-                var shiftPos = this.dir.clone();
-                shiftPos.multiplyScalar(deltaScale )
-                target.position.addSelf(shiftPos);
-          //  }
-                          
+               
+            var shiftPos = this.dir.clone();
+            shiftPos.multiplyScalar(deltaScale/2 )
+            target.position.addSelf(shiftPos);
+                         
         } }(this.target);
     
         planeMoveFunc = function(target) { return function(delta) {
-           // console.log (delta) 
             var deltaScale = delta.multiplyScalar(this.parent.scale.x).divideScalar(2);
-           
-            //if (deltaScale < 2 && deltaScale > -2) {   // 0.1 is minimum possible scale
-                
-                var shiftPos = new THREE.Vector3(0,1,0);
-                shiftPos.multiplySelf(deltaScale );
-                 
-                target.position.addSelf(deltaScale);
-                console.log (delta); 
-          //  }                       
+                          
+                var shiftPos = this.dir.clone();
+                shiftPos.multiplySelf(deltaScale );                 
+                target.position.addSelf(shiftPos);                
                           
         } }(this.target);
                         
