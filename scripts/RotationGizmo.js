@@ -61,7 +61,7 @@ OSMEX.RotationGizmo.prototype.update = function ( camera ) {
     
     if(this.target){  
         
-        var vector = camera.position.clone().subSelf(this.position);
+        var vector = camera.position.clone().sub(this.position);
         
         this.overlay.setDirection(vector);
     

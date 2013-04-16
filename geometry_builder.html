@@ -4,7 +4,6 @@
         <title>OSMEX3D Geometry builder</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-
         <style>
             body {
                 font-family: Monospace;
@@ -28,18 +27,17 @@
             #leftbar {
                 position:absolute;
             }
+            #right-bottombar {
+                position:absolute;
+            }
         </style>
     </head>
     <body>
-        <div id="leftbar" style="visibility:hidden;width:200px;display:block;">
-            <div class="list1" style="width:200px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <select id="listOfDeletedNodes" size="12" style="width:200px;">
-                    <option value="0"> Test 1</option>                
+        <div id="leftbar" style="visibility:hidden;width:300px;display:block;">
+            <div class="list1" style="width:300px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <select id="listOfOperations" size="12" style="width:300px;">
+
                 </select>  
-            </div>
-            <br/>
-            <div class="button1" style="width:200px;float:left;">
-                <input type="button" name="remove" value="Remove" style="width:200px" onclick="removeOptionFromListOfOperations()"> 
             </div>
         </div>
         <div id="topbar" style="visibility:hidden;display:inline;float:right;">
@@ -73,17 +71,27 @@
             <div id="union" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/union.png'>
             </div>
+            <div id="complement_1-2" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='images/complement_1-2.png'>
+            </div>
+            <div id="complement_2-1" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='images/complement_2-1.png'>
+            </div>            
             <div id="intersection" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/intersection.png'>
             </div>
-            <div id="complement" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='images/complement.png'>
+            <div id="rollback" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='images/rollback.png'>
+            </div>
+        </div>
+        <div id="right-bottombar" style="visibility:hidden;display:inline;float:right;">
+            <div id="createNewSketch" class="group4" style="width:200px;height:80px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src=''>
             </div>
         </div>
 
-        <script src="csgjs/csg.js"></script>
-        <script src="threejs/ThreeCSG.js"></script>
         <script src="threejs/three.js"></script>
+        <script src="threejs/test/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
 
         <script src="scripts/SketchBuilder.js"></script>
@@ -130,7 +138,8 @@
 
             var ROTATION_VECTOR;
 
-
+            var selectedObj = [];
+            var operationStack = [];
 
             init();
             animate();
@@ -147,9 +156,9 @@
                     });
 
                     $("#leftbar").css({
-                        "visibility": "visible"                      
+                        "visibility": "visible"
                     });
-                    
+
                     $("#bottombar").css({
                         "left": (window.innerWidth / 2) - ($("#bottombar").width() / 2) + "px",
                         "top": window.innerHeight - ($("#bottombar").height() + 10) + "px",
@@ -162,9 +171,12 @@
                         "visibility": "visible"
                     });
 
+                    $("#right-bottombar").css({
+                        "left": window.innerWidth - ($("#right-bottombar").width()) - ($("#topbar").width() / 4) + "px",
+                        "top": (window.innerHeight) - ($("#right-bottombar").height() + 10) + "px",
+                        "visibility": "visible"
+                    });
 
-
-                    
                     $(".group1").click(function() {
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
@@ -175,17 +187,13 @@
                         $(this).addClass("selected");
                         addObject(this);
                     });
-                    
+
                     $(".group3").click(function() {
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
                     });
-
                 });
-
-
-
 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -202,7 +210,7 @@
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
                 objectScene.fog = new THREE.Fog(0xffffff, 1, 1500);
-                objectScene.fog.color.setHSV(0.6, 0.05, 1);
+                //objectScene.fog.color.setHSV(0.6, 0.05, 1);
                 interfaceScene.fog = objectScene.fog;
 
                 objectScene.add(new THREE.AmbientLight(0x3f3f3f));
@@ -225,15 +233,13 @@
 
 
                 var blockGeometry = new THREE.CubeGeometry(1, 1, 1);
-                var blockMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});//new THREE.MeshBasicMaterial( { color: 0xffffff } );//vertexColors: THREE.FaceColors } );
+                var blockMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
                 var cubeBlock = new OSMEX.Block(blockGeometry, blockMaterial);
                 cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
                 objectScene.add(cubeBlock);
 
-
                 groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
                 objectScene.add(groundPlane);
-
 
                 sizerGizmo = new OSMEX.SizerGizmo();
                 interfaceScene.add(sizerGizmo);
@@ -281,39 +287,80 @@
             }
 
             function buildNewGeometryElement(element) {
-                 if (!CLICKED[0] || !CLICKED[1]) {
-                     alert("Error");
-                 } else {
-                     var nameOfOperation;
-                     if ($(element).attr('id') == "union") {
-                         nameOfOperation = "union";
-                     } else if ($(element).attr('id') == "intersection") {
-                         nameOfOperation = "intersection";
-                     } else if ($(element).attr('id') == "complement") {
-                         nameOfOperation = "complement";
-                     }
-                     saveAtListOfOperations(nameOfOperation);
-                     removeObject();
-                 }
+                if ($(element).attr('id') == "rollback") {
+
+                    if (operationStack.length > 0) {
+                        var rollbackOperation = operationStack.pop();
+                        objectScene.remove(rollbackOperation.output);
+                        var tmp;
+                        for (var i = 0; i < rollbackOperation.input.length; i++) {
+                            tmp = rollbackOperation.input[i];
+                            tmp.material.emissive.setHex(0x000000);
+                            tmp.visible = true;
+                        }
+                        removeFromListOfOperations();
+                    }
+                } else {
+                    if (!CLICKED[0] || !CLICKED[1]) {
+                        alert("Error");
+                    } else {
+
+                        var first_bsp = new ThreeBSP(CLICKED[0]);
+                        var second_bsp = new ThreeBSP(CLICKED[1]);
+
+                        var nameOfOperation, result_bsp;
+                        if ($(element).attr('id') == "union") {
+                            nameOfOperation = "union";
+                            result_bsp = first_bsp.union(second_bsp);
+                        } else if ($(element).attr('id') == "intersection") {
+                            nameOfOperation = "intersection";
+                            result_bsp = first_bsp.intersect(second_bsp);
+                        } else if ($(element).attr('id') == "complement_2-1") {
+                            nameOfOperation = "complement(2-1)";
+                            result_bsp = second_bsp.subtract(first_bsp);
+                        } else if ($(element).attr('id') == "complement_1-2") {
+                            nameOfOperation = "complement(1-2)";
+                            result_bsp = first_bsp.subtract(second_bsp);
+                        }
+
+                        var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
+                        var resultObj = result_bsp.toMesh(material);
+                        resultObj.geometry.computeVertexNormals();
+
+                        resultObj.scale = CLICKED[0].scale; // Bugs in scaling
+                        resultObj.pickable = true;
+                        resultObj.visible = true;
+                        objectScene.add(resultObj);
+
+                        CLICKED[0].visible = false;
+                        CLICKED[1].visible = false;
+
+                        var newSelected = [];
+                        while (selectedObj.length > 0) {
+                            newSelected.push(selectedObj.pop());
+                        }
+                        var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
+                        operationStack.push(newOperation);
+                        saveAtListOfOperations(newOperation.id + ": " + newOperation.type + ", input: "
+                                + newOperation.input[0].id + ", " + newOperation.input[1].id + ", output: "
+                                + newOperation.output.id);
+
+                        CLICKED[0] = null;
+                        CLICKED[1] = null;
+                    }
+                }
             }
-            
-            function removeObject() {
-                objectScene.remove(CLICKED[0]);
-                objectScene.remove(CLICKED[1]);
-                CLICKED[0] = null;
-                CLICKED[1] = null;
+
+            function saveAtListOfOperations(text) {
+                var obj = document.getElementById("listOfOperations");
+                obj.options[obj.options.length] = new Option(text, obj.options.length);
             }
-            
-            function saveAtListOfOperations(nameOfOperation) {
-                var objSelect = document.getElementById("listOfDeletedNodes");
-                objSelect.options[objSelect.options.length] = new Option(objSelect.options.length + " " + nameOfOperation, objSelect.options.length);
+
+            function removeFromListOfOperations() {
+                var obj = document.getElementById("listOfOperations");
+                obj.length = obj.length - 1;
             }
-            
-            function removeOptionFromListOfOperations(){
-                var objSelect = document.getElementById("listOfDeletedNodes");
-                //
-            }
-            
+
             function onWindowResize() {
 
                 camera.aspect = window.innerWidth / window.innerHeight;
@@ -349,7 +396,7 @@
                 var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                 projector.unprojectVector(vector, camera);
 
-                var raycaster = new THREE.Raycaster(camera.position, vector.subSelf(camera.position).normalize());
+                var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
                 var pickedObject = getFirstSuitableObject(raycaster, interfaceScene.children, true);
 
@@ -371,16 +418,26 @@
                     if (!CLICKED[0] && !CLICKED[1]) {
                         pickedObject.material.emissive.setHex(0x00ff00);
                         CLICKED[0] = pickedObject;
+                        selectedObj.push(pickedObject);
                     } else if (CLICKED[0] == pickedObject) {
                         CLICKED[0] = null;
                         pickedObject.material.emissive.setHex(0x000000);
+                        selectedObj.shift();
                     } else if (!CLICKED[1]) {
                         pickedObject.material.emissive.setHex(0x0000ff);
                         CLICKED[1] = pickedObject;
+                        selectedObj.push(pickedObject);
                     } else if (CLICKED[1] == pickedObject) {
                         CLICKED[1] = null;
                         pickedObject.material.emissive.setHex(0x000000);
+                        pickedObject.pop();
+                    } else if (CLICKED[0] && CLICKED[1]) {
+                    } else {
+                        pickedObject.material.emissive.setHex(0x00ff00);
+                        CLICKED[0] = pickedObject;
+                        selectedObj.unshift(pickedObject);
                     }
+
                 }
             }
 
@@ -395,7 +452,7 @@
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
-                    var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                     var intersectPoint = ray.intersectPlane(groundPlane);
 
                     if (intersectPoint !== undefined) {
@@ -408,24 +465,24 @@
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
-                    var raycaster = new THREE.Raycaster(camera.position, vector.subSelf(camera.position).normalize());
+                    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
                     var intersects = raycaster.intersectObject(groundGrid);
 
                     if (intersects.length > 0) {
 
-                        DRAGGING.position.copy(intersects[0].point.subSelf(offsetVector));
+                        DRAGGING.position.copy(intersects[0].point.sub(offsetVector));
                     }
                 }
                 else if (SIZING) {
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
-                    var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                     var intersectPoint = ray.intersectPlane(sizerPlane);
 
                     if (intersectPoint !== undefined) {
 
-                        intersectPoint.subSelf(SIZING.matrixWorld.getPosition());
+                        intersectPoint.sub(SIZING.matrixWorld.getPosition());
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
                         var len = SIZING.dir.dot(intersectPoint);
                         // TODO: workaround should be reimplemented
@@ -441,12 +498,12 @@
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                     projector.unprojectVector(vector, camera);
-                    var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                     var intersectPoint = ray.intersectPlane(movingPlane);
 
                     if (intersectPoint !== undefined) {
 
-                        var position = intersectPoint.subSelf(movingPlane.normal);
+                        var position = intersectPoint.sub(movingPlane.normal);
                         MOVING.setPosition(position);
                     }
                 }
@@ -511,7 +568,7 @@
 
                         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                         projector.unprojectVector(vector, camera);
-                        var raycaster = new THREE.Raycaster(camera.position, vector.subSelf(camera.position).normalize());
+                        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
                         var intersects = raycaster.intersectObject(groundGrid);
 
                         if (intersects.length > 0) {
@@ -539,9 +596,9 @@
 
                             var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                             projector.unprojectVector(vector, camera);
-                            var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+                            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                             var intersectPoint = ray.intersectPlane(groundPlane);
-                            offsetVector.copy(intersectPoint).subSelf(DRAGGING.position);
+                            offsetVector.copy(intersectPoint).sub(DRAGGING.position);
                         }
                         else if (pickRef instanceof OSMEX.SizerArrow) {
 
@@ -550,9 +607,9 @@
                             SELECTED.matrix.rotateAxis(SIZING.dir);
                             console.log("SIZING after", SIZING.dir);
                             var sizingPos = SIZING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(SIZING.dir);
-                            var forwardDir = SIZING.dir.clone().crossSelf(rightDir);
+                            var cameraDir = camera.position.clone().sub(sizingPos).normalize();
+                            var rightDir = cameraDir.clone().cross(SIZING.dir);
+                            var forwardDir = SIZING.dir.clone().cross(rightDir);
 
                             sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             //SELECTED.matrix.rotateAxis(sizerPlane.normal);
@@ -562,9 +619,9 @@
 
                             MOVING = pickRef;
                             var sizingPos = MOVING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(MOVING.dir);
-                            var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
+                            var cameraDir = camera.position.clone().sub(sizingPos).normalize();
+                            var rightDir = cameraDir.clone().cross(MOVING.dir);
+                            var forwardDir = MOVING.dir.clone().cross(rightDir);
                             movingPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
 
 
@@ -604,7 +661,6 @@
                     ;
 
                 }
-
             }
 
             function onDocumentMouseUp(event) {

@@ -49,7 +49,7 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
                 console.log("delta",deltaScale);
                 shiftPos.multiplyScalar(deltaScale * 1.5 );
                 console.log("shiftPos",shiftPos);            
-                target.position.addSelf(shiftPos);
+                target.position.add(shiftPos);
             }          
                  
                           

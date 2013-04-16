@@ -67,7 +67,7 @@ THREE.CSG = {
 			three_geometry = new THREE.Geometry( ),
 			polygons = csg_model.toPolygons( );
 		
-		if ( !CSG ) {              
+		if ( !CSG ) {
 			throw 'CSG library not loaded. Please get a copy from https://github.com/evanw/csg.js';
 		}
 		

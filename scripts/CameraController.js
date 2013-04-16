@@ -135,7 +135,7 @@ OSMEX.CameraController = function ( object, domElement )
     this.update = function () {
 
         var position = this.object.position;
-        var offset = position.clone().subSelf( this.center )
+        var offset = position.clone().sub( this.center );
 
         // angle from z-axis around y-axis
 
@@ -169,7 +169,7 @@ OSMEX.CameraController = function ( object, domElement )
         offset.y = radius * Math.cos( phi );
         offset.z = radius * Math.sin( phi ) * Math.cos( theta );
 
-        position.copy( this.center ).addSelf( offset );
+        position.copy( this.center ).add( offset );
 
         this.object.lookAt( this.center );
 

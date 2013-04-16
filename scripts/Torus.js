@@ -48,7 +48,7 @@ OSMEX.Torus.prototype.setDirection = function ( dir ) {
     }
     else
     {
-        axis = upVector.crossSelf( this.dir ).normalize();
+        axis = upVector.cross( this.dir ).normalize();
     }
 	
     var radians = Math.acos( cosa );

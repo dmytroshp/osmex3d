@@ -37,7 +37,7 @@ OSMEX.RotationGizmoOverlay.prototype.setDirection = function ( dir ) {
     }
     else
     {
-        axis = upVector.crossSelf( this.dir );
+        axis = upVector.cross( this.dir );
     }
 	
     var radians = Math.acos( cosa );
