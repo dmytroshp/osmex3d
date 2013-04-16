@@ -22,10 +22,10 @@ OSMEX.MovingGizmoPlane = function ( origin, dir, hex ) {
     meshMaterial.side = THREE.DoubleSide;
    
    var planeGeometry = new THREE.PlaneGeometry(8,8,8,8);
-   this.planeFront= new THREE.Mesh( planeGeometry, meshMaterial );
-   this.planeBack= new THREE.Mesh( planeGeometry, meshMaterial );
-   this.planeFront.position.set( 0, 0, 4 );
-   this.planeBack.position.set( 0, 0, -4); 
+   this.planeFront = new THREE.Mesh( planeGeometry, meshMaterial );
+   this.planeBack = new THREE.Mesh( planeGeometry, meshMaterial );
+   this.planeFront.position.set( 0, 0, 8 );
+   this.planeBack.position.set( 0, 0, -8); 
    //this.rotation.set (0,1.5,0);
    this.add( this.planeFront );
    this.add( this.planeBack );
@@ -44,7 +44,7 @@ OSMEX.MovingGizmoPlane.prototype = Object.create( THREE.Object3D.prototype );
 OSMEX.MovingGizmoPlane.prototype.setDirection = function ( dir ) {
     
     this.dir = dir.clone().normalize();
-    
+
     var upVector = new THREE.Vector3( 0, 1, 0 );
 	
     var cosa = upVector.dot( this.dir );
@@ -66,7 +66,7 @@ OSMEX.MovingGizmoPlane.prototype.setDirection = function ( dir ) {
     this.rotation.setEulerFromRotationMatrix( this.matrix, this.eulerOrder );
 };
 
-OSMEX.MovingGizmoPlane.prototype.setPosition2 = function ( position ) {
+OSMEX.MovingGizmoPlane.prototype.setPosition = function ( position ) {
     
     if (this.moveFunc) {
         

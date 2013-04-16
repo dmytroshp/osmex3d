@@ -60,6 +60,7 @@
         <script src="jquery/jquery-1.9.1.js"></script>
 
         <script src="scripts/SketchBuilder.js"></script>
+        <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
         <script src="scripts/GridGeometry.js"></script>
@@ -337,11 +338,9 @@
                     if ( intersectPoint !== undefined ) {
                         
                         intersectPoint.subSelf(MOVING.matrixWorld.getPosition());
-                       // intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
-                      // var position = intersectPoint.subSelf( actionPlane.normal );
-                        if (MOVING instanceof OSMEX.MovingArrow) 
-                            MOVING.setPosition (intersectPoint);
-                        else  MOVING.setPosition2 (intersectPoint);
+                        intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
+                        MOVING.setPosition (intersectPoint);
+
                     }
                 }
                 else if ( SCALING ) {

@@ -19,11 +19,13 @@ OSMEX.SketchBuilder = function ( type ) {
         this.name = "sphere"; 
         geometry = new THREE.SphereGeometry( 0.6, 15, 15 );
     }
-    
+
     this.Sketch = new OSMEX.Block( geometry, material );
     this.Sketch.scale = new THREE.Vector3(10.0, 10.0, 10.0);
+    this.BoundingBox = new OSMEX.BoundingBox(this.Sketch);
     this.add(this.Sketch);
-
+    this.add(this.BoundingBox);
+    
 };
 
 OSMEX.SketchBuilder.prototype = Object.create( THREE.Object3D.prototype );

@@ -54,7 +54,6 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
         
         arrowMoveFunc = function(target) { return function(delta) {
                           
-
             var deltaScale = delta * this.parent.scale.x;
                
             var shiftPos = this.dir.clone();
@@ -64,11 +63,12 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
         } }(this.target);
     
         planeMoveFunc = function(target) { return function(delta) {
+                
             var deltaScale = delta.multiplyScalar(this.parent.scale.x).divideScalar(2);
                           
-                var shiftPos = this.dir.clone();
-                shiftPos.multiplySelf(deltaScale );                 
-                target.position.addSelf(shiftPos);                
+            var shiftPos = this.dir.clone();
+            shiftPos.multiplySelf(deltaScale );                 
+            target.position.addSelf(shiftPos);                
                           
         } }(this.target);
                         
