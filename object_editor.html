@@ -72,6 +72,7 @@
         <script src="scripts/SizerArrow.js"></script>
         <script src="scripts/SizerGizmo.js"></script>
         <script src="scripts/MovingGizmo.js"></script>
+        <script src="scripts/MovingGizmoPlane.js"></script>
         <script src="scripts/MovingArrow.js"></script>
         <script src="scripts/Torus.js"></script>
         <script src="scripts/RotationTorus.js"></script>
@@ -335,8 +336,12 @@
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        var position = intersectPoint.subSelf( actionPlane.normal );
-                        MOVING.setPosition (position);
+                        intersectPoint.subSelf(actionPlane.normal);
+                        intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
+                      // var position = intersectPoint.subSelf( actionPlane.normal );
+                        if (MOVING instanceof OSMEX.MovingArrow) 
+                            MOVING.setPosition (intersectPoint);
+                        else  MOVING.setPosition2 (intersectPoint);
                     }
                 }
                 else if ( SCALING ) {
@@ -446,7 +451,7 @@
                                       
                             sizerGizmo.setSizing(true);
                         }
-                        else if ( pickRef instanceof OSMEX.MovingArrow ) {
+                        else if ( pickRef instanceof OSMEX.MovingArrow || pickRef instanceof OSMEX.MovingGizmoPlane) {
                             
                             MOVING = pickRef;
                             

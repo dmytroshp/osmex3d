@@ -218,9 +218,8 @@ OSMEX.CameraController = function ( object, domElement ) {
 
                         var cameraDir = _this.object.position.clone().subSelf(_this.target).normalize();
                         var rightDir = cameraDir.clone().crossSelf(_this.object.up);
-			var pan = _eye.clone().crossSelf( _this.object.up ).setLength( mouseChange.x )
-                        pan.subSelf(_eye.clone().crossSelf( rightDir ).setLength( mouseChange.y ));
-                        pan.setY(0);
+			var pan = rightDir.clone().setLength( mouseChange.x );
+                        pan.subSelf(_this.object.up.clone().crossSelf( rightDir ).normalize().setLength( mouseChange.y ));
                         
 
 			_this.object.position.addSelf( pan );
