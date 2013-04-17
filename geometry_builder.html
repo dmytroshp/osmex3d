@@ -4,6 +4,41 @@
         <title>OSMEX3D Geometry builder</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <script src="threejs/three.js"></script>
+        <script src="threejs/ThreeCSG.js"></script>
+        <script src="jquery/jquery-1.9.1.js"></script>
+        <script src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+        <link rel="stylesheet" href="jquery/ui-lightness/jquery-ui-1.10.2.custom.css">
+
+        <script src="scripts/SketchBuilder.js"></script>
+        <script src="scripts/ObjectScene.js"></script>
+        <script src="scripts/InterfaceScene.js"></script>
+        <script src="scripts/GridGeometry.js"></script>
+        <script src="scripts/CameraController.js"></script>
+        <script src="scripts/Block.js"></script>
+        <script src="scripts/Cube.js"></script>
+        <script src="scripts/ScaleCube.js"></script>
+        <script src="scripts/Arrow.js"></script>
+        <script src="scripts/SizerArrow.js"></script>
+        <script src="scripts/SizerGizmo.js"></script>
+        <script src="scripts/MovingGizmo.js"></script>
+        <script src="scripts/MovingArrow.js"></script>
+        <script src="scripts/Torus.js"></script>
+        <script src="scripts/RotationTorus.js"></script>
+        <script src="scripts/RotationGizmoOverlay.js"></script>
+        <script src="scripts/RotationGizmo.js"></script>
+
+        <script type="text/javascript">
+            var dialog_template="<div id='dialog-form' title='New Sketch'>\
+            <form>\
+                <label for='name'>Name</label>\
+                <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
+                <label for='category'>Category</label>\
+                <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
+            </form>\
+        </div>";
+        </script>
+
         <style>
             body {
                 font-family: Monospace;
@@ -14,6 +49,10 @@
             .selected {
                 background-color:yellow;
             }
+            label, input { display:block; }
+            input.text { margin-bottom:12px; width:95%; padding: .4em; }
+            fieldset { padding:0; border:0; margin-top:25px; }
+            div#users-contain { width: 350px; margin: 20px 0; }
             #topbar {
                 position:absolute; 
                 top:10px;               
@@ -29,7 +68,7 @@
             }
             #right-bottombar {
                 position:absolute;
-            }
+            }            
         </style>
     </head>
     <body>
@@ -89,28 +128,15 @@
                 <img src='images/build.png'>
             </div>
         </div>
+        <!--<div id="dialog-form" title="New Sketch">
+            <form>
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all" />
+                <label for="category">Category</label>
+                <input type="text" name="email" id="category" value="" class="text ui-widget-content ui-corner-all" />
+            </form>                    
+        </div>-->
 
-        <script src="threejs/three.js"></script>
-        <script src="threejs/ThreeCSG.js"></script>
-        <script src="jquery/jquery-1.9.1.js"></script>
-
-        <script src="scripts/SketchBuilder.js"></script>
-        <script src="scripts/ObjectScene.js"></script>
-        <script src="scripts/InterfaceScene.js"></script>
-        <script src="scripts/GridGeometry.js"></script>
-        <script src="scripts/CameraController.js"></script>
-        <script src="scripts/Block.js"></script>
-        <script src="scripts/Cube.js"></script>
-        <script src="scripts/ScaleCube.js"></script>
-        <script src="scripts/Arrow.js"></script>
-        <script src="scripts/SizerArrow.js"></script>
-        <script src="scripts/SizerGizmo.js"></script>
-        <script src="scripts/MovingGizmo.js"></script>
-        <script src="scripts/MovingArrow.js"></script>
-        <script src="scripts/Torus.js"></script>
-        <script src="scripts/RotationTorus.js"></script>
-        <script src="scripts/RotationGizmoOverlay.js"></script>
-        <script src="scripts/RotationGizmo.js"></script>
 
         <script type="text/javascript">
 
@@ -193,6 +219,32 @@
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
                     });
+
+
+                    var myDialog=$(dialog_template);
+                    myDialog.prependTo('body');
+                    myDialog.dialog({
+                        autoOpen: false,
+                        height: 400,
+                        width: 450,
+                        resizable: false,
+                        modal: true,
+                        buttons: {
+                            "Create": function() {
+                                var name = $("#name"), category = $("#category");
+                                $(this).dialog("close");
+                            },
+                            Cancel: function() {
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
+
+                    $(".group4").click(function() {
+                        myDialog.dialog("open");
+                    });
+
+
                 });
 
                 renderer = new THREE.WebGLRenderer({antialias: true});
@@ -262,11 +314,14 @@
                 renderer.autoClear = false;
 
                 container.appendChild(renderer.domElement);
-
-                document.addEventListener('mousemove', onDocumentMouseMove, false);
-                document.addEventListener('mousedown', onDocumentMouseDown, false);
-                document.addEventListener('mouseup', onDocumentMouseUp, false);
-                document.addEventListener('dblclick', onDocumentDoubleClick, false);
+                $(container).mousemove(onDocumentMouseMove);
+                $(container).mousedown(onDocumentMouseDown);
+                $(container).mouseup(onDocumentMouseUp);
+                $(container).dblclick(onDocumentDoubleClick);
+                //document.addEventListener('mousemove', onDocumentMouseMove, false);
+                //document.addEventListener('mousedown', onDocumentMouseDown, false);
+                //document.addEventListener('mouseup', onDocumentMouseUp, false);
+                //document.addEventListener('dblclick', onDocumentDoubleClick, false);
                 window.addEventListener('resize', onWindowResize, false);
             }
 
@@ -325,7 +380,7 @@
 
                         var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
                         var resultObj = result_bsp.toMesh(material);
-                        resultObj.geometry.computeVertexNormals();
+                        //resultObj.geometry.computeVertexNormals();
 
                         resultObj.scale = CLICKED[0].scale; // Bugs in scaling
                         resultObj.pickable = true;
@@ -415,27 +470,30 @@
 
                     var pickedObject = getPickedObject();
 
-                    if (!CLICKED[0] && !CLICKED[1]) {
-                        pickedObject.material.emissive.setHex(0x00ff00);
-                        CLICKED[0] = pickedObject;
-                        selectedObj.push(pickedObject);
-                    } else if (CLICKED[0] == pickedObject) {
-                        CLICKED[0] = null;
-                        pickedObject.material.emissive.setHex(0x000000);
-                        selectedObj.shift();
-                    } else if (!CLICKED[1]) {
-                        pickedObject.material.emissive.setHex(0x0000ff);
-                        CLICKED[1] = pickedObject;
-                        selectedObj.push(pickedObject);
-                    } else if (CLICKED[1] == pickedObject) {
-                        CLICKED[1] = null;
-                        pickedObject.material.emissive.setHex(0x000000);
-                        pickedObject.pop();
-                    } else if (CLICKED[0] && CLICKED[1]) {
-                    } else {
-                        pickedObject.material.emissive.setHex(0x00ff00);
-                        CLICKED[0] = pickedObject;
-                        selectedObj.unshift(pickedObject);
+                    if (pickedObject != null) {
+
+                        if (!CLICKED[0] && !CLICKED[1]) {
+                            pickedObject.material.emissive.setHex(0x00ff00);
+                            CLICKED[0] = pickedObject;
+                            selectedObj.push(pickedObject);
+                        } else if (CLICKED[0] == pickedObject) {
+                            CLICKED[0] = null;
+                            pickedObject.material.emissive.setHex(0x000000);
+                            selectedObj.shift();
+                        } else if (!CLICKED[1]) {
+                            pickedObject.material.emissive.setHex(0x0000ff);
+                            CLICKED[1] = pickedObject;
+                            selectedObj.push(pickedObject);
+                        } else if (CLICKED[1] == pickedObject) {
+                            CLICKED[1] = null;
+                            pickedObject.material.emissive.setHex(0x000000);
+                            selectedObj.pop();
+                        } else if (CLICKED[0] && CLICKED[1]) {
+                        } else {
+                            pickedObject.material.emissive.setHex(0x00ff00);
+                            CLICKED[0] = pickedObject;
+                            selectedObj.unshift(pickedObject);
+                        }
                     }
 
                 }
