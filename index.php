@@ -28,94 +28,99 @@ mysql_close($db);
         <script src="jquery/jquery-ui.js"></script>
         <script>
             $(document).ready(function(){
-                $();
-            });
-            var bigImg;
-            var isToggled;
-            var isShown;
-            function showBigImg(image){
-                if(isToggled)
-                return;
-                var mask = image.src;
-                mask=mask.substring(0, mask.length-9);
-                mask+=".png";
-                //bigImg = document.createElement('div');
-                //bigImg.style.display='block';
-                //bigImg.className="previewDiv";
-                //bigImg.innerHTML="<img src='"+mask+"'></div>";
-                image.parentElement.parentElement.children[image.parentElement.parentElement.children.length-1].innerHTML="<img src='"+mask+"'>";
-                image.parentElement.parentElement.children[image.parentElement.parentElement.children.length-1].style.display='block';
-            }
-            function hideBigImg(image){
-                    image.parentElement.parentElement.children[image.parentElement.parentElement.children.length-1].style.display='none';
-                    image.parentElement.parentElement.children.removeChild(image.parentElement.parentElement.children.length-1);
-            }
-            function show(image){
-                if(isShown){
-                    image.style.opacity=1.0;
-                    isShown=false;
-                    isToggled=false;
-                    return;
-                }
-                for(var i=0;i<image.parentElement.parentElement.children.length-1;i++)
-                image.parentElement.parentElement.children[i].children[0].style.opacity=1.0;
-                image.style.opacity=0.5;
-                isShown=true;
-                isToggled=true;
-            }
-            $(function ()
-            {
-                $("#accordion").accordion({
-                    heightStyle: "content",
-                    collapsible: true
+                var heightObj = $(window).height()*0.95;
+                $("#sidebar").css("height", heightObj);
+                $("#content").css("height", heightObj);
+                $(".accordion").css("font-family", "verdana");
+                $(".flip").click(function(){
+                    $(this).next(".slidingPanel").slideToggle(500);
                 });
+                $("#objectEditor").tabs();
+                $("#objectEditor").height($("#content").height() - 8);
+                $(".prev").mouseenter(function (){
+                    var position = $(this).position();
+                    var src = $(this).attr("src");
+                    var res = src.substring(0, src.length-9);
+                    var ending = ".png";
+                    res+=ending;
+                    $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
+                    $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
+                    
+                });
+                $(".prev").mouseleave(function (){
+                  $("#fullPic").remove();
+                });
+                $("#searchInput").keypress(function (){
+                    $.ajax({
+                        url:"php/search.php?q="+$("#searchInput").val(),
+                        async: true,
+                        cache: false,
+                        success:function(result){
+                            $(".accordion").empty();
+                            $(".accordion").html(result);
+                            $(".flip").click(function(){
+                    $(this).next(".slidingPanel").slideToggle(500);
+                });
+                $(".prev").mouseenter(function (){
+                    var position = $(this).position();
+                    var src = $(this).attr("src");
+                    var res = src.substring(0, src.length-9);
+                    var ending = ".png";
+                    res+=ending;
+                    $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
+                    $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
+                    
+                });
+                $(".prev").mouseleave(function (){
+                  $("#fullPic").remove();
+                });
+                        }
+                    });
+                });
+                
             });
         </script>
     </head>
         <body>
             <div id="mainContainer">
-                <div id="content">
-                    <div id="objectEditor">
-                        Developing GUI for 3D-Editor
-                        I develop GUI using HTML, CSS, jQuery, AJAX. Main idea is to select some instances and drag them to editor.
-                        Content consists of three parts:
-                        <ol>
-                            <li>Search</li>
-                            <li>Left menu</li>
-                            <li>Editor field</li>
-                        </ol>
-                        User can search different instances. Content (types and instances) will be filtered in a real-time by the word typed in search field.
-                        Left menu will contain different types of objects, if you choose some object, first 20 instances of this objects will be shown, if you scroll down, next 20 instances will be shown (AJAX). 
-                        After selecting the instance, user can drag and drop it to editor field.
-                    </div>
-                </div>
                 <div id="sidebar">
-                    <div id="searchDivc" style="margin-right: 10px; padding-right: 10px;padding-left: 5px;padding-bottom: 10px;">
-                        Search: <input type="search" style="width:86%">
+		    <div id="logo"><img src="img/logo.jpg" height="50" width="100"></div>
+                    <div id="searchDivc">
+                        <img src="img/searchIcon.png"> <form><input id="searchInput" type="search"></form>
                     </div>
-                    <div id ="accordionContainer">
-                    <div id="accordion">
+                    <div id="accordionContainer">
+                    <div class="accordion ui-widget ui-widget-content ui-corner-all">
                         <?php
                         global $array;
                         foreach ($array as $nameFigureType => $instances) {
-                            echo '<h3>'.$nameFigureType.'('.sizeof($instances).')</h3>';                           
-                            echo '<div class="contentContainer">';
+                            echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
+                            echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
                             for($i=0;$i<sizeof($instances);$i++)
                             {
                                 echo '<div class=imgContainer>';
-                                echo '<img src="previews/'.$instances[$i]['previewFileName'].'_mini.png" onmouseout="hideBigImg(this)" onmouseover="showBigImg(this)" onclick="show(this)">';
+                                echo '<img class="prev" src="previews/'.$instances[$i]['previewFileName'].'_mini.png">';
                                 echo '<div class=desc>';
                                 echo $instances[$i]['name'];
                                 echo '</div></div>';
                             }
-                            
-                            echo'<div class="previewDiv"></div>';
                             echo '</div>';   
                         }
                         ?>
                     </div>
-                </div>
+                    </div>
         </div>
+                <div id="content">
+                    <div id="objectEditor">
+                        <ul>
+                            <li><a href="#map">Map</a></li>
+                            <li><a href="#geoBuilder">Geometry Builder</a></li>
+                            <li><a href="#txtBuilder">Texture Builder</a></li>
+                        </ul>
+                        <div id="map"></div>
+                        <div id="geoBuilder"></div>
+                        <div id="txtBuilder"></div>
+                    </div>
+                </div>
             </div>
     </body>
 </html>
