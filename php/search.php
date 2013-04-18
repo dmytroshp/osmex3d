@@ -1,6 +1,5 @@
 <?php
 $req = $_GET['q'];
-
 global $array;
 $db = mysql_connect('localhost', 'root', '');
 if (!$db) {
@@ -19,7 +18,7 @@ else
     $sql = "SELECT * FROM figuretype
         INNER JOIN figureinst 
         ON figuretype.idFigureType = figureinst.idFigureType
-        WHERE nameFigureInst LIKE '".$req."%';";
+        WHERE nameFigureInst LIKE '%".  mysql_real_escape_string($req)."%';";
 }
 $query = mysql_query($sql, $db);
 while ($row = mysql_fetch_array($query)) {
