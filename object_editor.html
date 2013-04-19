@@ -39,6 +39,9 @@
 		<div id="noarrows" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
 			<img src='images/noarrows.png'>
 		</div>
+            	<div id="build_box" class="group1" style="width:40px;height:40px;border-style:solid;border-width:0px;border-color:black;float:left;">
+			<img src='images/build_box.png'>
+		</div>
 
 	</div>
 	<div id="rightbar" style="visibility:hidden;width:40px;display:block;">
@@ -63,7 +66,7 @@
         <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
-        <script src="scripts/GridGeometry.js"></script>
+        <script src="scripts/Grid.js"></script>
         <script src="scripts/Camera.js"></script>
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/Block.js"></script>
@@ -79,6 +82,7 @@
         <script src="scripts/RotationTorus.js"></script>
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
+        <script src="scripts/BoxBuilder.js"></script>
 
         <script type="text/javascript">
             
@@ -146,7 +150,7 @@
 				
                 cameraController = new OSMEX.CameraController( camera );
                 cameraController.ZoomSpeed = 2.0;
-                cameraController.addEventListener( 'change', render );
+                cameraController.addEventListener( 'change', onCameraChange );
 				
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
@@ -166,11 +170,8 @@
                 interfaceScene.add( interfaceLight );
 				
                 // GROUND
-                var groundMaterial = new THREE.MeshBasicMaterial( { wireframe: true, color: 0x000000 } );
-                groundMaterial.side = THREE.DoubleSide;
-                var groundGeometry = new OSMEX.GridGeometry( 100, 100, 20, 20 );
-                groundGrid = new THREE.Mesh( groundGeometry, groundMaterial );
-                objectScene.add( groundGrid );           
+                var groundGrid = new OSMEX.Grid(60, 4);
+                objectScene.add( groundGrid );
                   
                 var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
                 var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
@@ -179,7 +180,7 @@
                 objectScene.add( cubeBlock );
                    
                 groundPlane = new THREE.Plane( new THREE.Vector3(0, 1, 0));
-                objectScene.add (groundPlane);
+                objectScene.add(groundPlane);
                 		
                 sizerGizmo = new OSMEX.SizerGizmo();
                 interfaceScene.add(sizerGizmo);
@@ -189,6 +190,9 @@
                 
                 movingGizmo = new OSMEX.MovingGizmo();
                 interfaceScene.add(movingGizmo);
+                
+                boxBuilder = new OSMEX.BoxBuilder();
+                objectScene.add(boxBuilder);
                 
                 actionPlane = new THREE.Plane();
 						
@@ -288,6 +292,7 @@
                 mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
                 mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
+                boxBuilder.onMouseMove(mouse);
                 
                 if ( BUILDING ) {       
                  
@@ -306,13 +311,10 @@
                     
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
 	            projector.unprojectVector( vector, camera );
-                    var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersects = raycaster.intersectObject(groundGrid);
-                 
-                    if ( intersects.length > 0 ) {
+                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersectPoint = ray.intersectPlane(groundPlane);
                         
-                        DRAGGING.position.copy(intersects[0].point.subSelf( offsetVector ));
-                    }
+                    DRAGGING.position.copy(intersectPoint.subSelf( offsetVector ));
                 }
                 else if ( SIZING ) {
                     
@@ -394,25 +396,26 @@
                 event.preventDefault();
 				
                 if (event.button == 0) {
- 
- 
+                    
+                    if (boxBuilder.isBuilding()) {
+                        
+                       boxBuilder.onLeftClick(mouse);
+                       return;
+                    }
+                    
                     if (BUILDING){
 
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
-                    var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
-                    var intersects = raycaster.intersectObject(groundGrid);
+                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var intersectPoint = ray.intersectPlane(groundPlane);
                  
-                    if ( intersects.length > 0 ) {
+                     var object = new OSMEX.SketchBuilder(BUILDING.name);
+                     object.Sketch.position.copy(intersectPoint);
+                     object.Sketch.material.color.setHex(0xffffff);                        
+                     objectScene.add(object.Sketch);
                         
-                        var object = new OSMEX.SketchBuilder(BUILDING.name);
-                        object.Sketch.position.copy(intersects[0].point);
-                        object.Sketch.material.color.setHex(0xffffff);                        
-                        objectScene.add (object.Sketch);
-                        
-                        }
-                        
-                    objectScene.remove (BUILDING);
+                    objectScene.remove(BUILDING);
                     
                     }
                                      
@@ -553,6 +556,12 @@
                 sizerGizmo.update();
                 movingGizmo.update();
             } 
+            
+            function onCameraChange() {
+                
+                boxBuilder.update();
+                render();
+            } 
 			
             function render() {
                 
@@ -562,6 +571,12 @@
                 renderer.clear(false, true, false); // clear only Depth
                 renderer.render( interfaceScene, camera );
             }
+            
+            
+            $('#build_box').click(function() {
+                
+                boxBuilder.startBuild();
+            });
 
         </script>
 
