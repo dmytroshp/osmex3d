@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>OSMEX3D Texture editor</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="jquery/jquery-1.8.3.js"></script>
+	<script type="text/javascript" src="jquery/jquery-ui-1.9.2.custom.min.js"></script>
+
+	<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("#search").change(function(){
+                   var query=encodeURIComponent($("#search").val());
+                   $('#result1').empty();
+                   $("#result1").load("/query.php?q="+query); 
+                   //$("#result2").load("http://www.openstreetmap.org/geocoder/search_geonames?maxlat=90.0&maxlon=180.0&minlat=-90.0&minlon=-180&query="+query); 
+                   /*var settings = {
+                        type: "GET",
+                        url:"http://www.openstreetmap.org/geocoder/search_osm_nominatim?maxlat=90.0&maxlon=180.0&minlat=-90.0&minlon=-180&query="+query,
+                        dataType:"text",
+                        error: function(XHR,textStatus,errorThrown) {
+                            alert ("XHR="+XHR+"\ntextStatus="+textStatus+"\nerrorThrown=" + errorThrown);
+                        },
+                        success: function(data,textStatus) {
+                                $("body").append(data);
+                        },
+                        headers: {
+                            "Origin":"http://www.openstreetmap.org",
+                            "Access-Control-Allow-Origin":"http://www.openstreetmap.org",
+                            "Access-Control-Allow-Headers":"X-Requested-With"
+                        }
+                };
+                $.ajax(settings);*/
+            });
+        });
+        </script>
+</head>
+
+<body>
+    <input type="search" name="search" id="search"/>
+    <ul id="result1">
+        
+    </ul>
+    <ul id="result2">
+        
+    </ul>
+</body>
+
+</html>

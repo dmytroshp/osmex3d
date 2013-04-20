@@ -1,10 +1,10 @@
-﻿<?php
+<?php
 global $array;
-$db = mysql_connect('localhost', 'root', '');
+$db = mysql_connect('localhost', 'root', 'root');
 if (!$db) {
     die('Ошибка соединения: ' . mysql_error());
 }
-mysql_select_db('3d_schema',$db) or die('Could not select database.');
+mysql_select_db('osmex3d',$db) or die('Could not select database.');
 $sql = "SELECT * FROM figuretype
         INNER JOIN figureinst 
         ON figuretype.idFigureType = figureinst.idFigureType
@@ -85,6 +85,10 @@ mysql_close($db);
             <div id="mainContainer">
                 <div id="sidebar">
 		    <div id="logo"><img src="img/logo.jpg" height="50" width="100"></div>
+                    <div id="osmSearch">
+                        <input name="commit" type="submit" value="Перейти">
+                        <input autofocus="autofocus" id="query" name="query" placeholder="Поиск" tabindex="1" type="text" value="">
+                    </div>
                     <div id="searchDivc">
                         <img src="img/searchIcon.png"> <form><input id="searchInput" type="search"></form>
                     </div>
