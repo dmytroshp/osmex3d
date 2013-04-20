@@ -49,7 +49,11 @@
 
 	</div>
         
-        <div id="righttopbar" style="visibility:hidden;width:150px;display:block;text-align:rigth;">
+        <div id="righttopbar" style="visibility:hidden;width:200px;display:block;text-align:rigth;">
+            <input type="radio" checked="checked" id="PerspCam" name="Camera" value="Perspective">PerspectiveCamera
+            <br>
+            <input type="radio" id="OrthCam" name="Camera" value="Orthographic">OrthographicCamera
+            <br>
             <input type="checkbox" id="BBox" onchange="addBoundingBox();"> Bounding Box<br>
         </div>
         
@@ -153,11 +157,17 @@
 				$(this).addClass("selected");
 				addObject(this);
 			});
+                        $('input:radio').change(function(){
+                                if($('input[name="Camera"]:checked').val() == "Orthographic")
+                                    camera.toOrthographic();
+                                else camera.toPerspective()
+                        }
+                        );
 		});                
                      
                 renderer = new THREE.WebGLRenderer( { antialias: true } );
                 
-                camera = new OSMEX.Camera( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 1000, 1, 1000 );
+                camera = new OSMEX.Camera( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 300, 1, 300 );
                 camera.rotation.x -= Math.PI / 4;
                 camera.position.z = 100;
                 camera.position.y = 100;
@@ -217,6 +227,11 @@
                 document.addEventListener( 'mouseup', onDocumentMouseUp, false );
                 window.addEventListener( 'resize', onWindowResize, false );
             }
+          
+          function changeCamera ()
+                {
+                   console.log()
+                }
             
           function addBoundingBox ()
                 {
@@ -553,18 +568,6 @@
                     if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
                         else if(arrowMode == "moving") movingGizmo.setTarget(SELECTED);
                             else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED); 
-                   /*if($("#BBox").prop("checked")){
-                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined)
-                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
-
-                    }
-                    else{
-                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
-                            objectScene.children[i].remove(objectScene.children[i].children[0]);
-
-                    }*/
                     
                     /*if(arrowMode == "moving") movingGizmo.setTarget(SELECTED) 
                     else {
