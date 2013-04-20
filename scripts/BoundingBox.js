@@ -12,15 +12,15 @@ OSMEX.BoundingBox = function ( target ) {
    
     target.geometry.computeBoundingBox();
      
-    var XmaxYmaxZmax = target.geometry.boundingBox.max.clone().multiplySelf(target.scale);
-    var XmaxYmaxZmin = target.geometry.boundingBox.max.clone().setZ(target.geometry.boundingBox.min.z).multiplySelf(target.scale);   
-    var XmaxYminZmax = target.geometry.boundingBox.max.clone().setY(target.geometry.boundingBox.min.y).multiplySelf(target.scale);
-    var XmaxYminZmin = target.geometry.boundingBox.min.clone().setX(target.geometry.boundingBox.max.x).multiplySelf(target.scale);
+    var XmaxYmaxZmax = target.geometry.boundingBox.max.clone().multiply(target.scale);
+    var XmaxYmaxZmin = target.geometry.boundingBox.max.clone().setZ(target.geometry.boundingBox.min.z).multiply(target.scale);   
+    var XmaxYminZmax = target.geometry.boundingBox.max.clone().setY(target.geometry.boundingBox.min.y).multiply(target.scale);
+    var XmaxYminZmin = target.geometry.boundingBox.min.clone().setX(target.geometry.boundingBox.max.x).multiply(target.scale);
     
-    var XminYmaxZmax = target.geometry.boundingBox.max.clone().setX(target.geometry.boundingBox.min.x).multiplySelf(target.scale);
-    var XminYmaxZmin = target.geometry.boundingBox.min.clone().setY(target.geometry.boundingBox.max.y).multiplySelf(target.scale);   
-    var XminYminZmax = target.geometry.boundingBox.min.clone().setZ(target.geometry.boundingBox.max.z).multiplySelf(target.scale);
-    var XminYminZmin = target.geometry.boundingBox.min.clone().multiplySelf(target.scale);
+    var XminYmaxZmax = target.geometry.boundingBox.max.clone().setX(target.geometry.boundingBox.min.x).multiply(target.scale);
+    var XminYmaxZmin = target.geometry.boundingBox.min.clone().setY(target.geometry.boundingBox.max.y).multiply(target.scale);   
+    var XminYminZmax = target.geometry.boundingBox.min.clone().setZ(target.geometry.boundingBox.max.z).multiply(target.scale);
+    var XminYminZmin = target.geometry.boundingBox.min.clone().multiply(target.scale);
     
     
     var FrontLeftLineGeometry = new THREE.Geometry();

@@ -150,13 +150,13 @@
 				
                 cameraController = new OSMEX.CameraController( camera );
                 cameraController.ZoomSpeed = 2.0;
-                cameraController.addEventListener( 'change', onCameraChange );
+                //cameraController.addEventListener( 'change', onCameraChange );
 				
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
                 objectScene.fog = new THREE.Fog( 0xffffff, 1, 1500 );
-                objectScene.fog.color.setHSV( 0.6, 0.05, 1 );
+                //objectScene.fog.color.setHSV( 0.6, 0.05, 1 );
 
                 objectScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
                 interfaceScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
@@ -268,7 +268,7 @@
                 var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
                 projector.unprojectVector( vector, camera );
 				
-                var raycaster = new THREE.Raycaster( camera.position, vector.subSelf( camera.position ).normalize() );
+                var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
                 
                 var pickedObject = getFirstSuitableObject(raycaster, interfaceScene.children, true);
                 
@@ -293,7 +293,7 @@
                  
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
 	            projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                     var intersectPoint = ray.intersectPlane(groundPlane);
                  
                     if ( intersectPoint !== undefined ) {
@@ -306,21 +306,21 @@
                     
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
 	            projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                     var intersectPoint = ray.intersectPlane(groundPlane);
                         
-                    DRAGGING.position.copy(intersectPoint.subSelf( offsetVector ));
+                    DRAGGING.position.copy(intersectPoint.sub( offsetVector ));
                 }
                 else if ( SIZING ) {
                     
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                     projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                     var intersectPoint = ray.intersectPlane(actionPlane);
 
                     if (intersectPoint !== undefined) {
                         
-                        intersectPoint.subSelf(SIZING.matrixWorld.getPosition());
+                        intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(SIZING.matrixWorld));
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
                         SIZING.trackSizing(intersectPoint);
                     }
@@ -329,7 +329,7 @@
                     
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                     var intersectPoint = ray.intersectPlane(actionPlane);
                  
                     if ( intersectPoint !== undefined ) {
@@ -345,7 +345,7 @@
                     
                     var mouseX = (mouse.x* SCREEN_WIDTH/2)/10;
                         
-                    var sizingPos = projector.projectVector( SCALING.matrixWorld.getPosition().clone(), camera );
+                    var sizingPos = projector.projectVector( new THREE.Vector3().getPositionFromMatrix(SCALING.matrixWorld).clone(), camera );
                     sizingPos.x = (sizingPos.x * SCREEN_WIDTH/2)/10;
                     var len = mouseX - sizingPos.x;
 
@@ -355,14 +355,14 @@
                     
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                     projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                     var intersectPoint = ray.intersectPlane(actionPlane);
 
                     if (intersectPoint === undefined) {
                         alert("RotationEnd plane intersection problem!");
                     }
 
-                    intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
+                    intersectPoint.sub( new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld));
 
                     ROTATING.finishRotation(intersectPoint.clone().normalize());   
                 }
@@ -419,7 +419,7 @@
 
                     var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	            projector.unprojectVector( vector, camera );
-                    var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                    var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                     var intersectPoint = ray.intersectPlane(groundPlane);
                  
                      var object = new OSMEX.SketchBuilder(BUILDING.name);
@@ -443,9 +443,9 @@
 
                             var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                             projector.unprojectVector( vector, camera );
-                            var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                             var intersectPoint = ray.intersectPlane(groundPlane);                         
-                            offsetVector.copy( intersectPoint ).subSelf( DRAGGING.position );
+                            offsetVector.copy( intersectPoint ).sub( DRAGGING.position );
                         }
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
                             
@@ -453,13 +453,12 @@
                             
                             var rotatedDir = SIZING.dir.clone();
                             
-                            SIZING.matrixRotationWorld.extractRotation( SIZING.matrixWorld );
-                            var rotatedDir = SIZING.matrixRotationWorld.multiplyVector3( SIZING.dir.clone() ).normalize();   
-                            
-                            var sizingPos = SIZING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(rotatedDir).normalize();
-                            var forwardDir = rotatedDir.clone().crossSelf(rightDir).normalize();
+                            SIZING.matrixRotationWorld.extractRotation( SIZING.matrixWorld );  
+                            var rotatedDir = SIZING.dir.clone().applyMatrix4(SIZING.matrixRotationWorld).normalize();
+                            var sizingPos = new THREE.Vector3().getPositionFromMatrix(SIZING.matrixWorld);
+                            var cameraDir = camera.position.clone().sub(sizingPos).normalize();
+                            var rightDir = cameraDir.clone().cross(rotatedDir).normalize();
+                            var forwardDir = rotatedDir.clone().cross(rightDir).normalize();
                             actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                                       
@@ -499,22 +498,21 @@
                             ROTATING = pickRef;
                             
                             ROTATING.matrixRotationWorld.extractRotation( ROTATING.matrixWorld );
-                            var normal = ROTATING.matrixRotationWorld.multiplyVector3( ROTATING.dir.clone() ).normalize();
-                            
-                            var rotationPos = ROTATING.matrixWorld.getPosition();
+                            var normal = ROTATING.dir.clone().applyMatrix4(ROTATING.matrixRotationWorld).normalize();
+                            var rotationPos = new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld);
                             actionPlane.setFromNormalAndCoplanarPoint(normal, rotationPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
                             
                             var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                             projector.unprojectVector( vector, camera );
-                            var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                             var intersectPoint = ray.intersectPlane(actionPlane);
 
                             if (intersectPoint === undefined) {
                                 alert("RotationStart plane intersection problem!");
                             }
                             
-                            intersectPoint.subSelf(ROTATING.matrixWorld.getPosition());
+                            intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld));
 
                             ROTATING.setStartRotationVector(intersectPoint.clone().normalize());
                            

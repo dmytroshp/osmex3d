@@ -28,14 +28,14 @@ OSMEX.RotationTorus.prototype.finishRotation = function ( endRotationVec ) {
     
     if (radians > 0.01) {
         
-        var up = new THREE.Vector3().cross(this.startRotationVec, endRotationVec).normalize();
+        var up = new THREE.Vector3().crossVectors(this.startRotationVec, endRotationVec).normalize();
         
         this.matrixRotationWorld.extractRotation( this.matrixWorld );
-        var gloablDir = this.matrixRotationWorld.multiplyVector3( this.dir.clone() ).normalize();
+         var globalDir = this.dir.clone().applyMatrix4(this.matrixRotationWorld).normalize();
         
-        //console.log("dot=" + up.dot(gloablDir));
+        //console.log("dot=" + up.dot(globalDir));
         
-        if (up.dot(gloablDir) < 0) {
+        if (up.dot(globalDir) < 0) {
             
             radians = -radians;
         }

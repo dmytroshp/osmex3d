@@ -58,16 +58,16 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
 
             var scaleAxis = new THREE.Vector3( Math.abs(this.dir.x), Math.abs(this.dir.y), Math.abs(this.dir.z) );
             
-            var currentScale = scaleAxis.clone().multiplySelf(target.scale).length();
+            var currentScale = scaleAxis.clone().multiply(target.scale).length();
             
             if (currentScale + deltaScale > 0.1) {   // 0.1 is minimum possible scale
                 
                 var deltaScaleVec = scaleAxis.clone().multiplyScalar(deltaScale);
-                target.scale.addSelf(deltaScaleVec);
+                target.scale.add(deltaScaleVec);
                 var shiftPos = this.dir.clone();
-                target.matrix.rotateAxis(shiftPos);
+                shiftPos.transformDirection(target.matrix);
                 shiftPos.multiplyScalar(deltaScale / 2);
-                target.position.addSelf(shiftPos);
+                target.position.add(shiftPos);
             }
     
         } }(this.target);

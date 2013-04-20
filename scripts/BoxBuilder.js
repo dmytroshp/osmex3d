@@ -55,9 +55,9 @@ OSMEX.BoxBuilder.prototype.onLeftClick = function ( mouse ) {
 
     var projector = new THREE.Projector();
     projector.unprojectVector(vector, camera);
-    var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
     var intersectPoint = ray.intersectPlane(groundPlane);
-    var pos3d = intersectPoint.subSelf(this.matrixWorld.getPosition());
+    var pos3d = intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(this.matrixWorld));
     
     if (this.currentState !== BoxBuilderState.NOT_STARTED) {
         
@@ -115,9 +115,9 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
         var projector = new THREE.Projector();
         projector.unprojectVector(vector, camera);
-        var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
         var intersectPoint = ray.intersectPlane(groundPlane);
-        var pos3d = intersectPoint.subSelf(this.matrixWorld.getPosition());
+        var pos3d = intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(this.matrixWorld));
     
         if (this.currentState === BoxBuilderState.PICKING_POINT) {
         
@@ -126,7 +126,7 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
     
         else if (this.currentState === BoxBuilderState.PICKING_LENGTH) {
         
-            var lengthVec = pos3d.clone().subSelf(this.startPos);
+            var lengthVec = pos3d.clone().sub(this.startPos);
             var len = lengthVec.length();
             var lengthDir = lengthVec.divideScalar(len);
         
@@ -137,7 +137,7 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
                 
                 len = Math.min(len, this.MAX_LENGTH);
             
-                this.box.position.addSelf(lengthDir.multiplyScalar(len / 2));
+                this.box.position.add(lengthDir.multiplyScalar(len / 2));
             }
             else {
 
@@ -150,13 +150,13 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
         
         else if (this.currentState === BoxBuilderState.PICKING_WIDTH) {
             
-            var dir = this.endPos.clone().subSelf(this.startPos).normalize();
-            var expandVec = pos3d.clone().subSelf(this.startPos);
+            var dir = this.endPos.clone().sub(this.startPos).normalize();
+            var expandVec = pos3d.clone().sub(this.startPos);
             var dot = dir.dot(expandVec);
             
-            var intersect = this.startPos.clone().addSelf(dir.clone().multiplyScalar(dot));
+            var intersect = this.startPos.clone().add(dir.clone().multiplyScalar(dot));
             
-            var widthVec = pos3d.clone().subSelf(intersect);
+            var widthVec = pos3d.clone().sub(intersect);
             var width = widthVec.length();
             var widthDir = widthVec.divideScalar(width);
         
@@ -166,7 +166,7 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
                 
                 width = Math.min(width, this.MAX_WIDTH);
             
-                this.box.position.addSelf(widthDir.multiplyScalar(width / 2));
+                this.box.position.add(widthDir.multiplyScalar(width / 2));
             }
             else {
 
@@ -181,12 +181,12 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
             
             var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
             projector.unprojectVector(vector, camera);
-            var ray = new THREE.Ray(camera.position, vector.subSelf(camera.position).normalize());
+            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
             var intersectPoint = ray.intersectPlane(this.heightPlane);
 
             if (intersectPoint !== undefined) {
                 
-                var heightVec = intersectPoint.clone().subSelf(this.centerPos);
+                var heightVec = intersectPoint.clone().sub(this.centerPos);
                 var height = this.heightNormal.dot(heightVec);
                 
                 if (Math.abs(this.box.scale.y - height) < this.MAX_DELTA_HEIGHT) {
@@ -197,7 +197,7 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
 
                         height = Math.min(height, this.MAX_HEIGHT);
 
-                        this.box.position.addSelf(this.heightNormal.clone().multiplyScalar(height / 2));
+                        this.box.position.add(this.heightNormal.clone().multiplyScalar(height / 2));
                     }
                     else {
 
@@ -262,9 +262,9 @@ OSMEX.BoxBuilder.prototype.updateHeightPlane = function () {
         this.heightNormal.negate(); // prevent picking height on negative Y
     }
 
-    var cameraDir = camera.position.clone().subSelf(this.centerPos).normalize();
-    var rightDir = cameraDir.clone().crossSelf(this.heightNormal).normalize();
-    var forwardDir = this.heightNormal.clone().crossSelf(rightDir).normalize();
+    var cameraDir = camera.position.clone().sub(this.centerPos).normalize();
+    var rightDir = cameraDir.clone().cross(this.heightNormal).normalize();
+    var forwardDir = this.heightNormal.clone().cross(rightDir).normalize();
 
     this.heightPlane.setFromNormalAndCoplanarPoint(forwardDir, this.centerPos);
 };
