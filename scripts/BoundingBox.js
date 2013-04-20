@@ -12,15 +12,15 @@ OSMEX.BoundingBox = function ( target ) {
    
     target.geometry.computeBoundingBox();
      
-    var XmaxYmaxZmax = target.geometry.boundingBox.max.clone().multiply(target.scale);
-    var XmaxYmaxZmin = target.geometry.boundingBox.max.clone().setZ(target.geometry.boundingBox.min.z).multiply(target.scale);   
-    var XmaxYminZmax = target.geometry.boundingBox.max.clone().setY(target.geometry.boundingBox.min.y).multiply(target.scale);
-    var XmaxYminZmin = target.geometry.boundingBox.min.clone().setX(target.geometry.boundingBox.max.x).multiply(target.scale);
+    var XmaxYmaxZmax = target.geometry.boundingBox.max.clone();
+    var XmaxYmaxZmin = target.geometry.boundingBox.max.clone().setZ(target.geometry.boundingBox.min.z);   
+    var XmaxYminZmax = target.geometry.boundingBox.max.clone().setY(target.geometry.boundingBox.min.y);
+    var XmaxYminZmin = target.geometry.boundingBox.min.clone().setX(target.geometry.boundingBox.max.x);
     
-    var XminYmaxZmax = target.geometry.boundingBox.max.clone().setX(target.geometry.boundingBox.min.x).multiply(target.scale);
-    var XminYmaxZmin = target.geometry.boundingBox.min.clone().setY(target.geometry.boundingBox.max.y).multiply(target.scale);   
-    var XminYminZmax = target.geometry.boundingBox.min.clone().setZ(target.geometry.boundingBox.max.z).multiply(target.scale);
-    var XminYminZmin = target.geometry.boundingBox.min.clone().multiply(target.scale);
+    var XminYmaxZmax = target.geometry.boundingBox.max.clone().setX(target.geometry.boundingBox.min.x);
+    var XminYmaxZmin = target.geometry.boundingBox.min.clone().setY(target.geometry.boundingBox.max.y);   
+    var XminYminZmax = target.geometry.boundingBox.min.clone().setZ(target.geometry.boundingBox.max.z);
+    var XminYminZmin = target.geometry.boundingBox.min.clone();
     
     
     var FrontLeftLineGeometry = new THREE.Geometry();

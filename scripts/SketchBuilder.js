@@ -22,9 +22,9 @@ OSMEX.SketchBuilder = function ( type ) {
 
     this.Sketch = new OSMEX.Block( geometry, material );
     this.Sketch.scale = new THREE.Vector3(10.0, 10.0, 10.0);
-    this.BoundingBox = new OSMEX.BoundingBox(this.Sketch);
+    this.Sketch.add(new OSMEX.BoundingBox(this.Sketch));
     this.add(this.Sketch);
-    this.add(this.BoundingBox);
+    
     
 };
 

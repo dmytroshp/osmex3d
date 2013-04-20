@@ -22,6 +22,10 @@
             #rightbar {
                 position:absolute;
             }
+            
+            #righttopbar {
+                position:absolute; 
+            }   
         </style>
     </head>
     <body>
@@ -44,6 +48,11 @@
 		</div>
 
 	</div>
+        
+        <div id="righttopbar" style="visibility:hidden;width:150px;display:block;text-align:rigth;">
+            <input type="checkbox" id="BBox" onchange="addBoundingBox();"> Bounding Box<br>
+        </div>
+        
 	<div id="rightbar" style="visibility:hidden;width:40px;display:block;">
 		<div id="cube" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
 			<img src='images/cube.png'>
@@ -128,7 +137,12 @@
                         "visibility":"visible"
                     });
                     
-                    $("#rightbar").show();
+                    $("#righttopbar").css({
+                        "left":(window.innerWidth)-($("#topbar").width())+"px",
+                        "top":($("#topbar").height()/2)+"px",
+                        "visibility":"visible"
+                    });
+                    
 			$(".group1").click(function(){
 				$(".selected").removeClass("selected");
 				$(this).addClass("selected");
@@ -171,12 +185,6 @@
                 // GROUND
                 groundGrid = new OSMEX.Grid(60, 4);
                 objectScene.add( groundGrid );
-                  
-                var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
-                var blockMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
-                var cubeBlock = new OSMEX.Block( blockGeometry, blockMaterial );
-                cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
-                objectScene.add( cubeBlock );
                    
                 groundPlane = new THREE.Plane( new THREE.Vector3(0, 1, 0));
                 objectScene.add(groundPlane);
@@ -209,6 +217,22 @@
                 document.addEventListener( 'mouseup', onDocumentMouseUp, false );
                 window.addEventListener( 'resize', onWindowResize, false );
             }
+            
+          function addBoundingBox ()
+                {
+                    if($("#BBox").prop("checked")){
+                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined)
+                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
+
+                    }
+                    else{
+                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+
+                    }           
+                }
             
           function setArrowsType(element)
 		{
@@ -273,7 +297,7 @@
                 
                 if (pickedObject === null) {
                     
-                    pickedObject = getFirstSuitableObject(raycaster, objectScene.children);
+                    pickedObject = getFirstSuitableObject(raycaster, objectScene.children);                  
                 }
                 
                 return pickedObject;
@@ -421,7 +445,8 @@
                  
                      var object = new OSMEX.SketchBuilder(BUILDING.name);
                      object.Sketch.position.copy(intersectPoint);
-                     object.Sketch.material.color.setHex(0xffffff);                        
+                     object.Sketch.material.color.setHex(0xffffff);    
+                     if (object.Sketch.children[0].name == "BoundingBox") object.Sketch.remove(object.Sketch.children[0]);
                      objectScene.add(object.Sketch);
                         
                     objectScene.remove(BUILDING);
@@ -432,6 +457,8 @@
                         
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
                         cameraController.enabled = false;
+                         
+                       // if (arrowMode == "delete") objectScene.remove(PICKED);
                         
                         if ( pickRef instanceof OSMEX.Block ) {
 
@@ -445,7 +472,7 @@
                             offsetVector.copy( intersectPoint ).sub( DRAGGING.position );
                         }
                         else if ( pickRef instanceof OSMEX.SizerArrow ) {
-                            
+
                             SIZING = pickRef;
                             
                             var rotatedDir = SIZING.dir.clone();
@@ -462,7 +489,7 @@
                             sizerGizmo.setSizing(true);
                         }
                         else if ( pickRef instanceof OSMEX.MovingArrow || pickRef instanceof OSMEX.MovingGizmoPlane) {
-                            
+
                             MOVING = pickRef;
                             
                             if (pickRef instanceof OSMEX.MovingArrow) {
@@ -525,7 +552,20 @@
                     }
                     if(arrowMode == "scaling") sizerGizmo.setTarget(SELECTED)
                         else if(arrowMode == "moving") movingGizmo.setTarget(SELECTED);
-                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED);
+                            else if(arrowMode == "rotating") rotationGizmo.setTarget(SELECTED); 
+                   /*if($("#BBox").prop("checked")){
+                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined)
+                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
+
+                    }
+                    else{
+                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+
+                    }*/
+                    
                     /*if(arrowMode == "moving") movingGizmo.setTarget(SELECTED) 
                     else {
                         rotationGizmo.setTarget(SELECTED);
