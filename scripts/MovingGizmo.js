@@ -1,38 +1,26 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-
 OSMEX.MovingGizmo = function ( ) {
     
     THREE.Object3D.call( this );
     
-    scale = this.scale;
-    
     this.target = null;
 	
     this.AxisX = new OSMEX.MovingArrow( new THREE.Vector3( 1, 0, 0 ), 0xff0000 );  
-	
     this.AxisY = new OSMEX.MovingArrow( new THREE.Vector3( 0, 1, 0 ), 0x00ff00 );
-	
     this.AxisZ = new OSMEX.MovingArrow( new THREE.Vector3( 0, 0, 1 ), 0x0000ff );
     
-    this.AxisXPlane = new OSMEX.MovingGizmoPlane(this, new THREE.Vector3( 0, 1, 1 ), 0x00ffff );  
-	
-    this.AxisYPlane = new OSMEX.MovingGizmoPlane(this, new THREE.Vector3( 1, 0, 1 ), 0xff00ff );
-	
-    this.AxisZPlane = new OSMEX.MovingGizmoPlane(this, new THREE.Vector3( 1, 1, 0 ), 0xffff00 );
-    
-	
     this.add(this.AxisX);
-	
     this.add(this.AxisY);
-	
     this.add(this.AxisZ);
-
-    this.add(this.AxisXPlane);
-	
-    this.add(this.AxisYPlane);
-	
-    this.add(this.AxisZPlane);
+    
+    this.PlaneYZ = new OSMEX.MovingGizmoPlane( new THREE.Vector3( 1, 0, 0 ), 0xff0000 );
+    this.PlaneXZ = new OSMEX.MovingGizmoPlane( new THREE.Vector3( 0, 1, 0 ), 0x00ff00 );
+    this.PlaneXY = new OSMEX.MovingGizmoPlane( new THREE.Vector3( 0, 0, 1 ), 0x0000ff );
+    
+    this.add(this.PlaneYZ);
+    this.add(this.PlaneXZ);
+    this.add(this.PlaneXY);
     
     this.setTarget(null);
 };
@@ -52,43 +40,49 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
         
         visibility = true;
         
-        arrowMoveFunc = function(target) { return function(delta) {
+        arrowMoveFunc = function(target) { return function(position) {
+                
+            if (this.dir.x === 1)      target.position.x = position.x;
+            else if (this.dir.y === 1) target.position.y = position.y;
+            else if (this.dir.z === 1) target.position.z = position.z;
                           
-            var deltaScale = delta * this.parent.scale.x;
-               
-            var shiftPos = this.dir.clone();
-            shiftPos.multiplyScalar(deltaScale/2 )
-            target.position.addSelf(shiftPos);
+            //target.position.copy(position);
                          
         } }(this.target);
     
-        planeMoveFunc = function(target) { return function(delta) {
+        planeMoveFunc = function(target) { return function(position) { 
                 
-            var deltaScale = delta.multiplyScalar(this.parent.scale.x).divideScalar(2);
-                          
-            var shiftPos = this.dir.clone();
-            shiftPos.multiplySelf(deltaScale );                 
-            target.position.addSelf(shiftPos);                
+            if (this.dir.x === 1) {
+                
+                target.position.y = position.y;
+                target.position.z = position.z;
+            }
+            else if (this.dir.y === 1) {
+                
+                target.position.x = position.x;
+                target.position.z = position.z;
+            }
+            else if (this.dir.z === 1) {
+                
+                target.position.x = position.x;
+                target.position.y = position.y;
+            }
+                
+            //target.position.copy(position);
                           
         } }(this.target);
                         
     }
     
-    
     this.traverse( function( object ) { object.visible = visibility } );
     
     this.AxisX.moveFunc = arrowMoveFunc;
-    
     this.AxisY.moveFunc = arrowMoveFunc;
-    
     this.AxisZ.moveFunc = arrowMoveFunc;
     
-    this.AxisXPlane.moveFunc = planeMoveFunc;
-    
-    this.AxisYPlane.moveFunc = planeMoveFunc;
-    
-    this.AxisZPlane.moveFunc = planeMoveFunc;
-      
+    this.PlaneYZ.moveFunc = planeMoveFunc;
+    this.PlaneXZ.moveFunc = planeMoveFunc;
+    this.PlaneXY.moveFunc = planeMoveFunc;  
 }
 
 OSMEX.MovingGizmo.prototype.update = function ( ) {
@@ -96,6 +90,5 @@ OSMEX.MovingGizmo.prototype.update = function ( ) {
     if(this.target){  
         
         this.position.copy(this.target.position);
-        
     }
 }

@@ -170,7 +170,7 @@
                 interfaceScene.add( interfaceLight );
 				
                 // GROUND
-                var groundGrid = new OSMEX.Grid(60, 4);
+                groundGrid = new OSMEX.Grid(60, 4);
                 objectScene.add( groundGrid );
                   
                 var blockGeometry = new THREE.CubeGeometry( 1, 1, 1 );
@@ -241,12 +241,9 @@
                     
                     var intersects = raycaster.intersectObjects( objects, recursive );
                     
-
                     if ( intersects.length > 0 ) {
 
                         for( i = 0; i < intersects.length; i++ ) {
-                            
-                            
                             
                             if (intersects[i].object.parent.name === "RotationGizmoOverlay"){
                                 if (i+1 < intersects.length && intersects[i+1].object.parent.name === "RotationTorus")
@@ -259,9 +256,7 @@
                             var intersector = intersects[i];
                             
                             if ( intersector.object.pickable && intersector.object.visible ) {
-                                
-                                
-                                
+ 
                                 return intersector.object;
                             }
                         }
@@ -339,9 +334,10 @@
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        intersectPoint.subSelf(MOVING.matrixWorld.getPosition());
-                        intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
-                        MOVING.setPosition (intersectPoint);
+                        intersectPoint.subSelf( offsetVector );
+                        //intersectPoint.subSelf(MOVING.matrixWorld.getPosition());
+                        //intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
+                        MOVING.setPosition(intersectPoint);
 
                     }
                 }
@@ -377,15 +373,31 @@
                     if ( PICKED != pickedObject ) {
 
                         if ( PICKED ) {
-                            PICKED.material.emissive.setHex( PICKED.oldEmissive );
+                            
+                            if ( PICKED.material.emissive ) {
+                                
+                                PICKED.material.emissive.setHex( PICKED.oldEmissive );
+                            }
+                            else {
+                                
+                                PICKED.material.color.setHex( PICKED.oldColor );
+                            }
                         }
 
                         PICKED = pickedObject;
 
                         if ( PICKED ) {
                             
-                            PICKED.oldEmissive = PICKED.material.emissive.getHex();
-                            PICKED.material.emissive.setHex( 0xff0000 );
+                            if ( PICKED.material.emissive ) {
+                                
+                                PICKED.oldEmissive = PICKED.material.emissive.getHex();
+                                PICKED.material.emissive.setHex( 0xff0000 );
+                            }
+                            else {
+                            
+                                PICKED.oldColor = PICKED.material.color.getHex();
+                                PICKED.material.color.setHex( 0xffff00 );
+                            }
                         }
                     }
                 }
@@ -457,13 +469,25 @@
                             
                             MOVING = pickRef;
                             
-                            var sizingPos = MOVING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().crossSelf(MOVING.dir); 
-                            var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
-                            actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            if (pickRef instanceof OSMEX.MovingArrow) {
+
+                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
+                                var rightDir = cameraDir.clone().crossSelf(MOVING.dir); 
+                                var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
+                                actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            }
+                            else {
+                                
+                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                actionPlane.setFromNormalAndCoplanarPoint(MOVING.dir, sizingPos); 
+                            }
                             
-                            
+                            var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+                            projector.unprojectVector( vector, camera );
+                            var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var intersectPoint = ray.intersectPlane(actionPlane);                         
+                            offsetVector.copy( intersectPoint ).subSelf( MOVING.matrixWorld.getPosition() ); 
                         }
                         else if ( pickRef instanceof OSMEX.ScaleCube ) {
                             
