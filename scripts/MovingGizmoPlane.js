@@ -72,15 +72,15 @@ OSMEX.MovingGizmoPlane.prototype.setPosition = function ( position ) {
         
         if (this.dir.x == 0){
             position.setX(0);
-            this.moveFunc(position.subSelf(this.prevPos));           
+            this.moveFunc(position.sub(this.prevPos));           
             this.prevPos = position; 
         }else if (this.dir.y == 0){
             position.setY(0);
-            this.moveFunc(position.subSelf(this.prevPos));
+            this.moveFunc(position.sub(this.prevPos));
             this.prevPos = position; 
         }else if (this.dir.z == 0){
             position.setZ(0);
-            this.moveFunc(position.subSelf(this.prevPos));
+            this.moveFunc(position.sub(this.prevPos));
             this.prevPos = position; 
         }
 

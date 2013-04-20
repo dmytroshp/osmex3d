@@ -174,11 +174,11 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		}
 
-		_eye.copy( _this.object.position ).subSelf( _this.target );
+		_eye.copy( _this.object.position ).sub( _this.target );
 
 		var projection = _this.object.up.clone().setLength( mouseOnBall.y );
-		projection.addSelf( _this.object.up.clone().crossSelf( _eye ).setLength( mouseOnBall.x ) );
-		projection.addSelf( _eye.setLength( mouseOnBall.z ) );
+		projection.add( _this.object.up.clone().cross( _eye ).setLength( mouseOnBall.x ) );
+		projection.add( _eye.setLength( mouseOnBall.z ) );
 
 		return projection;
 
@@ -210,20 +210,20 @@ OSMEX.CameraController = function ( object, domElement ) {
 	this.panCamera = function () {
                 
                 
-		var mouseChange = _panEnd.clone().subSelf( _panStart );
+		var mouseChange = _panEnd.clone().sub( _panStart );
 
 		if ( mouseChange.lengthSq() ) {
                     
 			mouseChange.multiplyScalar( _eye.length() * _this.panSpeed );
 
-                        var cameraDir = _this.object.position.clone().subSelf(_this.target).normalize();
-                        var rightDir = cameraDir.clone().crossSelf(_this.object.up);
+                        var cameraDir = _this.object.position.clone().sub(_this.target).normalize();
+                        var rightDir = cameraDir.clone().cross(_this.object.up);
 			var pan = rightDir.clone().setLength( mouseChange.x );
-                        pan.subSelf(_this.object.up.clone().crossSelf( rightDir ).normalize().setLength( mouseChange.y ));
+                        pan.sub(_this.object.up.clone().cross( rightDir ).normalize().setLength( mouseChange.y ));
                         
 
-			_this.object.position.addSelf( pan );
-			_this.target.addSelf( pan );                
+			_this.object.position.add( pan );
+			_this.target.add( pan );                
                         
 			if ( _this.staticMoving ) {
 
@@ -231,7 +231,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 			} else {
 
-				_panStart.addSelf( mouseChange.sub( _panEnd, _panStart ).multiplyScalar( _this.dynamicDampingFactor ) );
+				_panStart.add( mouseChange.subVectors( _panEnd, _panStart ).multiplyScalar( _this.dynamicDampingFactor ) );
 
 			}
 
@@ -251,7 +251,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 			if ( _eye.lengthSq() < _this.minDistance * _this.minDistance ) {
 
-				_this.object.position.add( _this.target, _eye.setLength( _this.minDistance ) );
+				_this.object.position.addVectors( _this.target, _eye.setLength( _this.minDistance ) );
 
 			}
 
@@ -261,7 +261,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 	this.update = function () {
 
-		_eye.sub( _this.object.position, _this.target );
+		_eye.subVectors( _this.object.position, _this.target );
 
 		if ( !_this.noRotate ) {
 
@@ -311,7 +311,7 @@ OSMEX.CameraController = function ( object, domElement ) {
                 phiDelta = 0;
                 scale = 1;
                 
-		_this.object.position.add( _this.target, _eye );
+		_this.object.position.addVectors( _this.target, _eye );
 
 		_this.checkDistances();
 
@@ -319,7 +319,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		if ( lastPosition.distanceToSquared( _this.object.position ) > 0 ) {
 
-			_this.dispatchEvent( changeEvent );
+	//		_this.dispatchEvent( changeEvent );
 
 			lastPosition.copy( _this.object.position );
 
@@ -409,7 +409,7 @@ OSMEX.CameraController = function ( object, domElement ) {
 		if ( _state === STATE.ROTATE && !_this.noRotate ) {
 
 			_rotateEnd.set( event.clientX, event.clientY );
-                        _rotateDelta.sub( _rotateEnd, _rotateStart );
+                        _rotateDelta.subVectors( _rotateEnd, _rotateStart );
 
                         _this.rotateLeft( 2 * Math.PI * _rotateDelta.x / PIXELS_PER_ROUND * _this.rotateSpeed );
                         _this.rotateUp( 2 * Math.PI * _rotateDelta.y / PIXELS_PER_ROUND * _this.rotateSpeed );

@@ -58,7 +58,7 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
                
             var shiftPos = this.dir.clone();
             shiftPos.multiplyScalar(deltaScale/2 )
-            target.position.addSelf(shiftPos);
+            target.position.add(shiftPos);
                          
         } }(this.target);
     
@@ -67,8 +67,8 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
             var deltaScale = delta.multiplyScalar(this.parent.scale.x).divideScalar(2);
                           
             var shiftPos = this.dir.clone();
-            shiftPos.multiplySelf(deltaScale );                 
-            target.position.addSelf(shiftPos);                
+            shiftPos.multiply(deltaScale );                 
+            target.position.add(shiftPos);                
                           
         } }(this.target);
                         
