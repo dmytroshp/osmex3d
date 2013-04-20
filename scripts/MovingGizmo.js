@@ -45,8 +45,6 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
             if (this.dir.x === 1)      target.position.x = position.x;
             else if (this.dir.y === 1) target.position.y = position.y;
             else if (this.dir.z === 1) target.position.z = position.z;
-                          
-            //target.position.copy(position);
                          
         } }(this.target);
     
@@ -67,8 +65,6 @@ OSMEX.MovingGizmo.prototype.setTarget = function ( target ) {
                 target.position.x = position.x;
                 target.position.y = position.y;
             }
-                
-            //target.position.copy(position);
                           
         } }(this.target);
                         

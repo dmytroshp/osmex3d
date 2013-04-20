@@ -319,12 +319,17 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		if ( lastPosition.distanceToSquared( _this.object.position ) > 0 ) {
 
-	//		_this.dispatchEvent( changeEvent );
+			_this.dispatchEvent( changeEvent );
 
 			lastPosition.copy( _this.object.position );
 
 		}
 
+	};
+        
+        this.isRotating = function () {
+
+	    return _this.enabled && (_state === STATE.ROTATE);
 	};
 
 	// listeners

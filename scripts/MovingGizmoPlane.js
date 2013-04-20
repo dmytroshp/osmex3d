@@ -14,9 +14,7 @@ OSMEX.MovingGizmoPlane = function ( dir, hex ) {
     if ( hex === undefined ) hex = 0xffff00;
 
     var meshMaterial = new THREE.MeshBasicMaterial( {
-        color: hex, 
-        //shading: THREE.FlatShading, 
-        //ambient: 0xffffff
+        color: hex
     } );   
     
    meshMaterial.side = THREE.DoubleSide;

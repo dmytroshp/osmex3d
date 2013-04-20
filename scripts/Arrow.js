@@ -14,7 +14,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     this.setDirection( dir );
 
     if ( hex === undefined ) hex = 0xffff00;
-    if ( length === undefined ) length = 40;
+    if ( length === undefined ) length = 20;
     
     var lineGeometry = new THREE.Geometry();
     lineGeometry.vertices.push( new THREE.Vector3( 0, 0, 0 ) );
@@ -33,7 +33,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     if (this.type == "moving"){
         var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
         this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
-        this.cone.position.set( 0, 40, 0 );
+        this.cone.position.set( 0, 30, 0 );
         this.arrowContainer.add( this.cone );
       /* var planeGeometry = new THREE.PlaneGeometry(8,8,8,8);
         this.plane = new THREE.Mesh( planeGeometry, meshMaterial );
@@ -44,7 +44,7 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     }else if (this.type == "sizing"){
         var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
         this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
-        this.cone.position.set( 0, 40, 0 );
+        this.cone.position.set( 0, 30, 0 );
         this.arrowContainer.add( this.cone );
      }
 

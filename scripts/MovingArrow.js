@@ -17,7 +17,7 @@ OSMEX.MovingArrow.prototype.setPosition = function ( position ) {
     
     if (this.moveFunc) {
   
-        this.moveFunc(position.multiplySelf(this.dir)); 
+        this.moveFunc(position.multiply(this.dir)); 
     }
     
 };

@@ -150,13 +150,12 @@
 				
                 cameraController = new OSMEX.CameraController( camera );
                 cameraController.ZoomSpeed = 2.0;
-                //cameraController.addEventListener( 'change', onCameraChange );
+                cameraController.addEventListener( 'change', onCameraChange );
 				
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
-                objectScene.fog = new THREE.Fog( 0xffffff, 1, 1500 );
-                //objectScene.fog.color.setHSV( 0.6, 0.05, 1 );
+                objectScene.fog = new THREE.Fog( 0xFBFBFB, 1, 1500 );
 
                 objectScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
                 interfaceScene.add( new THREE.AmbientLight( 0x3f3f3f ) );
@@ -334,9 +333,7 @@
                  
                     if ( intersectPoint !== undefined ) {
                         
-                        intersectPoint.subSelf( offsetVector );
-                        //intersectPoint.subSelf(MOVING.matrixWorld.getPosition());
-                        //intersectPoint.multiplyScalar(1.0 / MOVING.parent.scale.x); // to compensate changing scale on changing distance
+                        intersectPoint.sub( offsetVector );
                         MOVING.setPosition(intersectPoint);
 
                     }
@@ -471,9 +468,9 @@
                             if (pickRef instanceof OSMEX.MovingArrow) {
 
                                 var sizingPos = MOVING.matrixWorld.getPosition();
-                                var cameraDir = camera.position.clone().subSelf(sizingPos).normalize();
-                                var rightDir = cameraDir.clone().crossSelf(MOVING.dir); 
-                                var forwardDir = MOVING.dir.clone().crossSelf(rightDir);
+                                var cameraDir = camera.position.clone().sub(sizingPos).normalize();
+                                var rightDir = cameraDir.clone().cross(MOVING.dir); 
+                                var forwardDir = MOVING.dir.clone().cross(rightDir);
                                 actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             }
                             else {
@@ -484,9 +481,9 @@
                             
                             var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
                             projector.unprojectVector( vector, camera );
-                            var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+                            var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                             var intersectPoint = ray.intersectPlane(actionPlane);                         
-                            offsetVector.copy( intersectPoint ).subSelf( MOVING.matrixWorld.getPosition() ); 
+                            offsetVector.copy( intersectPoint ).sub( MOVING.matrixWorld.getPosition() ); 
                         }
                         else if ( pickRef instanceof OSMEX.ScaleCube ) {
                             
