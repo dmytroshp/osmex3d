@@ -40,7 +40,7 @@
 		<div id="rotating" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
 			<img src='images/rotating.png'>
 		</div>
-		<div id="noarrows" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+		<div id="delete" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
 			<img src='images/noarrows.png'>
 		</div>
             	<div id="build_box" class="group1" style="width:40px;height:40px;border-style:solid;border-width:0px;border-color:black;float:left;">
@@ -102,6 +102,7 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
+            var FIRST_PICKABLE_OBJ = 5;
 
             var container;
 
@@ -236,13 +237,13 @@
           function addBoundingBox ()
                 {
                     if($("#BBox").prop("checked")){
-                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
+                        for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++) 
                         if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined)
                             objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
 
                     }
                     else{
-                        for (var i = 5, l = objectScene.children.length; i < l; i++) 
+                        for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++) 
                         if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
                             objectScene.children[i].remove(objectScene.children[i].children[0]);
 
@@ -460,8 +461,11 @@
                  
                      var object = new OSMEX.SketchBuilder(BUILDING.name);
                      object.Sketch.position.copy(intersectPoint);
-                     object.Sketch.material.color.setHex(0xffffff);    
-                     if (object.Sketch.children[0].name == "BoundingBox") object.Sketch.remove(object.Sketch.children[0]);
+                     object.Sketch.material.color.setHex(0xffffff);  
+                     
+                     if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked"))
+                         object.Sketch.remove(object.Sketch.children[0]);
+                     
                      objectScene.add(object.Sketch);
                         
                     objectScene.remove(BUILDING);
@@ -473,7 +477,7 @@
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
                         cameraController.enabled = false;
                          
-                       // if (arrowMode == "delete") objectScene.remove(PICKED);
+                        if (arrowMode == "delete") objectScene.remove(PICKED);
                         
                         if ( pickRef instanceof OSMEX.Block ) {
 
@@ -509,7 +513,7 @@
                             
                             if (pickRef instanceof OSMEX.MovingArrow) {
 
-                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld);
                                 var cameraDir = camera.position.clone().sub(sizingPos).normalize();
                                 var rightDir = cameraDir.clone().cross(MOVING.dir); 
                                 var forwardDir = MOVING.dir.clone().cross(rightDir);
@@ -517,7 +521,7 @@
                             }
                             else {
                                 
-                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld);
                                 actionPlane.setFromNormalAndCoplanarPoint(MOVING.dir, sizingPos); 
                             }
                             
@@ -525,7 +529,7 @@
                             projector.unprojectVector( vector, camera );
                             var ray = new THREE.Ray( camera.position, vector.sub( camera.position ).normalize() );
                             var intersectPoint = ray.intersectPlane(actionPlane);                         
-                            offsetVector.copy( intersectPoint ).sub( MOVING.matrixWorld.getPosition() ); 
+                            offsetVector.copy( intersectPoint ).sub( new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld) ); 
                         }
                         else if ( pickRef instanceof OSMEX.ScaleCube ) {
                             

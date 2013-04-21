@@ -231,8 +231,9 @@ OSMEX.BoxBuilder.prototype.build = function () {
     
     var buildedBox = this.box.clone();
     buildedBox.material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
+    if ($("#BBox").prop("checked")) buildedBox.add(new OSMEX.BoundingBox(buildedBox));
     objectScene.add(buildedBox);
-    
+
     this.finishBuild();
 };
 
