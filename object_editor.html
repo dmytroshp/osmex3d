@@ -103,6 +103,7 @@
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
             var FIRST_PICKABLE_OBJ = 5;
+            var ID_FOR_SERVER = 0;
 
             var container;
 
@@ -114,6 +115,8 @@
             var mouse = new THREE.Vector2(0, 0);
 			
             var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
+            var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
+            var CURRENT_OBJ;
             var offsetVector = new THREE.Vector3();
             
             var groundGrid, groundPlane;
@@ -228,43 +231,69 @@
                 document.addEventListener( 'mouseup', onDocumentMouseUp, false );
                 window.addEventListener( 'resize', onWindowResize, false );
             }
-          
-          function changeCamera ()
-                {
-                   console.log()
-                }
             
-          function addBoundingBox ()
-                {
-                    if($("#BBox").prop("checked")){
-                        for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++) 
+            function addToAdded ( obj ){
+                CURRENT_OBJ = obj;
+                CURRENT_OBJ.id = ID_FOR_SERVER;
+                ADDED.push(CURRENT_OBJ);
+                ID_FOR_SERVER ++;               
+            }
+            
+            function addToModified ( obj ){ 
+                for (var i = 0; i < ADDED.length; i++){
+                    if(ADDED[i].id == obj.id){                                 
+                        MODIFIED.push(ADDED[i]);
+                        ADDED.splice(i,1);
+                    }
+                }               
+            }
+            
+            function addToRemoved ( obj ){
+                for (var i = 0; i < ADDED.length; i++){
+                    if(ADDED[i].id == obj.id){                                 
+                        REMOVED.push(ADDED[i]);
+                        ADDED.splice(i,1);
+                    }
+                }
+               for (var i = 0; i < MODIFIED.length; i++){
+                   if(MODIFIED[i].id == PICKED.id){
+                       REMOVED.push(MODIFIED[i]);
+                       MODIFIED.splice(i,1);
+                   }
+               }               
+            }
+            
+            function saveScene (){
+                    
+            }
+                
+            function addBoundingBox (){
+                if($("#BBox").prop("checked")){
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++) 
                         if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined)
                             objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
 
-                    }
-                    else{
-                        for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++) 
+                }else{
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++) 
                         if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
                             objectScene.children[i].remove(objectScene.children[i].children[0]);
 
-                    }           
-                }
+                } 
+             }
             
-          function setArrowsType(element)
-		{
-                    //alert($(element).attr('id'));
-                     arrowMode = $(element).attr('id');
-		}
-            function addObject(element)
-		{
-                    //alert($(element).attr('id'));
-                    if($(element).attr('id') != "noarrows"){
+            function setArrowsType(element){
+                //alert($(element).attr('id'));
+                arrowMode = $(element).attr('id');
+            }
+            function addObject(element){
+                //alert($(element).attr('id'));
+                if($(element).attr('id') != "noarrows"){
                     BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
                     BUILDING.Sketch.pickable = false;
                     BUILDING.position.set(-1000,-1000,-1000);
                     objectScene.add (BUILDING);                    
-                    }                       
-		}
+                }                       
+            }
 			
             function onWindowResize() {
 
@@ -465,7 +494,7 @@
                      
                      if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked"))
                          object.Sketch.remove(object.Sketch.children[0]);
-                     
+                     addToAdded(object.Sketch);
                      objectScene.add(object.Sketch);
                         
                     objectScene.remove(BUILDING);
@@ -477,7 +506,10 @@
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
                         cameraController.enabled = false;
                          
-                        if (arrowMode == "delete") objectScene.remove(PICKED);
+                        if (arrowMode == "delete") {
+                            addToRemoved(PICKED);
+                            objectScene.remove(PICKED);
+                        }
                         
                         if ( pickRef instanceof OSMEX.Block ) {
 
@@ -586,10 +618,12 @@
             function onDocumentMouseUp( event ) {
                 
                 event.preventDefault();
-				
+
                 if (event.button == 0) {
-                   
+                    
                     cameraController.enabled = true;
+                    
+                    if (DRAGGING || SIZING || SCALING || ROTATING || MOVING)addToModified(SELECTED);
                     
                     if (SIZING) {
                         
