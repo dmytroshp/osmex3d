@@ -31,7 +31,7 @@
         <script type="text/javascript">
             var dialog_template="<div id='dialog-form' title='New Sketch'>\
             <form>\
-                <p>Icon (rotate by mouse right button pressed):</p>\
+                <p>Icon (use mouse with right button pressed to rotate):</p>\
                 <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:256px;height:256px;'></div></div>\
                 <label for='name'>Name:</label>\
                 <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
@@ -130,15 +130,6 @@
                 <img src='images/build.png'>
             </div>
         </div>
-        <!--<div id="dialog-form" title="New Sketch">
-            <form>
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all" />
-                <label for="category">Category</label>
-                <input type="text" name="email" id="category" value="" class="text ui-widget-content ui-corner-all" />
-            </form>                    
-        </div>-->
-
 
         <script type="text/javascript">
 
@@ -168,6 +159,8 @@
 
             var selectedObj = [];
             var operationStack = [];
+            
+            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
 
             init();
             animate();
@@ -223,7 +216,7 @@
                     });
 
 
-                    var myDialog=$(dialog_template);
+                    myDialog=$(dialog_template);
                     myDialog.prependTo('body');
                     myDialog.dialog({
                         autoOpen: false,
@@ -239,54 +232,67 @@
                             Cancel: function() {
                                 $(this).dialog("close");
                             }
+                        },
+                        open: function( event, ui ) {
+                    
+                            iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
+                            iconScene.add(iconMesh);
+                            
+                            iconMesh.geometry.computeBoundingSphere();
+                            
+                            var maxMeshScale = Math.max(Math.max(iconMesh.scale.x, iconMesh.scale.y), iconMesh.scale.z);
+                            var cameraOffset = iconMesh.geometry.boundingSphere.radius * maxMeshScale * 2.8;
+                            iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
+                            iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
+                            
+                            iconCameraController.userRotate = true;
+                            cameraController.userZoom = false;
+                            cameraController.userRotate = false;
+                    
+                        },
+                        close: function( event, ui ) {
+                    
+                            iconScene.remove(iconMesh);
+                            iconMesh = null;
+                            
+                            iconCameraController.userRotate = false;
+                            cameraController.userZoom = true;
+                            cameraController.userRotate = true;
+                            
+                            var dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
+                            
+                            // FOR TEST ONLY
+                            var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=256, height=256");
+                            newWindow.document.write("<img src='" + dataUrl + "'/>");
                         }
                     });
 
                     $(".group4").click(function() {
-                    
-                        var iconRenderer = new THREE.WebGLRenderer({antialias: true});
-                        iconRenderer.setSize(256, 256);
-                        iconRenderer.setClearColor(0xff0000, 1);
-                        //iconRenderer.autoClear = true;
-                        //$("#iconCanvas").appendChild(iconRenderer.domElement);
- 
-                        
-                        var iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 1000);
-                        iconCamera.rotation.x -= Math.PI / 4;
-                        iconCamera.position.z = 20;
-                        iconCamera.position.y = 20;
-                        
-                        var iconCameraController = new OSMEX.CameraController(iconCamera);
-                        iconCameraController.noZoom = true;
-                        iconCameraController.noPan = true;
-                        //iconCameraController.addEventListener('change', iconRender);
-                        
-                        var iconScene = new OSMEX.ObjectScene();
-                        //iconScene.add(CLICKED[0].clone());
-                        var blockGeometry1 = new THREE.CubeGeometry(1, 1, 1);
-                        var blockMaterial1 = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
-                        var cubeBlock1 = new OSMEX.Block(blockGeometry1, blockMaterial1);
-                        cubeBlock1.scale = new THREE.Vector3(10.0, 10.0, 10.0);
-                        iconScene.add(cubeBlock1);
-                        
-                        var iconLight = new THREE.DirectionalLight(0xffffff);
-                        iconLight.position = iconCamera.position;
-                        iconScene.add(iconLight);
-                        
-                        //var iconCanvas = document.getElementById('iconCanvas');
-                        //iconCanvas.appendChild(iconRenderer.domElement);
-                        $("#iconCanvas").append(iconRenderer.domElement);
-                        
-                        //iconRenderer.clear();
-                        iconRenderer.render(iconScene, iconCamera);
-                    
-                    
-                    
+
                         myDialog.dialog("open");
-                        
 
                     });
+                    
+                    iconRenderer = new THREE.WebGLRenderer({
+                                                            preserveDrawingBuffer: true,   // required to support .toDataURL()
+                                                            antialias: true
+                                                           });
+                    iconRenderer.setSize(256, 256);
+                    iconRenderer.setClearColorHex(0xffffff, 1);
+                    iconRenderer.autoClear = false;
+                    $("#iconCanvas").append(iconRenderer.domElement);
 
+                    iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 1000);
+                    
+                    iconCameraController = new OSMEX.CameraController(iconCamera);
+                    iconCameraController.userZoom = false;
+                    iconCameraController.userRotate = false;
+                    //iconCameraController.addEventListener('change', iconRender);
+
+                    iconScene = new OSMEX.ObjectScene();
+
+                    iconLight = new THREE.DirectionalLight(0xffffff);
+                    iconScene.add(iconLight);
 
                 });
 
@@ -789,8 +795,22 @@
 
                 requestAnimationFrame(animate);
 
-                update();
-                render();
+                if (myDialog && myDialog.dialog( "isOpen" )) {
+                    
+                    iconCameraController.update();
+                    
+                    iconLight.position.x = iconCamera.position.x + 0.5;
+                    iconLight.position.y = iconCamera.position.y + 1;
+                    iconLight.position.z = iconCamera.position.z;
+                    
+                    iconRenderer.clear();
+                    iconRenderer.render(iconScene, iconCamera);
+                }
+                else {
+                    
+                    update();
+                    render();
+                }
             }
 
             function update() {
