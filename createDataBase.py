@@ -17,7 +17,7 @@ CREATE_DATABASE_1 = """CREATE TABLE IF NOT EXISTS objectCategory (
 
 CREATE_DATABASE_2 = """CREATE TABLE IF NOT EXISTS objectInstance (
   id INT NOT NULL auto_increment,
-  ObjectID INT NOT NULL,
+  TypeID INT NOT NULL,
   scaleX DOUBLE,
   scaleY DOUBLE,
   scaleZ DOUBLE,
@@ -26,7 +26,7 @@ CREATE_DATABASE_2 = """CREATE TABLE IF NOT EXISTS objectInstance (
   rotationZ DOUBLE,
   positionLat DOUBLE,
   positionLon DOUBLE,
-  PRIMARY KEY  (id)
+  PRIMARY KEY (id)
 );"""
 
 CREATE_DATABASE_3 = """CREATE TABLE IF NOT EXISTS objectType (
