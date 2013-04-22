@@ -99,6 +99,7 @@ def parseWays(file):
     way_list.append(boundsArray)
     for way in ways:
         id = way.get('id')
+        #print id
         nodes = tree.xpath('/osm/way[@id=%s]/nd' % id)
         way_nodes = []
         for node in nodes:
@@ -166,7 +167,67 @@ def searchRightVector(rectangle):
     else:
         return [rectangle_n[last_index], rectangle[index]]
 
+def searchLongVector(rectangle):
+    vector = [rectangle[0], rectangle[1]]
+    lenvect = calculateDistance(vector[0], vector[1])
+    for i in range(0, len(rectangle)-1):
+        if (lenvect < calculateDistance(rectangle[i], rectangle[i+1])):
+            vector = [rectangle[i], rectangle[i+1]]
+            lenvect = calculateDistance(rectangle[i], rectangle[i+1])
+    if vector[0][1] > vector[1][1]:
+        return [vector[1], vector[0]]
+    else:
+        return [vector[0], vector[1]]
+
 def calculateAngleOffset(boundbox, rectangle):
+    bottomLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[0]), float(boundbox[3])] ]
+    bottomLine[0][0] -= 0.003
+    bottomLine[1][0] -= 0.003
+    xx = searchLeftVector(rectangle)
+    yy = searchRightVector(rectangle)
+    center_left = [ (xx[0][1] + xx[1][1]) / 2 , (xx[0][2] + xx[1][2]) / 2 ]
+    center_right = [ (yy[0][1] + yy[1][1]) / 2 , (yy[0][2] + yy[1][2]) / 2 ]
+    if center_left[0] > center_right[0]:
+        center_line = [center_right, center_left]
+    else:
+        center_line = [center_left, center_right]
+        #print "CENTER LINE: ", [center_right, center_left]
+    #print "bottomLine: ", bottomLine
+    #print "building: ", buildingLine
+    v1x = bottomLine[1][0] - bottomLine[0][0]
+    v1y = bottomLine[1][1] - bottomLine[0][1]
+    v2x = center_line[1][0] - center_line[0][0]
+    v2y = center_line[1][1] - center_line[0][1]
+    #print "vectors: ", v1x, v1y, v2x, v2y
+    angle = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
+    horizontalAngle = ((angle*180)/pi)
+    #print "horizontal angle1", horizontalAngle
+    angle =  (((horizontalAngle)*pi)/180)
+    return angle
+
+def calculateAngleOffsetBottom(boundbox, rectangle):
+    bottomLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[0]), float(boundbox[3])] ]
+    bottomLine[0][0] -= 0.003
+    bottomLine[1][0] -= 0.003
+    xx = searchLeftVector(rectangle)
+    yy = searchRightVector(rectangle)
+    #print "WARNING! ", xx, "!!!!!!!!!", yy
+    buildingLine = [ yy[0], xx[0] ]
+        #print "CENTER LINE: ", [center_right, center_left]
+    #print "bottomLine: ", bottomLine
+    #print "building: ", buildingLine
+    v1x = bottomLine[1][0] - bottomLine[0][0]
+    v1y = bottomLine[1][1] - bottomLine[0][1]
+    v2x = buildingLine[1][1] - buildingLine[0][1]
+    v2y = buildingLine[1][2] - buildingLine[0][2]
+    #print "vectors: ", v1x, v1y, v2x, v2y
+    angle = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
+    horizontalAngle = 180 - ((angle*180)/pi)
+    #print "horizontal angle1", horizontalAngle
+    angle =  (((horizontalAngle)*pi)/180)
+    return angle
+
+def calculateAngleOffsetSecond(boundbox, rectangle):
     bottomLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[0]), float(boundbox[3])] ]
     bottomLine[0][0] -= 0.003
     bottomLine[1][0] -= 0.003
@@ -180,7 +241,7 @@ def calculateAngleOffset(boundbox, rectangle):
     #print "vectors: ", v1x, v1y, v2x, v2y
     angle = acos((v1x*v2x + v1y*v2y) / (sqrt(pow (v1x,2) + pow (v1y,2)) * sqrt(pow (v2x,2) + pow (v2y,2))))
     horizontalAngle = (angle*180)/pi
-    #print "horizontal angle", horizontalAngle
+    #print "horizontal angle2", horizontalAngle
     verticalLine = [ [float(boundbox[0]), float(boundbox[2])], [float(boundbox[1]), float(boundbox[2])] ]
     verticalLine[0][1] -= 0.003
     verticalLine[1][1] -= 0.003
@@ -204,11 +265,29 @@ def createRectangle(boundBox, building, database):
     center_x = BGN[1] + ((END[1] - BGN[1]) / 2)
     center_y = BGN[2] + ((END[2] - BGN[2]) / 2)
     leftLine = searchLeftVector(building)
-    topLine = [leftLine[1], searchRightVector(building)[1]]
-    Z_COORD = calculateDistance(leftLine[0], leftLine[1]) / 2
+    rightLine = searchRightVector(building)
+    topLine = [leftLine[1], rightLine[1]]
+    bottomLine = [leftLine[0], rightLine[0]]
+
+    if calculateDistance(leftLine[0], leftLine[1]) > calculateDistance(rightLine[0], rightLine[1]):
+        Z_COORD = calculateDistance(leftLine[0], leftLine[1]) / 2
+    else:
+        Z_COORD = calculateDistance(rightLine[0], rightLine[1]) / 2
+
     Y_COORD = 20
-    X_COORD = calculateDistance(topLine[0], topLine[1]) / 2
-    angleOffset = calculateAngleOffset(boundBox, building)
+
+    if calculateDistance(topLine[0], topLine[1]) > calculateDistance(bottomLine[0], bottomLine[1]):
+        X_COORD = calculateDistance(topLine[0], topLine[1]) / 2
+    else:
+        X_COORD = calculateDistance(bottomLine[0], bottomLine[1]) / 2
+
+    angle1 = calculateAngleOffsetBottom(boundBox, building)
+    angle2 = calculateAngleOffsetSecond(boundBox, building)
+    print "angle ", angle1, " angle2 ", angle2
+    constant = 1
+    if angle2 < 0:
+        constant *= -1
+    angleOffset = ((abs(angle1) + abs(angle2))/2) * constant
     INSERT_RECTANGLE = "INSERT INTO objectInstance VALUES (null, %f, %f, %f, \
     %f, %f, %f, %f, %f, %d);" % (X_COORD, Y_COORD, Z_COORD, 0.0, angleOffset, 0.0,
         center_x, center_y, 1)
@@ -262,9 +341,12 @@ buildings_center = []
 db = MySQLdb.connect(host="127.0.0.1", user="root", port = 3306, passwd="vertrigo", charset='utf8')
 connection = db.cursor()
 connection.execute("USE osmex3d;")
+#buildings_center.append(createRectangle(bounds, buildingArray[14], connection))
+#buildings_center.append([46.438827, 30.697023])
+#buildings_center.append([46.4388899, 30.6971695])
 for building in buildingArray:
-    if len(building) <= 5:
-        buildings_center.append(createRectangle(bounds, building, connection))
+    if len(building) <= 5 and len(building) > 3:
+       buildings_center.append(createRectangle(bounds, building, connection))
 db.commit()
 db.close()
 

@@ -6,8 +6,7 @@ CREATE_DATABASE = "CREATE DATABASE IF NOT EXISTS osmex3d;"
 CREATE_TABLE_TYPE = "CREATE TABLE IF NOT EXISTS objectType (" \
                     "   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," \
                     "   preview TEXT," \
-                    "   vertexes TEXT," \
-                    "   indexes TEXT" \
+                    "   geometry TEXT" \
                     ");"
 CREATE_TABLE_INSTANCE = "CREATE TABLE IF NOT EXISTS objectInstance (" \
                         "   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," \
@@ -22,23 +21,23 @@ CREATE_TABLE_INSTANCE = "CREATE TABLE IF NOT EXISTS objectInstance (" \
                         "   ObjectID INT," \
                         "   FOREIGN KEY (ObjectID) REFERENCES objectType (id)" \
                         ");"
-CUBE_VERTEXES = "-1.0 -1.0 1.0 1.0 -1.0 1.0 1.0 1.0 1.0 -1.0 1.0 1.0 -1.0 -1.0 -1.0 \
--1.0 1.0 -1.0 1.0 1.0 -1.0 1.0 -1.0 -1.0 -1.0 1.0 -1.0 -1.0 1.0 1.0 1.0 1.0 1.0 1.0 \
-1.0 -1.0 -1.0 -1.0 -1.0 1.0 -1.0 -1.0 1.0 -1.0 1.0 -1.0 -1.0 1.0 1.0 -1.0 -1.0 1.0 \
-1.0 -1.0 1.0 1.0 1.0 1.0 -1.0 1.0 -1.0 -1.0 -1.0 -1.0 -1.0 1.0 -1.0 1.0 1.0 -1.0 1.0 -1.0"
-CUBE_INDEXES = "0 1 2 0 2 3 4 5 6 4 6 7 8 9 10 8 10 11 12 13 14 12 14 15 16 17 18 \
-16 18 19 20 21 22 20 22 23"
 CUBE_PREVIEW = "/default/path/image.png"
 
-INSERT_CUBE_GEOMETRY = "INSERT INTO objectType VALUES (null, '%s', '%s', '%s');" %\
-                       (CUBE_PREVIEW, CUBE_VERTEXES, CUBE_INDEXES)
+CREATE_TABLE_BUILDINGS = "CREATE TABLE IF NOT EXISTS buildings ("\
+                        "   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"\
+                        "   idNode CHAR(10),"\
+                        "   idWay CHAR(12),"\
+                        "   lat DOUBLE,"\
+                        "   lon DOUBLE"\
+                        ");"
 
+connection.execute("DROP DATABASE osmex3d;")
 connection.execute(CREATE_DATABASE)
 db.commit()
 connection.execute("USE osmex3d;")
 connection.execute(CREATE_TABLE_TYPE)
-db.commit()
-connection.execute(INSERT_CUBE_GEOMETRY)
 connection.execute(CREATE_TABLE_INSTANCE)
+connection.execute(CREATE_TABLE_BUILDINGS)
+connection.execute("ALTER TABLE buildings ADD INDEX (idNode);")
 db.commit()
 db.close()

@@ -19,13 +19,16 @@
     $object_positionLat = $_GET['positionLat'];
     $object_positionLon = $_GET['positionLon'];
     $object_referID = $_GET['objectType'];
+	$object_isDeleted = $_GET['isDeleted'];
 
     if ($object_uid == 0){
         $INSERT_OBJECT = "INSERT INTO objectInstance VALUE (NULL, ".$object_scaleX.", "
             .$object_scaleY.", ".$object_scaleZ.", ".$object_rotationX.", ".$object_rotationY.", "
             .$object_rotationZ.", ".$object_positionLat.", ".$object_positionLon.", ".$object_referID.");";
         $db->exec($INSERT_OBJECT);
-    } else {
+    } else if ($object_isDeleted == True){
+		$db->exec("DELETE FROM objectInstance WHERE id = ".$object_uid.";");
+	} else {
         $db->exec("UPDATE objectInstance SET scaleX=".$object_scaleX.", scaleY=".$object_scaleY.", scaleZ="
             .$object_scaleZ.", rotationX=".$object_rotationX.", rotationY=".$object_rotationY.", rotationZ="
             .$object_rotationZ.", positionLat=".$object_positionLat.", positionLon=".$object_positionLon

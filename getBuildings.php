@@ -15,7 +15,7 @@
     $position_latend = $_GET['lat_end'];
     $fullarr = array();
 
-    $res = $db->query("SELECT * FROM instance WHERE positionLon >=  $position_lon AND positionLon <=  $position_lonend 
+    $res = $db->query("SELECT * FROM objectInstance WHERE positionLon >=  $position_lon AND positionLon <=  $position_lonend 
         AND positionLat >= $position_lat AND positionLat <= $position_latend;");
 
     $row = $res->fetchAll();
