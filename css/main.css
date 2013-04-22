@@ -119,17 +119,86 @@ body
      position: absolute;
      z-index: 2;
  }
-#search_field input[type="submit"] {
+
+ #osmSearch
+ {
+     margin-left:5px;
+ }
+ 
+#osmSearch input[type="submit"] {
     border: 0;
     margin: 0;
+    margin-right: 6px;
     padding: 0;
     width: 15px;
     height: 15px;
     text-indent: -1000px;
     overflow: hidden;
-    background: url(/img/osm-search.png) 0 0 no-repeat;
-    position: absolute;
+    background: url('/img/osm-search.png') 0 0 no-repeat;
+    /*position: absolute;
     top: 5px;
-    right: 5px;
+    right: 5px;*/
     cursor: pointer;
+    display: inline-block;
+}
+#osmSearch input[type="text"] {
+    width: 165px;
+    padding: 3px;
+    font-size: 14px;
+    line-height: 15px;
+    height: 25px;
+    padding: 2px 0px 2px 5px;
+    box-shadow: inset #DDD 0px 1px 3px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    width: 90%;
+}
+#searchbar
+{
+    position: absolute;
+    left: 4px;
+    width:250px;
+    bottom: 5px;
+    top: 45px;
+    border: 1px #aaaaaa solid;
+    border-radius: 4px;
+    z-index:5;
+    background-color: white;
+    overflow: auto;
+   /* background-color: red;*/
+}
+#searchbar_header
+{
+    padding: 5px 10px;
+    background: #F4F4FF;
+    border-bottom: 1px solid #ccc;
+}
+#searchbar_header h6, #searchbar_content h6
+{
+    margin:5px;
+    font-size: 10px;
+    font-weight: bolder;
+    float: left;
+}
+#searchbar_header a.close_link
+{
+    margin-top:5px;
+    font-size: 10px;
+    float:right;
+}
+ul.results-list
+{
+    clear: left;
+    margin:0;
+    padding: 5px 5px 5px 5px;
+}
+ul.results-list li {
+    border-top: 1px solid #ccc;
+    /*border-bottom: 1px solid #ccc;*/
+    list-style: none;
+    margin:0;
+}
+ul.results-list li p{
+    font-size: 10px;
+    margin-left:3px;
 }

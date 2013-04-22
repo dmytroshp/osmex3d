@@ -4,7 +4,7 @@ $db = mysql_connect('localhost', 'root', 'root');
 if (!$db) {
     die('Ошибка соединения: ' . mysql_error());
 }
-mysql_select_db('3d_schema',$db) or die('Could not select database.');
+mysql_select_db('osmex3d',$db) or die('Could not select database.');
 $sql = "SELECT * FROM figurecategory
         INNER JOIN figuretype 
         ON figuretype.id_figurecategory = figurecategory.id_figurecategory
@@ -24,9 +24,22 @@ mysql_close($db);
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="css/jqueryui.css" />
         <link rel="stylesheet" href="css/main.css" />
-        <script src="jquery/jquery-1.9.1.js"></script>
-        <script src="jquery/jquery-ui.js"></script>
-        <script>
+        <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="jquery/jquery-ui.js"></script>
+        <script type="text/javascript">
+            var searchbar_template="<div id='searchbar'>\
+                <div id='searchbar_header'>\
+                    &nbsp;<h6>Search results</h6><a class='close_link' href='#'>Close</a>\
+                </div>\
+                <div id='searchbar_content'>\
+                    <h6>Results from <a href='http://nominatim.openstreetmap.org/'>OpenStreetMap Nominatim</a></h6>\
+                    <div id='nominatium'>\
+                    </div>\
+                    <h6>Results from <a href='http://www.geonames.org/'>GeoNames</a></h6>\
+                    <div id='geonames'>\
+                    </div>\
+                </div>\
+             </div>";
             $(document).ready(function(){
                 var heightObj = $(window).height()*0.95;
                 $("#sidebar").css("height", heightObj);
@@ -77,7 +90,40 @@ mysql_close($db);
                         }
                     });
                 });
-                
+                //var searchbar=$(searchbar_template);
+                //searchbar.insertAfter('#objectEditor ul');
+                $("#osmSearchForm").submit(function(){
+                    if($('#searchbar').size()==0)
+                    {
+                        $("#objectEditor div").css({'margin-left':'250px'});
+                        var searchbar=$(searchbar_template);
+                        searchbar.insertAfter('#objectEditor ul');
+                        //$('#searchbar').next().css({'margin-left':'250px'});
+                        $(".close_link").click(function(){
+                            //$('#searchbar').next().css({'margin-left':'0px'});
+                            $("#objectEditor div").css({'margin-left':'0px'});
+                            $('#searchbar').remove();
+                        });
+                    }
+                    $("#nominatium").html('<br><center><img align="center" src="img/searching.gif"/></center>');
+                    $("#geonames").html('<br><center><img align="center" src="img/searching.gif"/></center>');
+                    $.ajax({
+                        url:"search.php?q="+$("#query").val(),
+                        async: true,
+                        cache: false,
+                        dataType:'json',
+                        success:function(result){
+                            $("#nominatium").html(result['nominatium']);
+                            $("#nominatium ul").next().remove();
+                            $("#nominatium ul").next().remove();
+                            $("#geonames").html(result['geonames']);
+                            $("#geonames ul").next().remove();
+                            $("#geonames ul").next().remove();
+                            //$(result).appendTo('#nominatium');
+                        }
+                     });
+                     return false;
+                });
             });
         </script>
     </head>
@@ -86,12 +132,15 @@ mysql_close($db);
                 <div id="sidebar">
 		    <div id="logo"><img src="img/logo.jpg" height="50" width="100"></div>
                     <div id="osmSearch">
-                        <input name="commit" type="submit" value="Перейти">
-                        <input autofocus="autofocus" id="query" name="query" placeholder="Поиск" tabindex="1" type="text" value="">
+                        <form id="osmSearchForm">
+                            <input name="commit" type="submit" value="Go">
+                            <input autofocus="autofocus" id="query" name="query" placeholder="Search" tabindex="1" type="text" value="">
+                        </form>
                     </div>
-                    <div id="searchDivc">
+                    <br>
+                    <!--<div id="searchDivc">
                         <img src="img/searchIcon.png"> <form><input id="searchInput" type="search"></form>
-                    </div>
+                    </div>-->
                     <div id="accordionContainer">
                     <div class="accordion ui-widget ui-widget-content ui-corner-all">
                         <?php
@@ -120,9 +169,9 @@ mysql_close($db);
                             <li><a href="#geoBuilder">Geometry Builder</a></li>
                             <li><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
-                        <div id="map"></div>
-                        <div id="geoBuilder"></div>
-                        <div id="txtBuilder"></div>
+                        <div id="map">aa aa aa aa aa aa aa aa aa aa</div>
+                        <div id="geoBuilder">bb bb bb bb bb bb bb bb bb</div>
+                        <div id="txtBuilder">c c c c c c c c c c c c c c  c c c</div>
                     </div>
                 </div>
             </div>
