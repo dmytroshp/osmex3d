@@ -33,10 +33,10 @@
         <script src="scripts/RotationGizmo.js"></script>
         <script src="scripts/BoxBuilder.js"></script>
 
-        <script src="AjaxRequests.js"></script>
-        <script src="server_scripts/SavingScene.js"></script>
+        <script src="scripts/AjaxRequests.js"></script>
+        <!---<script src="server_scripts/SavingScene.js"></script>
         <script src="server_scripts/XMLHttpRequest.js"></script>        
-        
+        -->
         <script type="text/javascript">
             var dialog_template = "<div id='dialog-form' title='New Sketch'>\
             <form>\
@@ -361,19 +361,16 @@
                         resizable: false,
                         modal: true,
                         buttons: {
+                            "Save": function() {
+                                saveScene();
+                            },
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
                                 var geometryExporter = new THREE.GeometryExporter();
                                 var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
-                                $.ajax({
-                                    type: "POST",
-                                    url: "AddSketch.php",
-                                    cache: false,
-                                    data: {name:name.val(),category:category.val(),geometry:serializedGeometry},//"name=" + name.val() + "&category=" + category.val() + "&serializedGeometry=" + serializedGeometry.toString(),
-                                    success: function(data) {
-                                        alert(data);
-                                    }
-                                });
+                                
+                                ajaxNewSketch(name, category, serializedGeometry);
+                                
                                 cameraController.enabled = true;
                                 document.addEventListener('mousemove', onDocumentMouseMove, false);
                                 document.addEventListener('mousedown', onDocumentMouseDown, false);
@@ -411,11 +408,14 @@
                             document.removeEventListener('mouseup', onDocumentMouseUp, false);
                             myDialog.dialog("open");
                         } else {
-                            showErrorMessage("Error");
+                            //showErrorMessage("Error");
                         }
                     });
                     
-
+                    function saveScene (){
+                        postScene(ADDED, MODIFIED, REMOVED);               
+                    }
+            
                     function hideMessage()
                     {
                         if(alert.fadeOut)
@@ -570,9 +570,7 @@
                 return coords;
             }
             
-            function saveScene (){
-                postScene(ADDED, MODIFIED, REMOVED);               
-            }
+            
 
             function addBoundingBox (){
                 if($("#BBox").prop("checked")){

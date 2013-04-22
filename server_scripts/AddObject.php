@@ -17,6 +17,7 @@ if (!$link) {
 
 $db_selected = mysql_select_db('3d_schema', $link);
 if (!$db_selected) {
+    echo "Die!";
     die('Не удалось выбрать базу 3d_schema: ' . mysql_error());
 }
 
