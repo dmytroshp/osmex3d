@@ -1,7 +1,7 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
 OSMEX.Grid = function ( size, step ) {
-
+        
 	var geometry = new THREE.Geometry();
 	var material = new THREE.LineBasicMaterial( { vertexColors: THREE.VertexColors } );
 	var color1 = new THREE.Color( 0x444444 ), color2 = new THREE.Color( 0x888888 );
