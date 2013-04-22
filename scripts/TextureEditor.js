@@ -542,6 +542,8 @@ function initTextureEditor()
                 $("#rectangle-selection").button("disable");
                 $("#clear-all").button("disable");
                 $("#process-all").button("disable");
+                $('.ui-state-active').attr('aria-pressed','false');
+                $('.ui-state-active').removeClass('ui-state-active');
                 //$(".jcrop-holder").click(msgSelectionType);
             }
             if(regions.length>0)
@@ -619,6 +621,8 @@ function initTextureEditor()
                 $(".jcrop-holder").unbind('click');
                 $(".jcrop-holder").click(msgSelectionType);
                 showInfoMessage(result.message);
+                $('.ui-state-active').attr('aria-pressed','false');
+                $('.ui-state-active').removeClass('ui-state-active');
             }
         });
 	/*$("#new-selection").button({icons: {
