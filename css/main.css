@@ -3,7 +3,7 @@
     margin-left: 2%;
     margin-right: 1%;
     float: left;
-    width:25%;
+    width:400px;
     position: relative;
 }
 body
@@ -37,7 +37,7 @@ body
 
  #content
  {
-      width:68%;
+      width:60%;
       float: left;
       
  }
@@ -48,7 +48,7 @@ body
  }
  .slidingPanel
  {
-     height: 180px;
+     height: 300px;
      font-size: 0.5em !important;
      overflow-y: auto;
      direction: rtl;
@@ -56,7 +56,7 @@ body
  }
  .accordion
  {
-     padding: 10px;
+     padding: 5px;
      overflow-y: auto;
      position: absolute;
      bottom: 5px;
@@ -118,4 +118,35 @@ body
      display: none;
      position: absolute;
      z-index: 2;
+ }
+ #accSearch{
+     position: absolute;
+     top: 50px;
+     left: 30px;
+     right: 5px;
+ }
+ #collapseImg{
+     
+ }
+ .accordionContainer{
+     top: 30px;
+     position: relative;
+ }
+ #txt{
+     
+ }
+ .scrollHelper{
+     display:none;
+ }
+ #editBtn{
+     position:absolute;
+     right:10px;
+     top: 10px;
+     font-size: 0.8em;
+ }
+ #backBtn{
+     position:absolute;
+     right:70px;
+     top: 10px;
+     font-size: 0.8em;
  }
