@@ -1,32 +1,28 @@
 <?php
+include '../include/connect_db.php';
 $req = $_GET['q'];
 global $array;
-$db = mysql_connect('localhost', 'root', '');
-if (!$db) {
-    die('Ошибка соединения: ' . mysql_error());
-}
-mysql_select_db('3d_schema',$db) or die('Could not select database.');
 if($req=="")
 {
-    $sql = "SELECT * FROM figurecategory
-        INNER JOIN figuretype 
-        ON figuretype.id_figurecategory = figurecategory.id_figurecategory
-        ORDER BY name_figurecategory, name_figuretype ASC";
+$sql = "SELECT Cat.name as 'nameCat', Type.name as 'nameType', Type.id as idType FROM objectcategory Cat
+        INNER JOIN objecttype Type
+        ON Type.CategoryID = Cat.id
+        ORDER BY Cat.name, Type.name ASC";
 }
 else
 {
-    $sql = "SELECT * FROM figurecategory
-            INNER JOIN figuretype 
-            ON figuretype.id_figurecategory = figurecategory.id_figurecategory
-            WHERE name_figuretype LIKE '%".  mysql_real_escape_string($req)."%';";
+    $sql = "SELECT Cat.name as 'nameCat', Type.name as 'nameType', Type.id as idType FROM objectcategory Cat
+        INNER JOIN objecttype Type
+        ON Type.CategoryID = Cat.id
+        WHERE Type.name LIKE '%".  mysql_real_escape_string($req)."%';";
 }
-$query = mysql_query($sql, $db);
+$query = mysql_query($sql, $connection);
 while ($row = mysql_fetch_array($query)) {
-    $test['name'] = $row['name_figuretype'];
-    $test['previewFileName'] = $row['id_figuretype'].'_'.$row['name_figuretype'];
-    $array[$row['name_figurecategory']][]=$test;
+    $test['name'] = $row['nameType'];
+    $test['previewFileName'] = $row['idType'].'_'.$row['nameType'];
+    $array[$row['nameCat']][]=$test;
 }
-mysql_close($db);
+mysql_close($connection);
 if(sizeof($array)<=0)
 {
     echo "no objects found";
