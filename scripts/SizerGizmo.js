@@ -6,8 +6,11 @@ MIN_OBJ_SCALE = 0.33;
 OSMEX.SizerGizmo = function ( ) {
     
     THREE.Object3D.call( this );
+    this.name = "SizerGizmo";
     
     this.target = null;
+    
+    this.isSizing = false;
 	
     this.AxisPositiveX = new OSMEX.SizerArrow( new THREE.Vector3( 1, 0, 0 ), 0xff0000 );  
     this.AxisNegativeX = new OSMEX.SizerArrow( new THREE.Vector3(-1, 0, 0 ), 0xff0000 );
@@ -50,20 +53,19 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
         visibility = true;
         
         arrowSizeFunc = function(target) { return function(delta) {
-            
-            
-            var deltaScale = delta * 40.0;
+              
+            var deltaScale = delta * this.parent.scale.x;
 
             var scaleAxis = new THREE.Vector3( Math.abs(this.dir.x), Math.abs(this.dir.y), Math.abs(this.dir.z) );
             
-            var currentScale = scaleAxis.clone().multiply(target.scale).length();//
+            var currentScale = scaleAxis.clone().multiply(target.scale).length();
             
-            if (currentScale + deltaScale > 0.1) {
+            if (currentScale + deltaScale > 0.1) {   // 0.1 is minimum possible scale
                 
                 var deltaScaleVec = scaleAxis.clone().multiplyScalar(deltaScale);
                 target.scale.add(deltaScaleVec);
                 var shiftPos = this.dir.clone();
-                target.matrix.rotateAxis(shiftPos);
+                shiftPos.transformDirection(target.matrix);
                 shiftPos.multiplyScalar(deltaScale / 2);
                 target.position.add(shiftPos);
             }
@@ -100,9 +102,14 @@ OSMEX.SizerGizmo.prototype.setTarget = function ( target ) {
 
 OSMEX.SizerGizmo.prototype.update = function ( ) {
     
-    if(this.target){  
+    if(this.target) { 
         
         this.position.copy(this.target.position);
         this.rotation.copy(this.target.rotation);
     }
+}
+
+OSMEX.SizerGizmo.prototype.setSizing = function ( isSizing ) {
+    
+    this.isSizing = isSizing;
 }

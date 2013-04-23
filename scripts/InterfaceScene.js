@@ -13,10 +13,12 @@ OSMEX.InterfaceScene.prototype.updateMatrixWorld = function ( force ) {
     
     for (var i = 0, l = this.children.length; i < l; i++)
     {
-        var distance = this.camera.position.distanceTo(this.children[i].position) / 250.0;
-        this.children[i].scale.x = distance;
-        this.children[i].scale.y = distance;
-        this.children[i].scale.z = distance;
+        // to make 1 unit equals 4 pixels on the screen for interface scene
+        var scale = 4 * this.camera.position.distanceTo(this.children[i].position) / this.camera.unitToPixelScale;
+        
+        this.children[i].scale.x = scale;
+        this.children[i].scale.y = scale;
+        this.children[i].scale.z = scale;
     }
     
     THREE.Scene.prototype.updateMatrixWorld.call(this, force);

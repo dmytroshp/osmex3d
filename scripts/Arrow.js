@@ -5,6 +5,9 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     THREE.Object3D.call( this );
     this.name = "Arrow";
     
+    this.arrowContainer = new THREE.Object3D();
+    this.add(this.arrowContainer);
+    
     this.pickable = false;
     
     this.dir = null;
@@ -18,26 +21,31 @@ OSMEX.Arrow = function ( dir, origin, length, hex, type ) {
     lineGeometry.vertices.push( new THREE.Vector3( 0, 1, 0 ) );
 
     this.line = new THREE.Line( lineGeometry, new THREE.LineBasicMaterial( {color: hex} ) );
-    this.add( this.line );
+    this.arrowContainer.add( this.line );
 
     var meshMaterial = new THREE.MeshPhongMaterial( {
         color: hex, 
         shading: THREE.SmoothShading, 
         ambient: 0xffffff
     } );
-    
     this.type = type;
     
     if (this.type == "moving"){
         var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
         this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
         this.cone.position.set( 0, 30, 0 );
-        this.add( this.cone );
+        this.arrowContainer.add( this.cone );
+      /* var planeGeometry = new THREE.PlaneGeometry(8,8,8,8);
+        this.plane = new THREE.Mesh( planeGeometry, meshMaterial );
+        this.plane.position.set( 0, 4, 0 );
+        this.plane.rotation.set( 1.5, 1.5, 0);
+        this.add( this.plane );*/
+        
     }else if (this.type == "sizing"){
-         var cubeGeometry = new THREE.CubeGeometry( 4, 4, 4 );;
-         this.cube = new THREE.Mesh( cubeGeometry, meshMaterial );
-         this.cube.position.set( 0, 30, 0 );
-         this.add( this.cube );
+        var coneGeometry = new THREE.CylinderGeometry( 0, 1.5, 7.5, 5, 1 );
+        this.cone = new THREE.Mesh( coneGeometry, meshMaterial );
+        this.cone.position.set( 0, 30, 0 );
+        this.arrowContainer.add( this.cone );
      }
 
     
@@ -67,34 +75,31 @@ OSMEX.Arrow.prototype.setDirection = function ( dir ) {
     }
     else
     {
-        axis = new THREE.Vector3().cross( upVector, this.dir );
+        axis = new THREE.Vector3().crossVectors( upVector, this.dir );
     }
 	
     var radians = Math.acos( cosa );
 	
-    this.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
-    this.rotation.setEulerFromRotationMatrix( this.matrix, this.eulerOrder );
+    this.arrowContainer.matrix = new THREE.Matrix4().makeRotationAxis( axis, radians );
+    this.arrowContainer.rotation.setEulerFromRotationMatrix( this.arrowContainer.matrix, this.arrowContainer.eulerOrder );
 };
 
 OSMEX.Arrow.prototype.setLength = function ( length ) {
     
     this.len = length;
     this.line.scale.y = length;
-    if (this.type == "sizing")this.cube.position.y = length; 
+    if (this.type == "sizing")this.cone.position.y = length; 
     
 };
 
 OSMEX.Arrow.prototype.restoreDefaultLength = function ( ) {
     
-    this.len = this.defaultLength;
-    this.line.scale.y = this.defaultLength;
-    if (this.type == "sizing") this.cube.position.y = this.defaultLength;    
-    
+    this.setLength(this.defaultLength);
 };
 
 OSMEX.Arrow.prototype.setColor = function ( hex ) {
     
     this.line.material.color.setHex( hex );
-    if (this.type == "sizing")this.cube.material.color.setHex( hex );
-        else this.cube.material.color.setHex( hex );
+    this.cone.material.color.setHex( hex );
+   // if (this.type == "moving") this.plane.material.color.setHex( hex );
 }; 

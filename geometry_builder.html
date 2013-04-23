@@ -5,15 +5,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <script src="threejs/three.js"></script>
+        <script src="threejs/GeometryExporter.js"></script>
         <script src="threejs/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
         <script src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
-        <link rel="stylesheet" href="jquery/ui-lightness/jquery-ui-1.10.2.custom.css">
+        <link rel="stylesheet" href="jquery/smoothness/jquery-ui-1.10.2.custom.min.css">
 
         <script src="scripts/SketchBuilder.js"></script>
+        <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
-        <script src="scripts/GridGeometry.js"></script>
+        <script src="scripts/Grid.js"></script>
+        <script src="scripts/Camera.js"></script>
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/Block.js"></script>
         <script src="scripts/Cube.js"></script>
@@ -22,23 +25,37 @@
         <script src="scripts/SizerArrow.js"></script>
         <script src="scripts/SizerGizmo.js"></script>
         <script src="scripts/MovingGizmo.js"></script>
+        <script src="scripts/MovingGizmoPlane.js"></script>
         <script src="scripts/MovingArrow.js"></script>
         <script src="scripts/Torus.js"></script>
         <script src="scripts/RotationTorus.js"></script>
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
+        <script src="scripts/BoxBuilder.js"></script>
 
+        <script src="scripts/AjaxRequests.js"></script>
+        
         <script type="text/javascript">
-            var dialog_template="<div id='dialog-form' title='New Sketch'>\
-            <form>\
-                <p>Icon (use mouse with right button pressed to rotate):</p>\
-                <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:256px;height:256px;'></div></div>\
-                <label for='name'>Name:</label>\
-                <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
-                <label for='category'>Category:</label>\
-                <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
-            </form>\
-        </div>";
+            var dialog_template = "<div id='dialog-form' title='New Sketch'>\
+                <form>\
+                    <p>Icon (use mouse with right button pressed to rotate):</p>\
+                    <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:235px;height:235px;'></div></div>\
+                    <label for='name'>Name:</label>\
+                    <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
+                    <label for='category'>Category:</label>\
+                    <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
+                </form>\
+            </div>";
+            var red_alert_template = "<div style='position:absolute;top:5px; left:5px; z-index: 1; width:300px; display:none;' id='message' class='ui-widget'>\
+                    <div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
+                        <p>\
+                        <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
+                        <p id='msgtext'></p>\
+                        </p>\
+                    </div>\
+                </div>";
+            var alert = {};
+            var timeout_id = 0;
         </script>
 
         <style>
@@ -47,9 +64,6 @@
                 background-color: #f0f0f0;
                 margin: 0px;
                 overflow: hidden;
-            }
-            .selected {
-                background-color:yellow;
             }
             label, input { display:block; }
             input.text { margin-bottom:12px; width:95%; padding: .4em; }
@@ -70,31 +84,122 @@
             }
             #right-bottombar {
                 position:absolute;
-            }            
+            }
+            #righttopbar {
+                position:absolute; 
+            }   
+            #content {
+                position:absolute;
+            }
+            #dragging {
+                background-image: url('images/48x48/dragging.jpg');               
+            }
+            #dragging:hover {
+                background-image: url('images/48x48/dragging_over.jpg');               
+            }                         
+            #dragging.selected
+            {
+                background-image: url('images/48x48/dragging_pressed.jpg');               
+            }
+
+            #moving {
+                background-image: url('images/48x48/moving.jpg');               
+            }
+            #moving:hover {
+                background-image: url('images/48x48/moving_over.jpg');               
+            }                        
+            #moving.selected
+            {
+                background-image: url('images/48x48/moving_pressed.jpg');               
+            }
+
+            #scaling {
+                background-image: url('images/48x48/scaling.jpg');               
+            }
+            #scaling:hover {
+                background-image: url('images/48x48/scaling_over.jpg');               
+            }                        
+            #scaling.selected
+            {
+                background-image: url('images/48x48/scaling_pressed.jpg');               
+            }
+
+            #rotating {
+                background-image: url('images/48x48/rotating.jpg');               
+            }
+            #rotating:hover {
+                background-image: url('images/48x48/rotating_over.jpg');               
+            }                        
+            #rotating.selected
+            {
+                background-image: url('images/48x48/rotating_pressed.jpg');               
+            }
+
+            #deleting {
+                background-image: url('images/48x48/deleting.jpg');               
+            }
+            #deleting:hover {
+                background-image: url('images/48x48/deleting_over.jpg');               
+            }                        
+            #deleting.selected
+            {
+                background-image: url('images/48x48/deleting_pressed.jpg');               
+            }
+
+            #build_box {
+                background-image: url('images/48x48/build_box.jpg');               
+            }
+            #build_box:hover {
+                background-image: url('images/48x48/build_box_over.jpg');               
+            }                        
+            #build_box.selected
+            {
+                background-image: url('images/48x48/build_box_pressed.jpg');               
+            }
         </style>
     </head>
     <body>
-        <div id="leftbar" style="visibility:hidden;width:300px;display:block;">
-            <div class="list1" style="width:300px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <select id="listOfOperations" size="12" style="width:300px;">
-
+        <div id="leftbar" style="visibility:hidden;display:inline;float:left;">
+            <div class="list1" style="width:180px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <select id="listOfOperations" size="5" style="width:180px;" >
                 </select>  
             </div>
+
+            <div id="rollback" class="group3" style="width:40px;height:40px;float:left;">
+                <img src='images/rollback.png'>
+            </div>
+
         </div>
+
         <div id="topbar" style="visibility:hidden;display:inline;float:right;">
-            <div id="scaling" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='images/scaling.png'>
+            <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
             </div>
-            <div id="moving" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='images/moving.png'>
+            <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp; 
             </div>
-            <div id="rotating" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='images/rotating.png'>
+            <div id="scaling" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
             </div>
-            <div id="noarrows" class="group1" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='images/noarrows.png'>
+            <div id="rotating" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="deleting" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="build_box" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
             </div>
         </div>
+
+        <div id="righttopbar" style="visibility:hidden;width:200px;display:block;text-align:rigth;">
+            <input type="radio" checked="checked" id="PerspCam" name="Camera" value="Perspective">PerspectiveCamera
+            <br>
+            <input type="radio" id="OrthCam" name="Camera" value="Orthographic">OrthographicCamera
+            <br>
+            <input type="checkbox" id="BBox" onchange="addBoundingBox();"> Bounding Box<br>
+        </div>
+
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
             <div id="cube" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/cube.png'>
@@ -107,61 +212,68 @@
             <div id="sphere" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/sphere.png'>
             </div>
+
         </div>
+
         <div id="bottombar" style="visibility:hidden;display:inline;float:right;">            
-            <div id="union" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/union.png'>
             </div>
-            <div id="complement_1-2" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="complement_1-2" class="group3" title="Difference. Subtraction of one object from another (first object is subtracted by second one)." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/complement_1-2.png'>
             </div>
-            <div id="complement_2-1" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="complement_2-1" class="group3" title="Difference. Subtraction of one object from another (second object is subtracted by first one)." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/complement_2-1.png'>
             </div>            
-            <div id="intersection" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="intersection" class="group3" title="Intersection. Portion common to both objects." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/intersection.png'>
             </div>
-            <div id="rollback" class="group3" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='images/rollback.png'>
-            </div>
+
         </div>
         <div id="right-bottombar" style="visibility:hidden;display:inline;float:right;">
             <div id="build" class="group4" style="width:200px;height:80px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='images/build.png'>
             </div>
         </div>
-
+        
         <script type="text/javascript">
 
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
+            var FIRST_PICKABLE_OBJ = 5;
+            var GRID_SIZE = 60;
+            var MIN_LON = 30.73699951171875;
+            var MIN_LAT = 46.470970513345925;
+            var MAX_LON = 30.738372802734375;
+            var MAX_LAT = 46.471916320870406;
 
             var container;
 
             var renderer;
-            var camera = new THREE.PerspectiveCamera(SCREEN_FOV, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 1000), cameraController, projector;
-            var objectScene = new OSMEX.ObjectScene(), interfaceScene = new OSMEX.InterfaceScene(camera);
+            var camera;
+            var cameraController, projector;
+            var objectScene, interfaceScene;
 
             var mouse = new THREE.Vector2(0, 0);
 
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
             var CLICKED = [null, null];
+
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
+            var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
             var groundGrid, groundPlane;
 
-            var sizerGizmo, rotationGizmo, movingGizmo, sizerPlane, movingPlane;
+            var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
 
             var arrowMode, objectType;
 
-            var ROTATION_VECTOR;
-
             var selectedObj = [];
             var operationStack = [];
-            
-            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
 
+            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
+            
             init();
             animate();
 
@@ -176,9 +288,15 @@
                         "visibility": "visible"
                     });
 
+
                     $("#leftbar").css({
+                        "left": 10 + "px",
+                        "top": window.innerHeight - $("#leftbar").height() - 10 + "px",
+                        "opacity": 0.3,
                         "visibility": "visible"
                     });
+
+
 
                     $("#bottombar").css({
                         "left": (window.innerWidth / 2) - ($("#bottombar").width() / 2) + "px",
@@ -189,6 +307,12 @@
                     $("#rightbar").css({
                         "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
+                        "visibility": "visible"
+                    });
+
+                    $("#righttopbar").css({
+                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
+                        "top": ($("#topbar").height() / 2) + "px",
                         "visibility": "visible"
                     });
 
@@ -208,6 +332,13 @@
                         $(this).addClass("selected");
                         addObject(this);
                     });
+                    $('input:radio').change(function() {
+                        if ($('input[name="Camera"]:checked').val() == "Orthographic")
+                            camera.toOrthographic();
+                        else
+                            camera.toPerspective()
+                    }
+                    );
 
                     $(".group3").click(function() {
                         $(".selected").removeClass("selected");
@@ -215,8 +346,10 @@
                         buildNewGeometryElement(this);
                     });
 
+                    $(".group3").tooltip();
 
-                    myDialog=$(dialog_template);
+
+                    myDialog = $(dialog_template);
                     myDialog.prependTo('body');
                     myDialog.dialog({
                         autoOpen: false,
@@ -225,16 +358,40 @@
                         resizable: false,
                         modal: true,
                         buttons: {
+                            "Test": function() {
+                                // TEST ONLY
+                                saveScene();
+                            },
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
+                                var geometryExporter = new THREE.GeometryExporter();
+                                var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
+
+                                ajaxNewSketch(name, category, serializedGeometry);
+
+                                addEvents();
                                 $(this).dialog("close");
+
+                                while (selectedObj.length > 0) {
+                                    selectedObj.pop();
+                                }
+                                CLICKED[0].material.emissive.setHex(0x000000);
+                                if (CLICKED[1] != null) {
+                                    CLICKED[1].material.emissive.setHex(0x000000);
+                                }
+                                CLICKED[0] = null;
+                                CLICKED[1] = null;
+
                             },
                             Cancel: function() {
+                                addEvents();
                                 $(this).dialog("close");
                             }
                         },
                         open: function( event, ui ) {
                     
+                            CLICKED[0].material.emissive.setHex(0x000000);
+                            
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
                             iconScene.add(iconMesh);
                             
@@ -248,10 +405,8 @@
                             iconCameraController.userRotate = true;
                             cameraController.userZoom = false;
                             cameraController.userRotate = false;
-                    
                         },
                         close: function( event, ui ) {
-                    
                             iconScene.remove(iconMesh);
                             iconMesh = null;
                             
@@ -259,25 +414,45 @@
                             cameraController.userZoom = true;
                             cameraController.userRotate = true;
                             
+                            addEvents();
+                            
                             var dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
                             
                             // FOR TEST ONLY
-                            var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=256, height=256");
+                            var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=235, height=235");
                             newWindow.document.write("<img src='" + dataUrl + "'/>");
                         }
                     });
 
                     $(".group4").click(function() {
-
-                        myDialog.dialog("open");
-
+                        if (CLICKED[0]) {
+                            removeEvents();
+                            myDialog.dialog("open");
+                        } else {
+                            showErrorMessage("Error. Select an object.");
+                        }
                     });
+
+                    function addEvents() {
+                        cameraController.enabled = true;
+                        document.addEventListener('mousemove', onDocumentMouseMove, false);
+                        document.addEventListener('mousedown', onDocumentMouseDown, false);
+                        document.addEventListener('mouseup', onDocumentMouseUp, false);
+                        document.addEventListener('dblclick', onDocumentDoubleClick, false);
+                    }
+                    
+                    function removeEvents() {
+                        cameraController.enabled = false;
+                        document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                        document.removeEventListener('mousedown', onDocumentMouseDown, false);
+                        document.removeEventListener('mouseup', onDocumentMouseUp, false);
+                    }
                     
                     iconRenderer = new THREE.WebGLRenderer({
                                                             preserveDrawingBuffer: true,   // required to support .toDataURL()
                                                             antialias: true
                                                            });
-                    iconRenderer.setSize(256, 256);
+                    iconRenderer.setSize(235, 235);
                     iconRenderer.setClearColorHex(0xffffff, 1);
                     iconRenderer.autoClear = false;
                     $("#iconCanvas").append(iconRenderer.domElement);
@@ -296,23 +471,22 @@
 
                 });
 
+
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
-                camera = new THREE.PerspectiveCamera(SCREEN_FOV, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 1000);
+                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 300, 1, 300);
                 camera.rotation.x -= Math.PI / 4;
                 camera.position.z = 100;
                 camera.position.y = 100;
 
                 cameraController = new OSMEX.CameraController(camera);
-                cameraController.userZoomSpeed = 2.0;
-                cameraController.addEventListener('change', render);
+                cameraController.ZoomSpeed = 2.0;
+                cameraController.addEventListener('change', onCameraChange);
 
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
-                objectScene.fog = new THREE.Fog(0xffffff, 1, 1500);
-                //objectScene.fog.color.setHSV(0.6, 0.05, 1);
-                interfaceScene.fog = objectScene.fog;
+                objectScene.fog = new THREE.Fog(0xFBFBFB, 1, 1500);
 
                 objectScene.add(new THREE.AmbientLight(0x3f3f3f));
                 interfaceScene.add(new THREE.AmbientLight(0x3f3f3f));
@@ -326,18 +500,8 @@
                 interfaceScene.add(interfaceLight);
 
                 // GROUND
-                var groundMaterial = new THREE.MeshBasicMaterial({wireframe: true, color: 0x000000});
-                groundMaterial.side = THREE.DoubleSide;
-                var groundGeometry = new OSMEX.GridGeometry(100, 100, 20, 20);
-                groundGrid = new THREE.Mesh(groundGeometry, groundMaterial);
+                groundGrid = new OSMEX.Grid(60, 4);
                 objectScene.add(groundGrid);
-
-
-                var blockGeometry = new THREE.CubeGeometry(1, 1, 1);
-                var blockMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
-                var cubeBlock = new OSMEX.Block(blockGeometry, blockMaterial);
-                cubeBlock.scale = new THREE.Vector3(10.0, 10.0, 10.0);
-                objectScene.add(cubeBlock);
 
                 groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
                 objectScene.add(groundPlane);
@@ -351,27 +515,132 @@
                 movingGizmo = new OSMEX.MovingGizmo();
                 interfaceScene.add(movingGizmo);
 
-                sizerPlane = new THREE.Plane();
-                movingPlane = new THREE.Plane();
+                boxBuilder = new OSMEX.BoxBuilder();
+                objectScene.add(boxBuilder);
+
+                actionPlane = new THREE.Plane();
 
                 projector = new THREE.Projector();
 
-                // RENDERER
+                var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
+                var geometry = new THREE.SphereGeometry(6, 15, 15);
+                //var sphere1 = new OSMEX.Block( geometry, material );
+                var sphere2 = new OSMEX.Block(geometry, material);
+                sphere2.name = "Sphere";
+                sphere2.position.x = -60;
+                sphere2.position.z = -60;
 
+                //objectScene.add(sphere1);
+                objectScene.add(sphere2);
+
+                // RENDERER
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
                 renderer.setClearColor(objectScene.fog.color, 1);
                 renderer.autoClear = false;
 
                 container.appendChild(renderer.domElement);
-                $(container).mousemove(onDocumentMouseMove);
-                $(container).mousedown(onDocumentMouseDown);
-                $(container).mouseup(onDocumentMouseUp);
-                $(container).dblclick(onDocumentDoubleClick);
-                //document.addEventListener('mousemove', onDocumentMouseMove, false);
-                //document.addEventListener('mousedown', onDocumentMouseDown, false);
-                //document.addEventListener('mouseup', onDocumentMouseUp, false);
-                //document.addEventListener('dblclick', onDocumentDoubleClick, false);
+
+                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                document.addEventListener('mousedown', onDocumentMouseDown, false);
+                document.addEventListener('mouseup', onDocumentMouseUp, false);
+                document.addEventListener('dblclick', onDocumentDoubleClick, false);
                 window.addEventListener('resize', onWindowResize, false);
+            }
+
+            function saveScene() {
+                        postScene(ADDED, MODIFIED, REMOVED);
+            }
+            
+            function hideMessage()
+            {
+                if (alert.fadeOut)
+                    alert.fadeOut(1000, function() {
+                    });
+            }
+            function showErrorMessage(text)
+            {
+                clearTimeout(timeout_id);
+                if (alert.remove)
+                    alert.remove();
+                alert = $(red_alert_template);
+                alert.find("#msgtext").html(text);
+                alert.appendTo('body');
+                //$("#msgtext").html(text);
+                alert.fadeIn(600, function() {
+                    timeout_id = setTimeout(hideMessage, 4400);
+                });
+            }
+
+            function addToAdded(obj) {
+                var OBJ = obj;
+                OBJ.id = 0;
+                OBJ.isDeleted = false;
+                ADDED.push(OBJ);
+            }
+
+            function addToModified(obj) {
+                var already_in = false;
+                for (var i = 0; i < MODIFIED.length; i++) {
+                    if (obj == MODIFIED[i]) {
+                        already_in = true
+                    }
+                }
+                if (!already_in) {
+                    obj.isDeleted = false;
+                    MODIFIED.push(obj);
+                }
+            }
+
+            function addToRemoved(obj) {
+                for (var i = 0; i < ADDED.length; i++) {
+                    if (ADDED[i].id == obj.id) {
+                        obj.isDeleted = true;
+                        REMOVED.push(ADDED[i]);
+                        ADDED.splice(i, 1);
+                    }
+                }
+                for (var i = 0; i < MODIFIED.length; i++) {
+                    if (MODIFIED[i].id == PICKED.id) {
+                        obj.isDeleted = true;
+                        REMOVED.push(MODIFIED[i]);
+                        MODIFIED.splice(i, 1);
+                    }
+                }
+            }
+
+            function coordinates() {
+                this.lat = 0;
+                this.lon = 0;
+            }
+
+            function local2LatLon(vector) {
+
+                var lonDiff = MAX_LON - MIN_LON;
+                var latDiff = MAX_LAT - MIN_LAT;
+                var lonStep = lonDiff / (GRID_SIZE * 2);
+                var latStep = latDiff / (GRID_SIZE * 2);
+                var lon = MIN_LON + ((vector.x + GRID_SIZE) * lonStep);
+                var lat = MAX_LAT - ((vector.z + GRID_SIZE) * latStep);
+                var coords = new coordinates();
+                coords.lon = lon;
+                coords.lat = lat;
+                return coords;
+            }
+
+
+
+            function addBoundingBox() {
+                if ($("#BBox").prop("checked")) {
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined && objectScene.children[i].visible != false)
+                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
+
+                } else {
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+
+                }
             }
 
             function setArrowsType(element)
@@ -394,6 +663,11 @@
                 if ($(element).attr('id') == "rollback") {
 
                     if (operationStack.length > 0) {
+                        CLICKED[0] = null;
+                        CLICKED[1] = null;
+                        while (selectedObj.length > 0) {
+                            selectedObj.pop();
+                        }
                         var rollbackOperation = operationStack.pop();
                         objectScene.remove(rollbackOperation.output);
                         var tmp;
@@ -406,7 +680,7 @@
                     }
                 } else {
                     if (!CLICKED[0] || !CLICKED[1]) {
-                        alert("Error");
+                        showErrorMessage("Error. Select two objects.");
                     } else {
 
                         var first_bsp = new ThreeBSP(CLICKED[0]);
@@ -414,16 +688,16 @@
 
                         var nameOfOperation, result_bsp;
                         if ($(element).attr('id') == "union") {
-                            nameOfOperation = "union";
+                            nameOfOperation = "Union";
                             result_bsp = first_bsp.union(second_bsp);
                         } else if ($(element).attr('id') == "intersection") {
-                            nameOfOperation = "intersection";
+                            nameOfOperation = "Intersection";
                             result_bsp = first_bsp.intersect(second_bsp);
                         } else if ($(element).attr('id') == "complement_2-1") {
-                            nameOfOperation = "complement(2-1)";
+                            nameOfOperation = "Complement(2-1)";
                             result_bsp = second_bsp.subtract(first_bsp);
                         } else if ($(element).attr('id') == "complement_1-2") {
-                            nameOfOperation = "complement(1-2)";
+                            nameOfOperation = "Complement(1-2)";
                             result_bsp = first_bsp.subtract(second_bsp);
                         }
 
@@ -445,9 +719,7 @@
                         }
                         var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
                         operationStack.push(newOperation);
-                        saveAtListOfOperations(newOperation.id + ": " + newOperation.type + ", input: "
-                                + newOperation.input[0].id + ", " + newOperation.input[1].id + ", output: "
-                                + newOperation.output.id);
+                        saveAtListOfOperations(newOperation.id + 1 + ". " + newOperation.type);
 
                         CLICKED[0] = null;
                         CLICKED[1] = null;
@@ -457,17 +729,28 @@
 
             function saveAtListOfOperations(text) {
                 var obj = document.getElementById("listOfOperations");
-                obj.options[obj.options.length] = new Option(text, obj.options.length);
+                //obj.options[obj.options.length] = new Option(text, obj.options.length);
+                var option = new Option(text, obj.options.length);
+                for (var i = obj.options.length - 1; i >= 0; i--) {
+                    var opt = new Option(obj.options[i].text, i);
+                    obj.options[i + 1] = opt;
+                }
+                obj.options[0] = option;
             }
 
             function removeFromListOfOperations() {
                 var obj = document.getElementById("listOfOperations");
-                obj.length = obj.length - 1;
+                //obj.length = obj.length - 1;
+                for (var i = 0; i < obj.options.length - 1; i++) {
+                    var opt = new Option(obj.options[i + 1].text, obj.options.length);
+                    obj.options[i] = opt;
+                }
+                obj.options[obj.options.length - 1] = null;
             }
 
             function onWindowResize() {
 
-                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.setSize(window.innerWidth, window.innerHeight);
                 camera.updateProjectionMatrix();
 
                 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -479,16 +762,23 @@
 
                     var intersects = raycaster.intersectObjects(objects, recursive);
 
-
                     if (intersects.length > 0) {
 
                         for (i = 0; i < intersects.length; i++) {
 
-                            var intersector = intersects[i];
-                            if (intersector.object.parent.name === "RotationGizmoOverlay")
+                            if (intersects[i].object.parent.name === "RotationGizmoOverlay") {
+                                if (i + 1 < intersects.length && intersects[i + 1].object.parent.name === "RotationTorus")
+                                    i += 1;
+                                else if (i + 1 < intersects.length)
+                                    continue;
+
                                 return null;
+                            }
+
+                            var intersector = intersects[i];
 
                             if (intersector.object.pickable && intersector.object.visible) {
+
                                 return intersector.object;
                             }
                         }
@@ -522,7 +812,7 @@
                     if (pickedObject != null) {
 
                         if (!CLICKED[0] && !CLICKED[1]) {
-                            pickedObject.material.emissive.setHex(0x00ff00);
+                            pickedObject.material.emissive.setHex(0x00aa00);
                             CLICKED[0] = pickedObject;
                             selectedObj.push(pickedObject);
                         } else if (CLICKED[0] == pickedObject) {
@@ -530,7 +820,7 @@
                             pickedObject.material.emissive.setHex(0x000000);
                             selectedObj.shift();
                         } else if (!CLICKED[1]) {
-                            pickedObject.material.emissive.setHex(0x0000ff);
+                            pickedObject.material.emissive.setHex(0x0000aa);
                             CLICKED[1] = pickedObject;
                             selectedObj.push(pickedObject);
                         } else if (CLICKED[1] == pickedObject) {
@@ -539,7 +829,7 @@
                             selectedObj.pop();
                         } else if (CLICKED[0] && CLICKED[1]) {
                         } else {
-                            pickedObject.material.emissive.setHex(0x00ff00);
+                            pickedObject.material.emissive.setHex(0x00aa00);
                             CLICKED[0] = pickedObject;
                             selectedObj.unshift(pickedObject);
                         }
@@ -554,6 +844,8 @@
 
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                boxBuilder.onMouseMove(mouse);
 
                 if (BUILDING) {
 
@@ -572,33 +864,23 @@
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
-                    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-                    var intersects = raycaster.intersectObject(groundGrid);
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                    var intersectPoint = ray.intersectPlane(groundPlane);
 
-                    if (intersects.length > 0) {
-
-                        DRAGGING.position.copy(intersects[0].point.sub(offsetVector));
-                    }
+                    DRAGGING.position.copy(intersectPoint.sub(offsetVector));
                 }
                 else if (SIZING) {
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                    var intersectPoint = ray.intersectPlane(sizerPlane);
+                    var intersectPoint = ray.intersectPlane(actionPlane);
 
                     if (intersectPoint !== undefined) {
 
-                        intersectPoint.sub(SIZING.matrixWorld.getPosition());
+                        intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(SIZING.matrixWorld));
                         intersectPoint.multiplyScalar(1.0 / SIZING.parent.scale.x); // to compensate changing scale on changing distance
-                        var len = SIZING.dir.dot(intersectPoint);
-                        // TODO: workaround should be reimplemented
-                        if (Math.abs(SIZING.len - len) < (SIZING.maxLength - SIZING.minLength)) {
-
-                            // console.log ("length=",len);
-                            SIZING.setLength(len);
-
-                        }
+                        SIZING.trackSizing(intersectPoint);
                     }
                 }
                 else if (MOVING) {
@@ -606,18 +888,19 @@
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                    var intersectPoint = ray.intersectPlane(movingPlane);
+                    var intersectPoint = ray.intersectPlane(actionPlane);
 
                     if (intersectPoint !== undefined) {
 
-                        var position = intersectPoint.sub(movingPlane.normal);
-                        MOVING.setPosition(position);
+                        intersectPoint.sub(offsetVector);
+                        MOVING.setPosition(intersectPoint);
+
                     }
                 }
                 else if (SCALING) {
                     var mouseX = (mouse.x * SCREEN_WIDTH / 2) / 10;
 
-                    var sizingPos = projector.projectVector(SCALING.matrixWorld.getPosition().clone(), camera);
+                    var sizingPos = projector.projectVector(new THREE.Vector3().getPositionFromMatrix(SCALING.matrixWorld).clone(), camera);
                     sizingPos.x = (sizingPos.x * SCREEN_WIDTH / 2) / 10;
                     var len = mouseX - sizingPos.x;
 
@@ -625,16 +908,18 @@
                 }
                 else if (ROTATING) {
 
-                    var mouseX = (mouse.x * SCREEN_WIDTH / 2) + SCREEN_WIDTH / 2;
-                    var mouseY = -(mouse.y * SCREEN_HEIGHT / 2) + SCREEN_HEIGHT / 2;
-                    var vector = projector.projectVector(ROTATING.matrixWorld.getPosition().clone(), camera);
+                    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                    projector.unprojectVector(vector, camera);
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                    var intersectPoint = ray.intersectPlane(actionPlane);
 
-                    vector.x = (vector.x * SCREEN_WIDTH / 2) + SCREEN_WIDTH / 2;
-                    vector.y = -(vector.y * SCREEN_HEIGHT / 2) + SCREEN_HEIGHT / 2;
-                    var currentVector = new THREE.Vector2(-(vector.x - mouseX), vector.y - mouseY).normalize();
+                    if (intersectPoint === undefined) {
+                        alert("RotationEnd plane intersection problem!");
+                    }
 
-                    ROTATING.setAngle(ROTATION_VECTOR, currentVector);
+                    intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld));
 
+                    ROTATING.finishRotation(intersectPoint.clone().normalize());
                 }
                 else {
 
@@ -643,7 +928,9 @@
                         if (PICKED != pickedObject) {
                             if (PICKED) {
                                 if (CLICKED[0] != PICKED && CLICKED[1] != PICKED) {
-                                    PICKED.material.emissive.setHex(PICKED.oldEmissive);
+                                    if (PICKED.material.emissive) {
+                                        PICKED.material.emissive.setHex(PICKED.oldEmissive);
+                                    }
                                 }
                             }
 
@@ -652,8 +939,10 @@
                             if (PICKED) {
                                 if (CLICKED[0] != PICKED || CLICKED[1] != PICKED) {
                                     if (CLICKED[0] != PICKED && CLICKED[1] != PICKED) {
-                                        PICKED.oldEmissive = PICKED.material.emissive.getHex();
-                                        PICKED.material.emissive.setHex(0xff0000);
+                                        if (PICKED.material.emissive) {
+                                            PICKED.oldEmissive = PICKED.material.emissive.getHex();
+                                            PICKED.material.emissive.setHex(0xff0000);
+                                        }
                                     } else {
                                         PICKED.oldEmissive = 0x000000;
                                     }
@@ -671,21 +960,26 @@
 
                 if (event.button == 0) {
 
+                    if (boxBuilder.isBuilding()) {
+
+                        boxBuilder.onLeftClick(mouse);
+                        return;
+                    }
+
                     if (BUILDING) {
 
                         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                         projector.unprojectVector(vector, camera);
-                        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-                        var intersects = raycaster.intersectObject(groundGrid);
+                        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                        var intersectPoint = ray.intersectPlane(groundPlane);
 
-                        if (intersects.length > 0) {
-
-                            var object = new OSMEX.SketchBuilder(BUILDING.name);
-                            object.Sketch.position.copy(intersects[0].point);
-                            object.Sketch.material.color.setHex(0xffffff);
-                            objectScene.add(object.Sketch);
-
-                        }
+                        var object = new OSMEX.SketchBuilder(BUILDING.name);
+                        object.Sketch.position.copy(intersectPoint);
+                        object.Sketch.material.color.setHex(0xffffff);
+                        if (object.Sketch.children[0].name == "BoundingBox")
+                            object.Sketch.remove(object.Sketch.children[0]);
+                        addToAdded(object.Sketch);
+                        objectScene.add(object.Sketch);
 
                         objectScene.remove(BUILDING);
 
@@ -694,12 +988,17 @@
                     if (PICKED) {
 
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
+                        cameraController.enabled = false;
+
+                        if (arrowMode == "deleting") {
+                            addToRemoved(PICKED);
+                            objectScene.remove(PICKED);
+                        }
 
                         if (pickRef instanceof OSMEX.Block) {
 
                             SELECTED = pickRef;
                             DRAGGING = pickRef;
-
 
                             var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                             projector.unprojectVector(vector, camera);
@@ -710,28 +1009,43 @@
                         else if (pickRef instanceof OSMEX.SizerArrow) {
 
                             SIZING = pickRef;
-                            console.log("SIZING before", SIZING.dir);
-                            SELECTED.matrix.rotateAxis(SIZING.dir);
-                            console.log("SIZING after", SIZING.dir);
-                            var sizingPos = SIZING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().sub(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().cross(SIZING.dir);
-                            var forwardDir = SIZING.dir.clone().cross(rightDir);
 
-                            sizerPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
-                            //SELECTED.matrix.rotateAxis(sizerPlane.normal);
+                            var rotatedDir = SIZING.dir.clone();
+
+                            SIZING.matrixRotationWorld.extractRotation(SIZING.matrixWorld);
+                            var rotatedDir = SIZING.dir.clone().applyMatrix4(SIZING.matrixRotationWorld).normalize();
+                            var sizingPos = new THREE.Vector3().getPositionFromMatrix(SIZING.matrixWorld);
+                            var cameraDir = camera.position.clone().sub(sizingPos).normalize();
+                            var rightDir = cameraDir.clone().cross(rotatedDir).normalize();
+                            var forwardDir = rotatedDir.clone().cross(rightDir).normalize();
+                            actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
+
+                            sizerGizmo.setSizing(true);
                         }
-                        else if (pickRef instanceof OSMEX.MovingArrow) {
+                        else if (pickRef instanceof OSMEX.MovingArrow || pickRef instanceof OSMEX.MovingGizmoPlane) {
 
                             MOVING = pickRef;
-                            var sizingPos = MOVING.matrixWorld.getPosition();
-                            var cameraDir = camera.position.clone().sub(sizingPos).normalize();
-                            var rightDir = cameraDir.clone().cross(MOVING.dir);
-                            var forwardDir = MOVING.dir.clone().cross(rightDir);
-                            movingPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
 
+                            if (pickRef instanceof OSMEX.MovingArrow) {
 
+                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                var cameraDir = camera.position.clone().sub(sizingPos).normalize();
+                                var rightDir = cameraDir.clone().cross(MOVING.dir);
+                                var forwardDir = MOVING.dir.clone().cross(rightDir);
+                                actionPlane.setFromNormalAndCoplanarPoint(forwardDir, sizingPos);
+                            }
+                            else {
+
+                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                actionPlane.setFromNormalAndCoplanarPoint(MOVING.dir, sizingPos);
+                            }
+
+                            var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                            projector.unprojectVector(vector, camera);
+                            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                            var intersectPoint = ray.intersectPlane(actionPlane);
+                            offsetVector.copy(intersectPoint).sub(MOVING.matrixWorld.getPosition());
                         }
                         else if (pickRef instanceof OSMEX.ScaleCube) {
 
@@ -739,15 +1053,27 @@
 
                         }
                         else if (pickRef instanceof OSMEX.RotationTorus) {
+
                             ROTATING = pickRef;
 
-                            var mouseX = (mouse.x * SCREEN_WIDTH / 2) + SCREEN_WIDTH / 2;
-                            var mouseY = -(mouse.y * SCREEN_HEIGHT / 2) + SCREEN_HEIGHT / 2;
-                            var vector = projector.projectVector(ROTATING.matrixWorld.getPosition().clone(), camera);
+                            ROTATING.matrixRotationWorld.extractRotation(ROTATING.matrixWorld);
+                            var normal = ROTATING.dir.clone().applyMatrix4(ROTATING.matrixRotationWorld).normalize();
+                            var rotationPos = new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld);
+                            actionPlane.setFromNormalAndCoplanarPoint(normal, rotationPos);
+                            // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
 
-                            vector.x = (vector.x * SCREEN_WIDTH / 2) + SCREEN_WIDTH / 2;
-                            vector.y = -(vector.y * SCREEN_HEIGHT / 2) + SCREEN_HEIGHT / 2;
-                            ROTATION_VECTOR = new THREE.Vector2(-(vector.x - mouseX), vector.y - mouseY).normalize();
+                            var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                            projector.unprojectVector(vector, camera);
+                            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                            var intersectPoint = ray.intersectPlane(actionPlane);
+
+                            if (intersectPoint === undefined) {
+                                alert("RotationStart plane intersection problem!");
+                            }
+
+                            intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld));
+
+                            ROTATING.setStartRotationVector(intersectPoint.clone().normalize());
 
                         }
                         else {
@@ -765,7 +1091,6 @@
                         movingGizmo.setTarget(SELECTED);
                     else if (arrowMode == "rotating")
                         rotationGizmo.setTarget(SELECTED);
-                    ;
 
                 }
             }
@@ -773,11 +1098,19 @@
             function onDocumentMouseUp(event) {
 
                 event.preventDefault();
-
                 if (event.button == 0) {
 
-                    if (SIZING)
+                    cameraController.enabled = true;
+
+                    if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
+                        addToModified(SELECTED);
+                    }
+
+                    if (SIZING) {
+
                         SIZING.restoreDefaultLength();
+                        sizerGizmo.setSizing(false);
+                    }
                     if (SCALING)
                         SCALING.restoreDefaultScale();
 
@@ -787,13 +1120,12 @@
                     SCALING = null;
                     ROTATING = null;
                     MOVING = null;
-                    ROTATION_VECTOR = null;
                 }
             }
 
             function animate() {
 
-                requestAnimationFrame(animate);
+               requestAnimationFrame(animate);
 
                 if (myDialog && myDialog.dialog( "isOpen" )) {
                     
@@ -821,6 +1153,13 @@
                 movingGizmo.update();
             }
 
+            function onCameraChange() {
+
+                boxBuilder.update();
+                render();
+            }
+
+
             function render() {
 
                 renderer.clear();
@@ -829,6 +1168,11 @@
                 renderer.clear(false, true, false); // clear only Depth
                 renderer.render(interfaceScene, camera);
             }
+
+            $('#build_box').click(function() {
+
+                boxBuilder.startBuild();
+            });
 
         </script>
 
