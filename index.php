@@ -16,6 +16,21 @@ while ($row = mysql_fetch_array($query)) {
     $array[$row['name_figurecategory']][]=$test;
 }
 mysql_close($db);
+
+global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
+if(!isset($_GET['zoom']))
+    $landscapeMode='boundary';
+else
+{
+    $landscapeMode='zoom';
+    $zoom=intval($_GET['zoom']);
+}
+$minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
+$minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
+$maxlon=(isset($_GET['maxlon'])&& is_numeric($_GET['maxlon']))?$_GET['maxlon']:180;
+$maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:90;
+$mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
+$mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,6 +42,18 @@ mysql_close($db);
         <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
         <script type="text/javascript" src="jquery/jquery-ui.js"></script>
         <script type="text/javascript">
+            <?php
+                global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
+                echo<<<HERE
+                    var landscapeMode='$landscapeMode';
+                    var minlon=$minlon;
+                    var minlat=$minlat;
+                    var maxlon=$maxlon;
+                    var maxlat=$maxlat;
+                    var mlon=$mlon;
+                    var mlat=$mlat;
+HERE;
+            ?>
             var searchbar_template="<div id='searchbar'>\
                 <div id='searchbar_header'>\
                     &nbsp;<h6>Search results</h6><a class='close_link' href='#'>Close</a>\
@@ -169,9 +196,9 @@ mysql_close($db);
                             <li><a href="#geoBuilder">Geometry Builder</a></li>
                             <li><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
-                        <div id="map">aa aa aa aa aa aa aa aa aa aa</div>
-                        <div id="geoBuilder">bb bb bb bb bb bb bb bb bb</div>
-                        <div id="txtBuilder">c c c c c c c c c c c c c c  c c c</div>
+                        <div id="map"></div>
+                        <div id="geoBuilder"></div>
+                        <div id="txtBuilder"></div>
                     </div>
                 </div>
             </div>
