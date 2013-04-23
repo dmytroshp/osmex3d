@@ -36,42 +36,24 @@
         var icon = new OpenLayers.Icon('http://i062.radikal.ru/1209/58/9d99454e85d0.png',size,offset);
 		var icon_start = new OpenLayers.Icon('http://s09.radikal.ru/i182/1212/ad/590aa0e89cae.png',size,offset);
 		var icon_second = new OpenLayers.Icon('http://s45.radikal.ru/i108/1212/0d/b2cbfeb346ac.png',size,offset);
-		x=[];
-		s_x = [46.441062 , 30.700660,
-46.440101 , 30.696269,
-46.439437 , 30.701566,
-46.440714 , 30.696185,
-46.442925 , 30.697870,
-46.441166 , 30.699152,
-46.441937 , 30.696096,
-46.438861 , 30.701692,
-46.441711 , 30.697948,
-46.441763 , 30.701219,
-46.438762 , 30.700905,
-46.438662 , 30.698781,
-46.441306 , 30.696084,
-46.438502 , 30.697426,
-46.441747 , 30.701951,
-46.441752 , 30.697320,
-46.439577 , 30.702351,
-46.440679 , 30.699257,
-46.438980 , 30.700342,
-46.440107 , 30.697942,
-46.441836 , 30.700587,
-46.441737 , 30.698511,
-46.441797 , 30.699877,
-46.439481 , 30.696859,
-46.441915 , 30.699142];
-		t_x = [];
+		x=[35.884691, 14.508609,
+    35.88475, 14.508561,
+    35.886143, 14.511925,
+    35.886204, 14.511883];
+		s_x = [35.885447, 14.510243];
+		t_x = [35.88475, 14.508561,
+    35.886204, 14.511883,
+    35.884691, 14.508609,
+    35.886143, 14.511925];
 	for ( i = 0; i < 1500; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(s_x[i+1], s_x[i]).transform( fromProjection, toProjection),icon_start.clone());
 		markers.addMarker(marker_tmp);
 	}
-	for ( i = 0; i < 0; i+=2){
+	for ( i = 0; i < 10; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(t_x[i+1], t_x[i]).transform( fromProjection, toProjection),icon_second.clone());
 		markers.addMarker(marker_tmp);
 	}
-	for ( i = 0; i < 0; i+=2){
+	for ( i = 0; i < 10; i+=2){
 		marker_tmp = new OpenLayers.Marker(new OpenLayers.LonLat(x[i+1], x[i]).transform( fromProjection, toProjection),icon.clone());
 		markers.addMarker(marker_tmp);
 	}

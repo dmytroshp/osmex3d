@@ -17,7 +17,6 @@ CREATE_DATABASE_1 = """CREATE TABLE IF NOT EXISTS objectCategory (
 
 CREATE_DATABASE_2 = """CREATE TABLE IF NOT EXISTS objectInstance (
   id INT NOT NULL auto_increment,
-  TypeID INT NOT NULL,
   scaleX DOUBLE,
   scaleY DOUBLE,
   scaleZ DOUBLE,
@@ -26,6 +25,7 @@ CREATE_DATABASE_2 = """CREATE TABLE IF NOT EXISTS objectInstance (
   rotationZ DOUBLE,
   positionLat DOUBLE,
   positionLon DOUBLE,
+  TypeID INT NOT NULL,
   PRIMARY KEY (id)
 );"""
 
@@ -59,7 +59,7 @@ CREATE_DATABASE_6 = """CREATE TABLE IF NOT EXISTS buildings (
   lat DOUBLE,
   lon DOUBLE
 );"""
-
+connection.execute("DROP DATABASE osmex3d;")
 connection.execute("CREATE DATABASE IF NOT EXISTS osmex3d;")
 connection.execute("USE osmex3d;")
 connection.execute(CREATE_DATABASE)
