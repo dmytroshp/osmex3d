@@ -24,7 +24,7 @@ function ajaxPostScene(array) {
 function ajaxNewSketch(name, category, serializedGeometry) {
     $.ajax({
         type: "POST",
-        url: "server_scripts/AddObject.php",
+        url: "server_scripts/NewSketch.php",
         cache: false,
         data: {name: name.val(), category: category.val(), geometry: serializedGeometry}, 
         success: function(data) {
