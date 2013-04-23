@@ -1,0 +1,6 @@
+<?php
+require_once 'connect_db.php';
+define("TEXTURE_PATH","./textures");
+define("TWIDTH",96);
+define("THEIGHT",96);
+?>
