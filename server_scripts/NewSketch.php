@@ -13,13 +13,13 @@ $url = $_POST['dataUrl'];
 $link = mysql_connect('127.0.0.1', 'root', '');
 if (!$link) {
     echo "Error";
-    die('Ошибка соединения: ' . mysql_error());
+    die('РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: ' . mysql_error());
 }
 
 $db_selected = mysql_select_db('osmex3d', $link);
 if (!$db_selected) {
     echo "Die!";
-    die('Не удалось выбрать базу osmex3d: ' . mysql_error());
+    die('РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹Р±СЂР°С‚СЊ Р±Р°Р·Сѓ osmex3d: ' . mysql_error());
 }
 
 $q = sprintf("SELECT COUNT(*) FROM objecttype WHERE name='%s'", mysql_real_escape_string($name));
