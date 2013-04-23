@@ -29,7 +29,7 @@
         $t8 = $rs["rotationZ"];
         $t9 = $rs["positionLon"];
         $t10 = $rs["positionLat"];
-        $t11 = $rs["ObjectID"];
+        $t11 = $rs["TypeID"];
         $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
             "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10, "typeObject" => $t11);
     }
