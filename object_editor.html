@@ -285,6 +285,14 @@
                 document.body.appendChild(container);
 
                 $(document).ready(function() {
+                    $.fn.preload = function() {
+                        this.each(function(){
+                            $('<img/>')[0].src = this;
+                        });
+                    }
+                    
+                    $(['images/48x48/dragging.jpg','images/48x48/dragging_over.jpg','images/48x48/dragging_pressed.jpg', 'images/48x48/moving.jpg','images/48x48/moving_over.jpg','images/48x48/moving_pressed.jpg', 'images/48x48/scaling.jpg','images/48x48/scaling_over.jpg','images/48x48/scaling_pressed.jpg','images/48x48/rotating.jpg','images/48x48/rotating_over.jpg','images/48x48/rotating_pressed.jpg','images/48x48/deleting.jpg','images/48x48/deleting_over.jpg','images/48x48/deleting_pressed.jpg','images/48x48/build_box.jpg','images/48x48/build_box_over.jpg','images/48x48/build_box_pressed.jpg']).preload();
+                    
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
