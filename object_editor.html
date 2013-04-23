@@ -480,16 +480,6 @@
 
                 projector = new THREE.Projector();
 
-                var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
-                var geometry = new THREE.SphereGeometry(6, 15, 15);
-                //var sphere1 = new OSMEX.Block( geometry, material );
-                var sphere2 = new OSMEX.Block(geometry, material);
-                sphere2.name = "Sphere";
-                sphere2.position.x = -60;
-                sphere2.position.z = -60;
-
-                //objectScene.add(sphere1);
-                objectScene.add(sphere2);
 
                 // RENDERER
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -956,7 +946,7 @@
                             objectScene.remove(PICKED);
                         }
 
-                        if (pickRef instanceof OSMEX.Block) {
+                        if (pickRef instanceof OSMEX.Block || pickRef.name === "undef") {
 
                             SELECTED = pickRef;
                             DRAGGING = pickRef;
@@ -990,7 +980,7 @@
 
                             if (pickRef instanceof OSMEX.MovingArrow) {
 
-                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld);
                                 var cameraDir = camera.position.clone().sub(sizingPos).normalize();
                                 var rightDir = cameraDir.clone().cross(MOVING.dir);
                                 var forwardDir = MOVING.dir.clone().cross(rightDir);
@@ -998,7 +988,7 @@
                             }
                             else {
 
-                                var sizingPos = MOVING.matrixWorld.getPosition();
+                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld);
                                 actionPlane.setFromNormalAndCoplanarPoint(MOVING.dir, sizingPos);
                             }
 
@@ -1006,7 +996,7 @@
                             projector.unprojectVector(vector, camera);
                             var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                             var intersectPoint = ray.intersectPlane(actionPlane);
-                            offsetVector.copy(intersectPoint).sub(MOVING.matrixWorld.getPosition());
+                            offsetVector.copy(intersectPoint).sub(new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld));
                         }
                         else if (pickRef instanceof OSMEX.ScaleCube) {
 
