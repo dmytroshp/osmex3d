@@ -8,23 +8,23 @@ if (!$db) {
 mysql_select_db('3d_schema',$db) or die('Could not select database.');
 if($req=="")
 {
-    $sql = "SELECT * FROM figuretype
-        INNER JOIN figureinst 
-        ON figuretype.idFigureType = figureinst.idFigureType
-        ORDER BY nameFigureInst, nameFigureType ASC";
+    $sql = "SELECT * FROM figurecategory
+        INNER JOIN figuretype 
+        ON figuretype.id_figurecategory = figurecategory.id_figurecategory
+        ORDER BY name_figurecategory, name_figuretype ASC";
 }
 else
 {
-    $sql = "SELECT * FROM figuretype
-        INNER JOIN figureinst 
-        ON figuretype.idFigureType = figureinst.idFigureType
-        WHERE nameFigureInst LIKE '%".  mysql_real_escape_string($req)."%';";
+    $sql = "SELECT * FROM figurecategory
+            INNER JOIN figuretype 
+            ON figuretype.id_figurecategory = figurecategory.id_figurecategory
+            WHERE name_figuretype LIKE '%".  mysql_real_escape_string($req)."%';";
 }
 $query = mysql_query($sql, $db);
 while ($row = mysql_fetch_array($query)) {
-    $test['name'] = $row['nameFigureInst'];
-    $test['previewFileName'] = $row['idFigureInst'].'_'.$row['nameFigureInst'];
-    $array[$row['nameFigureType']][]=$test;
+    $test['name'] = $row['name_figuretype'];
+    $test['previewFileName'] = $row['id_figuretype'].'_'.$row['name_figuretype'];
+    $array[$row['name_figurecategory']][]=$test;
 }
 mysql_close($db);
 if(sizeof($array)<=0)
