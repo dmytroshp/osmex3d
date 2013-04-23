@@ -274,6 +274,8 @@
 
             var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
             
+            var dataUrl;
+            
             init();
             animate();
 
@@ -344,6 +346,7 @@
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
+                        addBoundingBox();
                     });
 
                     $(".group3").tooltip();
@@ -367,11 +370,11 @@
                                 var geometryExporter = new THREE.GeometryExporter();
                                 var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
 
-                                ajaxNewSketch(name, category, serializedGeometry);
-
                                 addEvents();
                                 $(this).dialog("close");
 
+                                ajaxNewSketch(name, category, serializedGeometry, dataUrl);
+                                
                                 while (selectedObj.length > 0) {
                                     selectedObj.pop();
                                 }
@@ -416,7 +419,7 @@
                             
                             addEvents();
                             
-                            var dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
+                            dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
                             
                             // FOR TEST ONLY
                             var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=235, height=235");
@@ -627,13 +630,14 @@
                 return coords;
             }
 
-
-
             function addBoundingBox() {
                 if ($("#BBox").prop("checked")) {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
                         if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined && objectScene.children[i].visible != false)
                             objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
+                        else {
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+                        }
 
                 } else {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
@@ -643,13 +647,11 @@
                 }
             }
 
-            function setArrowsType(element)
-            {
+            function setArrowsType(element) {
                 //alert($(element).attr('id'));
                 arrowMode = $(element).attr('id');
             }
-            function addObject(element)
-            {
+            function addObject(element) {
                 //alert($(element).attr('id'));
                 if ($(element).attr('id') != "noarrows") {
                     BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
@@ -687,25 +689,31 @@
                         var second_bsp = new ThreeBSP(CLICKED[1]);
 
                         var nameOfOperation, result_bsp;
+                        var scale;
+                        
                         if ($(element).attr('id') == "union") {
                             nameOfOperation = "Union";
                             result_bsp = first_bsp.union(second_bsp);
+                            scale = CLICKED[0].scale;
                         } else if ($(element).attr('id') == "intersection") {
                             nameOfOperation = "Intersection";
                             result_bsp = first_bsp.intersect(second_bsp);
+                            scale = CLICKED[0].scale;
                         } else if ($(element).attr('id') == "complement_2-1") {
                             nameOfOperation = "Complement(2-1)";
                             result_bsp = second_bsp.subtract(first_bsp);
+                            scale = CLICKED[1].scale;
                         } else if ($(element).attr('id') == "complement_1-2") {
                             nameOfOperation = "Complement(1-2)";
                             result_bsp = first_bsp.subtract(second_bsp);
+                            scale = CLICKED[0].scale;
                         }
 
                         var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
                         var resultObj = result_bsp.toMesh(material);
                         //resultObj.geometry.computeVertexNormals();
 
-                        resultObj.scale = CLICKED[0].scale; // Bugs in scaling
+                        resultObj.scale = scale;
                         resultObj.pickable = true;
                         resultObj.visible = true;
                         objectScene.add(resultObj);
@@ -976,7 +984,7 @@
                         var object = new OSMEX.SketchBuilder(BUILDING.name);
                         object.Sketch.position.copy(intersectPoint);
                         object.Sketch.material.color.setHex(0xffffff);
-                        if (object.Sketch.children[0].name == "BoundingBox")
+                        if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked")) 
                             object.Sketch.remove(object.Sketch.children[0]);
                         addToAdded(object.Sketch);
                         objectScene.add(object.Sketch);
@@ -993,6 +1001,7 @@
                         if (arrowMode == "deleting") {
                             addToRemoved(PICKED);
                             objectScene.remove(PICKED);
+                            document.getElementById("dragging").click();
                         }
 
                         if (pickRef instanceof OSMEX.Block) {
