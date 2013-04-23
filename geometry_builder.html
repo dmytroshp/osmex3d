@@ -272,7 +272,7 @@
             var selectedObj = [];
             var operationStack = [];
 
-            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
+            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh, dataUrl;
             
             init();
             animate();
@@ -366,11 +366,12 @@
                                 var name = $("#name"), category = $("#category");
                                 var geometryExporter = new THREE.GeometryExporter();
                                 var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
-
-                                ajaxNewSketch(name, category, serializedGeometry);
-
+                                
                                 addEvents();
                                 $(this).dialog("close");
+                                
+                                ajaxNewSketch(name, category, serializedGeometry, dataUrl);
+                                
 
                                 while (selectedObj.length > 0) {
                                     selectedObj.pop();
@@ -416,11 +417,11 @@
                             
                             addEvents();
                             
-                            var dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
+                            dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
                             
                             // FOR TEST ONLY
-                            var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=235, height=235");
-                            newWindow.document.write("<img src='" + dataUrl + "'/>");
+                            //var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=235, height=235");
+                            //newWindow.document.write("<img src='" + dataUrl + "'/>");
                         }
                     });
 

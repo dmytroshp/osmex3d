@@ -21,12 +21,12 @@ function ajaxPostScene(array) {
     }
 }
 
-function ajaxNewSketch(name, category, serializedGeometry) {
+function ajaxNewSketch(name, category, serializedGeometry, dataUrl) {
     $.ajax({
         type: "POST",
         url: "server_scripts/NewSketch.php",
         cache: false,
-        data: {name: name.val(), category: category.val(), geometry: serializedGeometry}, 
+        data: {name: name.val(), category: category.val(), geometry: serializedGeometry, url:dataUrl}, 
         success: function(data) {
             alert(data);
         }
