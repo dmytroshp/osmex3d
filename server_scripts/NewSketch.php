@@ -6,9 +6,7 @@
 $name = $_POST['name'];
 $category = $_POST['category'];
 $serializedGeometry = $_POST['geometry'];
-$url = $_POST['url'];
-
-echo $url;
+echo serialize($serializedGeometry);
 //print_r($serializedGeometry);
 
 $link = mysql_connect('127.0.0.1', 'root', '');
