@@ -92,14 +92,14 @@
                 position:absolute;
             }
             #dragging {
-                background-image: url('img/48x48/dragging.jpg');               
+                background-image: url('img/48x48/6.jpg');               
             }
             #dragging:hover {
-                background-image: url('img/48x48/dragging_over.jpg');               
+                background-image: url('img/48x48/6_over.jpg');               
             }                         
             #dragging.selected
             {
-                background-image: url('img/48x48/dragging_pressed.jpg');               
+                background-image: url('img/48x48/6_pressed.jpg');               
             }
 
             #moving {
@@ -156,6 +156,13 @@
             {
                 background-image: url('img/48x48/build_box_pressed.jpg');               
             }
+            
+            #publish {
+                background-image: url('img/publish.png');               
+            }
+            #publish:hover {
+                background-image: url('img/publish_hovered.png');               
+            }                        
         </style>
     </head>
     <body>
@@ -192,12 +199,8 @@
             </div>
         </div>
 
-        <div id="righttopbar" style="visibility:hidden;width:200px;display:block;text-align:rigth;">
-            <input type="radio" checked="checked" id="PerspCam" name="Camera" value="Perspective">PerspectiveCamera
-            <br>
-            <input type="radio" id="OrthCam" name="Camera" value="Orthographic">OrthographicCamera
-            <br>
-            <input type="checkbox" id="BBox" onchange="addBoundingBox();"> Bounding Box<br>
+        <div id="righttopbar" style="visibility:hidden;display:block;text-align:left;">
+            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Display bounding boxes</label>
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
@@ -231,8 +234,8 @@
 
         </div>
         <div id="right-bottombar" style="visibility:hidden;display:inline;float:right;">
-            <div id="build" class="group4" style="width:200px;height:80px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='img/build.png'>
+            <div id="publish" class="group4" style="width:200px;height:50px;float:left;">
+                &nbsp; 
             </div>
         </div>
         
@@ -272,9 +275,7 @@
             var selectedObj = [];
             var operationStack = [];
 
-            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
-            
-            var dataUrl;
+            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh, imageData;
             
             init();
             animate();
@@ -291,7 +292,7 @@
                         });
                     }
                     
-                    $(['img/48x48/dragging.jpg','img/48x48/dragging_over.jpg','img/48x48/dragging_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg']).preload();
+                    $(['img/48x48/6.jpg','img/48x48/6_over.jpg','img/48x48/6_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg','img/publish.png','img/publish_hovered.png']).preload();
                     
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
@@ -342,13 +343,6 @@
                         $(this).addClass("selected");
                         addObject(this);
                     });
-                    $('input:radio').change(function() {
-                        if ($('input[name="Camera"]:checked').val() == "Orthographic")
-                            camera.toOrthographic();
-                        else
-                            camera.toPerspective()
-                    }
-                    );
 
                     $(".group3").click(function() {
                         $(".selected").removeClass("selected");
@@ -364,7 +358,7 @@
                     myDialog.prependTo('body');
                     myDialog.dialog({
                         autoOpen: false,
-                        height: 550,
+                        height: 600,
                         width: 450,
                         resizable: false,
                         modal: true,
@@ -378,10 +372,9 @@
                                 var geometryExporter = new THREE.GeometryExporter();
                                 var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
 
-                                addEvents();
-                                $(this).dialog("close");
+                                imageData = iconRenderer.domElement.toDataURL("image/png");
 
-                                ajaxNewSketch(name, category, serializedGeometry, dataUrl);
+                                ajaxNewSketch(name, category, serializedGeometry, imageData);
                                 
                                 while (selectedObj.length > 0) {
                                     selectedObj.pop();
@@ -392,10 +385,12 @@
                                 }
                                 CLICKED[0] = null;
                                 CLICKED[1] = null;
+                                
+                                $(this).dialog("close");
 
                             },
                             Cancel: function() {
-                                addEvents();
+                                
                                 $(this).dialog("close");
                             }
                         },
@@ -413,25 +408,22 @@
                             iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
                             iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
                             
-                            iconCameraController.userRotate = true;
-                            cameraController.userZoom = false;
-                            cameraController.userRotate = false;
+                            iconCameraController.noRotate = false;
+                            cameraController.noZoom = true;
+                            cameraController.noRotate = true;
+                            cameraController.noPan = true;
                         },
                         close: function( event, ui ) {
-                            iconScene.remove(iconMesh);
-                            iconMesh = null;
-                            
-                            iconCameraController.userRotate = false;
-                            cameraController.userZoom = true;
-                            cameraController.userRotate = true;
                             
                             addEvents();
                             
-                            dataUrl = iconRenderer.domElement.toDataURL("image/png");  // SKETCH ICON, SHOULD BE SENT TO THE SERVER
+                            iconScene.remove(iconMesh);
+                            iconMesh = null;
                             
-                            // FOR TEST ONLY
-                            var newWindow = window.open("", "Icon","scrollbars=0, toolbar=0, width=235, height=235");
-                            newWindow.document.write("<img src='" + dataUrl + "'/>");
+                            iconCameraController.noRotate = true;
+                            cameraController.noZoom = false;
+                            cameraController.noRotate = false;
+                            cameraController.noPan = false;
                         }
                     });
 
@@ -440,7 +432,7 @@
                             removeEvents();
                             myDialog.dialog("open");
                         } else {
-                            showErrorMessage("Error. Select an object.");
+                            showErrorMessage("Error. Please select an object to publish.");
                         }
                     });
 
@@ -471,8 +463,9 @@
                     iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 1000);
                     
                     iconCameraController = new OSMEX.CameraController(iconCamera);
-                    iconCameraController.userZoom = false;
-                    iconCameraController.userRotate = false;
+                    iconCameraController.noZoom = true;
+                    iconCameraController.noRotate = true;
+                    iconCameraController.noPan = true;
                     //iconCameraController.addEventListener('change', iconRender);
 
                     iconScene = new OSMEX.ObjectScene();

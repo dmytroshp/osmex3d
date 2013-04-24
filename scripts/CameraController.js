@@ -11,11 +11,9 @@ OSMEX.CameraController = function ( object, domElement ) {
        //From prev version
         
         this.center = new THREE.Vector3();
-        this.userRotate = true;
 
         this.minPolarAngle = 0; // radians
         this.maxPolarAngle = Math.PI; // radians
-
         
         var EPS = 0.000001;
         var PIXELS_PER_ROUND = 1800;        
