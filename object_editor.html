@@ -408,48 +408,30 @@
                             iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
                             iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
                             
-                            iconCameraController.noRotate = false;
-                            cameraController.noZoom = true;
-                            cameraController.noRotate = true;
-                            cameraController.noPan = true;
+                            iconCameraController.enabled = true;
+                            cameraController.enabled = false;
                         },
                         close: function( event, ui ) {
-                            
-                            addEvents();
                             
                             iconScene.remove(iconMesh);
                             iconMesh = null;
                             
-                            iconCameraController.noRotate = true;
-                            cameraController.noZoom = false;
-                            cameraController.noRotate = false;
-                            cameraController.noPan = false;
+                            iconCameraController.enabled = false;
+                            cameraController.enabled = true;
                         }
                     });
 
                     $(".group4").click(function() {
+                        
                         if (CLICKED[0]) {
-                            removeEvents();
+
                             myDialog.dialog("open");
+                            
                         } else {
+                            
                             showErrorMessage("Error. Please select an object to publish.");
                         }
                     });
-
-                    function addEvents() {
-                        cameraController.enabled = true;
-                        document.addEventListener('mousemove', onDocumentMouseMove, false);
-                        document.addEventListener('mousedown', onDocumentMouseDown, false);
-                        document.addEventListener('mouseup', onDocumentMouseUp, false);
-                        document.addEventListener('dblclick', onDocumentDoubleClick, false);
-                    }
-                    
-                    function removeEvents() {
-                        cameraController.enabled = false;
-                        document.removeEventListener('mousemove', onDocumentMouseMove, false);
-                        document.removeEventListener('mousedown', onDocumentMouseDown, false);
-                        document.removeEventListener('mouseup', onDocumentMouseUp, false);
-                    }
                     
                     iconRenderer = new THREE.WebGLRenderer({
                                                             preserveDrawingBuffer: true,   // required to support .toDataURL()
@@ -460,12 +442,13 @@
                     iconRenderer.autoClear = false;
                     $("#iconCanvas").append(iconRenderer.domElement);
 
-                    iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 1000);
+                    iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
                     
                     iconCameraController = new OSMEX.CameraController(iconCamera);
                     iconCameraController.noZoom = true;
-                    iconCameraController.noRotate = true;
+                    iconCameraController.noRotate = false;
                     iconCameraController.noPan = true;
+                    iconCameraController.enabled = false;
                     //iconCameraController.addEventListener('change', iconRender);
 
                     iconScene = new OSMEX.ObjectScene();
@@ -478,13 +461,12 @@
 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
-                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 300, 1, 300);
+                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 1500, 1, 1500);
                 camera.rotation.x -= Math.PI / 4;
                 camera.position.z = 100;
                 camera.position.y = 100;
 
                 cameraController = new OSMEX.CameraController(camera);
-                cameraController.ZoomSpeed = 2.0;
                 cameraController.addEventListener('change', onCameraChange);
 
                 objectScene = new OSMEX.ObjectScene();
@@ -640,6 +622,15 @@
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
                 arrowMode = $(element).attr('id');
+                
+                if (arrowMode === "build_box") {
+                    
+                    boxBuilder.startBuild();
+                }
+                else {
+                    
+                    boxBuilder.finishBuild();
+                }
             }
             function addObject(element) {
                 //alert($(element).attr('id'));
@@ -987,7 +978,6 @@
                     if (PICKED) {
 
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
-                        cameraController.enabled = false;
 
                         if (arrowMode == "deleting") {
                             addToRemoved(PICKED);
@@ -1106,8 +1096,6 @@
                 event.preventDefault();
                 if (event.button == 0) {
 
-                    cameraController.enabled = true;
-
                     if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
                         addToModified(SELECTED);
                     }
@@ -1174,11 +1162,6 @@
                 renderer.clear(false, true, false); // clear only Depth
                 renderer.render(interfaceScene, camera);
             }
-
-            $('#build_box').click(function() {
-
-                boxBuilder.startBuild();
-            });
 
         </script>
 

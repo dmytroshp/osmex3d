@@ -111,6 +111,8 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
 
         this.text.style.left = cx + 16 + 'px';
         this.text.style.top = cy + 4 + 'px';
+        
+        this.box.visible = true;
     
         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
         var projector = new THREE.Projector();
@@ -216,11 +218,11 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
 OSMEX.BoxBuilder.prototype.startBuild = function () {
     
     this.currentState = BoxBuilderState.PICKING_POINT;
-    this.box.visible = true;
     
     this.box.position = new THREE.Vector3(0, 0, 0);
     this.box.rotation = new THREE.Vector3(0, 0, 0);
     this.box.scale = new THREE.Vector3(this.MIN_WIDTH, this.MIN_HEIGHT, this.MIN_LENGTH);
+    this.box.visible = false;
     
     cameraController.noPan = true;
     this.text.style.visibility = 'visible';
