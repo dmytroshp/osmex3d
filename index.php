@@ -1,21 +1,17 @@
-<?php
+﻿<?php
+include 'include/connect_db.php';
 global $array;
-$db = mysql_connect('localhost', 'root', 'root');
-if (!$db) {
-    die('Ошибка соединения: ' . mysql_error());
-}
-mysql_select_db('osmex3d',$db) or die('Could not select database.');
-$sql = "SELECT * FROM figurecategory
-        INNER JOIN figuretype 
-        ON figuretype.id_figurecategory = figurecategory.id_figurecategory
-        ORDER BY name_figurecategory, name_figuretype ASC";
-$query = mysql_query($sql, $db);
+$sql = "SELECT Cat.name as 'nameCat', Type.name as 'nameType', Type.id as idType FROM objectcategory Cat
+        INNER JOIN objecttype Type
+        ON Type.CategoryID = Cat.id
+        ORDER BY Cat.name, Type.name ASC";
+$query = mysql_query($sql, $connection);
 while ($row = mysql_fetch_array($query)) {
-    $test['name'] = $row['name_figuretype'];
-    $test['previewFileName'] = $row['id_figuretype'].'_'.$row['name_figuretype'];
-    $array[$row['name_figurecategory']][]=$test;
+    $test['name'] = $row['nameType'];
+    $test['previewFileName'] = $row['idType'].'_'.$row['nameType'];
+    $array[$row['nameCat']][]=$test;
 }
-mysql_close($db);
+mysql_close($connection);
 
 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
 if(!isset($_GET['zoom']))
@@ -68,8 +64,11 @@ HERE;
                 </div>\
              </div>";
             $(document).ready(function(){
+                var flag=1;
+                $(".accordionContainer").tabs();
                 var heightObj = $(window).height()*0.95;
                 $("#sidebar").css("height", heightObj);
+                $(".accordionContainer").css("height", heightObj-100);
                 $("#content").css("height", heightObj);
                 $(".accordion").css("font-family", "verdana");
                 $(".flip").click(function(){
@@ -90,9 +89,9 @@ HERE;
                 $(".prev").mouseleave(function (){
                   $("#fullPic").remove();
                 });
-                $("#searchInput").keyup(function (){
+                $("#accSearch").keyup(function (){
                     $.ajax({
-                        url:"php/search.php?q="+$("#searchInput").val(),
+                        url:"php/search.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
                         success:function(result){
@@ -116,6 +115,48 @@ HERE;
                 });
                         }
                     });
+                });
+                $("#tabGeo").css("display","none");
+                            $("#tabTxt").css("display","none");
+                            $("#backBtn").css("display","none");
+                            $("#editBtn").val("Edit");
+                            $(".accordionContainer").css("display", "none");
+                            width=$("#searchDivc").width();
+                            $("#searchDivc").width(width-150);
+                            $("#sidebar").width(width-150);
+                            $("#content").css("width", "75%");
+                            flag=0;
+                $("#collapseImg").click(function (){
+                    $(".slidingPanel").slideUp("fast");
+                });
+                $("#backBtn").click(function (){
+                    if(flag){
+                            $("#tabGeo").css("display","none");
+                            $("#tabTxt").css("display","none");
+                            $(this).css("display","none");
+                            $("#editBtn").val("Edit");
+                            $(".accordionContainer").css("display", "none");
+                            width=$("#searchDivc").width();
+                            $("#searchDivc").width(width-150);
+                            $("#sidebar").width(width-150);
+                            $("#content").css("width", "75%");
+                            flag=0;
+                    }
+
+                });
+                $("#editBtn").click(function (){
+                    if(!flag){
+                        flag=1;
+                    $("#tabGeo").css("display","block");
+                            $("#tabTxt").css("display","block");
+                            $("#backBtn").css("display","block");
+                            $("#editBtn").val("Save");
+                            $(".accordionContainer").css("display", "block");
+                            width=$("#searchDivc").width();
+                            $("#searchDivc").width(width+150);
+                            $("#sidebar").width(width+150);
+                            $("#content").css("width", "62%");
+                    }
                 });
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
@@ -158,44 +199,52 @@ HERE;
             <div id="mainContainer">
                 <div id="sidebar">
 		    <div id="logo"><img src="img/logo.jpg" height="50" width="100"></div>
+                    <div id="searchDivc">
                     <div id="osmSearch">
                         <form id="osmSearchForm">
                             <input name="commit" type="submit" value="Go">
                             <input autofocus="autofocus" id="query" name="query" placeholder="Search" tabindex="1" type="text" value="">
                         </form>
                     </div>
-                    <br>
-                    <!--<div id="searchDivc">
-                        <img src="img/searchIcon.png"> <form><input id="searchInput" type="search"></form>
-                    </div>-->
-                    <div id="accordionContainer">
-                    <div class="accordion ui-widget ui-widget-content ui-corner-all">
-                        <?php
-                        global $array;
-                        foreach ($array as $nameFigureType => $instances) {
-                            echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
-                            echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
-                            for($i=0;$i<sizeof($instances);$i++)
-                            {
-                                echo '<div class=imgContainer>';
-                                echo '<img class="prev" src="previews/'.$instances[$i]['previewFileName'].'_mini.png">';
-                                echo '<div class=desc>';
-                                echo $instances[$i]['name'];
-                                echo '</div></div>';
+                    </div>
+                    <div class="accordionContainer">
+                        <ul>
+                        <li><a href="#acc">Sketches</a></li>
+                        <li><a href="#txt">Textures</a></li>
+                        </ul>
+                        <img id="collapseImg" src="img/collapse.png">
+                        <input id="accSearch" type="search">
+                        <div id="acc" class="accordion ui-widget ui-widget-content ui-corner-all">
+                            <?php
+                            global $array;
+                            foreach ($array as $nameFigureType => $instances) {
+                                echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
+                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
+                                
+                                for($i=0;$i<sizeof($instances);$i++)
+                                {
+                                    echo '<div class=imgContainer>';
+                                    echo '<img class="prev" src="previews/'.$instances[$i]['previewFileName'].'_mini.png">';
+                                    echo '<div class=desc>';
+                                    echo $instances[$i]['name'];
+                                    echo '</div></div>';
+                                }
+                                echo '</div>';   
+                                echo '<div class="scrollHelper"></div>';
                             }
-                            echo '</div>';   
-                        }
-                        ?>
+                            ?>
+                        </div>
                     </div>
-                    </div>
-        </div>
+                </div>
                 <div id="content">
                     <div id="objectEditor">
                         <ul>
-                            <li><a href="#map">Map</a></li>
-                            <li><a href="#geoBuilder">Geometry Builder</a></li>
-                            <li><a href="#txtBuilder">Texture Builder</a></li>
+                            <li id="tabMap"><a href="#map">Map</a></li>
+                            <li id="tabGeo"><a href="#geoBuilder">Geometry Builder</a></li>
+                            <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
+                        <input id="editBtn" type="button" value="Save">
+                         <input id="backBtn" type="button" value="Simple View">
                         <div id="map"></div>
                         <div id="geoBuilder"></div>
                         <div id="txtBuilder"></div>
