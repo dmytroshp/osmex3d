@@ -1,5 +1,5 @@
 ﻿<?php
-include 'include/connect_db.php';
+include './server_scripts/config.php';
 global $array;
 $sql = "SELECT Cat.name as 'nameCat', Type.name as 'nameType', Type.id as idType FROM objectcategory Cat
         INNER JOIN objecttype Type
@@ -91,7 +91,7 @@ HERE;
                 });
                 $("#accSearch").keyup(function (){
                     $.ajax({
-                        url:"php/search.php?q="+$("#accSearch").val(),
+                        url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
                         success:function(result){
@@ -176,7 +176,7 @@ HERE;
                     $("#nominatium").html('<br><center><img align="center" src="img/searching.gif"/></center>');
                     $("#geonames").html('<br><center><img align="center" src="img/searching.gif"/></center>');
                     $.ajax({
-                        url:"search.php?q="+$("#query").val(),
+                        url:"server_scripts/osmSearch.php?q="+$("#query").val(),
                         async: true,
                         cache: false,
                         dataType:'json',

@@ -1,5 +1,5 @@
 <?php
-include '../include/connect_db.php';
+require_once 'config.php';
 $req = $_GET['q'];
 global $array;
 if($req=="")

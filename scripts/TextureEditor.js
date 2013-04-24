@@ -493,7 +493,7 @@ function send(pack)
     $.ajax({
         async:false,
         type:'POST',
-        url:'texture_saver.php',
+        url:'server_scripts/textureSaver.php',
         processData: false,
         headers: {
             'Content-Type': 'application/json'
