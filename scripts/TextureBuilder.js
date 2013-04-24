@@ -46,9 +46,11 @@ var init_template="<div id='drop' class='drop-zone'>\
             </div>\
 	</div>\
 </div>";
-$(document).ready(function(){
+
+function prepareTextureBuilder()
+{
     
-var ie=false;
+    var ie=false;
 var mycanvas=null;
 var sourceImage=null;
 var jcropInstance=null;
@@ -110,17 +112,6 @@ function getMouseXY(e)
 
   return true;
 }
-
-initTextureEditor();
-
-$(document).bind("dragstart", function(e) {
-    if (e.target.nodeName.toUpperCase() == "IMG") {
-         return false;
-    }
-});
-
-
-
 function drawPoint(e)
 {
     var mouseX=e.clientX;
@@ -640,6 +631,11 @@ function initTextureEditor()
                 showErrorMessage('The File APIs are not fully supported in this browser.');
 	}
 }
-
-
-});
+    
+    initTextureEditor();
+    $("#textureBuilder").bind("dragstart", function(e) {
+        if (e.target.nodeName.toUpperCase() == "IMG") {
+            return false;
+        }
+    });
+}

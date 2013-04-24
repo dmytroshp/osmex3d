@@ -33,10 +33,20 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
     <head>
         <title>OSMEX3D</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" href="css/jqueryui.css" />
-        <link rel="stylesheet" href="css/main.css" />
+<!--        <link rel="stylesheet" href="css/jqueryui.css" />-->
         <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
-        <script type="text/javascript" src="jquery/jquery-ui.js"></script>
+        <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+        <script type="text/javascript" src="jquery/jquery.color.js"></script>
+        <script type="text/javascript" src="jquery/jquery.Jcrop.min.js"></script>
+        
+        <script type="text/javascript" src="scripts/TextureBuilder.prototypes.js"></script>
+        <script type="text/javascript" src="scripts/TextureBuilder.js"></script>
+        
+        <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/jcrop/jquery.Jcrop.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/TextureBuilder.css" rel="stylesheet" />
+        <link rel="stylesheet" href="css/main.css" />
+        
         <script type="text/javascript">
             <?php
                 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
@@ -74,7 +84,30 @@ HERE;
                 $(".flip").click(function(){
                     $(this).next(".slidingPanel").slideToggle(500);
                 });
-                $("#objectEditor").tabs();
+                
+                // Work area tabs
+                var initializator={
+                    tabMap:function(){alert('map');},
+                    tabGeo:function(){alert('geoBuilder');},
+                    tabTxt:function()
+                    {
+                        prepareTextureBuilder();
+                    }
+                };
+                $("#objectEditor").tabs({
+                    load:function( event, ui )
+                    {
+                        initializator[ui.tab.attr('id')].call(ui,null);
+                    },
+                    beforeLoad: function( event, ui ) {
+                        ui.jqXHR.error(function() {
+                        ui.panel.html(
+                                "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+                                "If this wouldn't be a demo." );
+                        });
+                    }
+                });
+                
                 $("#objectEditor").height($("#content").height() - 8);
                 $(".prev").mouseenter(function (){
                     var position = $(this).position();
@@ -163,13 +196,13 @@ HERE;
                 $("#osmSearchForm").submit(function(){
                     if($('#searchbar').size()==0)
                     {
-                        $("#objectEditor div").css({'margin-left':'250px'});
+                        $("#objectEditor").children('div').css({'margin-left':'250px'});
                         var searchbar=$(searchbar_template);
                         searchbar.insertAfter('#objectEditor ul');
                         //$('#searchbar').next().css({'margin-left':'250px'});
                         $(".close_link").click(function(){
                             //$('#searchbar').next().css({'margin-left':'0px'});
-                            $("#objectEditor div").css({'margin-left':'0px'});
+                            $("#objectEditor").children('div').css({'margin-left':'0px'});
                             $('#searchbar').remove();
                         });
                     }
@@ -191,7 +224,7 @@ HERE;
                         }
                      });
                      return false;
-                });
+                });                
             });
         </script>
     </head>
@@ -241,13 +274,12 @@ HERE;
                         <ul>
                             <li id="tabMap"><a href="#map">Map</a></li>
                             <li id="tabGeo"><a href="#geoBuilder">Geometry Builder</a></li>
-                            <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
+                            <li id="tabTxt"><a href="ajax/textureBuilder.html">Texture Builder</a></li>
                         </ul>
                         <input id="editBtn" type="button" value="Save">
                          <input id="backBtn" type="button" value="Simple View">
                         <div id="map"></div>
                         <div id="geoBuilder"></div>
-                        <div id="txtBuilder"></div>
                     </div>
                 </div>
             </div>
