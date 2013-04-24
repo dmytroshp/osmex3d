@@ -1,12 +1,6 @@
 <?php
-include 'include/image_thumbnail.php';
-define("TEXTURE_PATH","./textures");
-define("TWIDTH",96);
-define("THEIGHT",96);
-
-$db=  mysql_connect('localhost', 'root', 'root');
-$r=mysql_select_db("osmex3d");
-
+require_once 'config.php';
+require_once 'imageThumbnail.php';
 $body = file_get_contents('php://input');
 $pack=  json_decode($body,true);
 if($pack===FALSE || $pack===NULL)
@@ -16,7 +10,7 @@ if($pack===FALSE || $pack===NULL)
     echo json_encode($response);
     exit;
 }
-if($db===FALSE || $r===FALSE)
+if($connection===FALSE || $select_db===FALSE)
 {
     $response['success']=false;
     $response['message']="Database error.";
@@ -43,6 +37,7 @@ foreach ($pack as $region) {
         exit;
     }
     $uid=  mysql_insert_id();
+    //mysql_close($connection);
     $prefix=TEXTURE_PATH."/".$uid."_".$region['name'];
     $pattern="/data:image\/(png|jpeg|jpg|gif|tiff|tif);base64,(.*)/i";
     if(preg_match($pattern, $region['dataurl'],$match))

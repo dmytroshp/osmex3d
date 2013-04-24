@@ -1,10 +1,8 @@
 <?php
-define("TEXTURE_PATH","/textures");
-$db=  mysql_connect('localhost', 'root', 'root');
-$r=mysql_select_db("osmex3d");
+require_once 'config.php';
 $mode=$_GET['mode'];
 $response=array();
-if($db===FALSE || $r===FALSE)
+if($connection===FALSE || $select_db===FALSE)
 {
     echo json_encode($response);
     exit;
@@ -41,5 +39,6 @@ switch($mode)
         break;
     default:
 }
+mysql_close($connection);
 echo json_encode($response);
 ?>

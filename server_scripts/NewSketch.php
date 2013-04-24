@@ -1,32 +1,16 @@
 <?php
-//$body=  file_get_contents('php://input');
-//echo $body."<br>";
-//$phpObject=  json_decode($body);
-//print_r($_POST);
+require_once 'config.php';
+require_once 'imageThumbnail.php';
 $name = $_POST['name'];
 $category = $_POST['category'];
 $serializedGeometry = $_POST['geometry'];
-$url = $_POST['dataUrl'];
-//echo serialize($serializedGeometry);
-//print_r($serializedGeometry);
-
-$link = mysql_connect('127.0.0.1', 'root', '');
-if (!$link) {
-    echo "Error";
-    die('РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: ' . mysql_error());
-}
-
-$db_selected = mysql_select_db('osmex3d', $link);
-if (!$db_selected) {
-    echo "Die!";
-    die('РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹Р±СЂР°С‚СЊ Р±Р°Р·Сѓ osmex3d: ' . mysql_error());
-}
-
+$imageData = $_POST['imageData'];
+if($connection===FALSE||$select_db===FALSE)
+    die('MySQL connection error.');
 $q = sprintf("SELECT COUNT(*) FROM objecttype WHERE name='%s'", mysql_real_escape_string($name));
 $result = mysql_query($q);
 $count = mysql_fetch_array($result);
 mysql_free_result($result);
-
 if ($count[0] == 0) {
     $query = sprintf("INSERT INTO objectcategory ( id, name ) VALUES(NULL, '%s')", mysql_real_escape_string($category));
     mysql_query($query);
@@ -39,11 +23,33 @@ if ($count[0] == 0) {
     
     $query = sprintf("INSERT INTO objecttype ( name, CategoryID, geometryStr ) VALUES('%s', ".$i.", '%s')", mysql_real_escape_string($name), mysql_real_escape_string(serialize($serializedGeometry)));
     mysql_query($query);
+    $uid=  mysql_insert_id();
+    $prefix=PREVIEWS_PATH."/".$uid."_".$name;
+    $pattern="/data:image\/(png|jpeg|jpg|gif|tiff|tif);base64,(.*)/i";
+    if(preg_match($pattern, $imageData,$match))
+    {
+        $type=$match[1];
+        $data=base64_decode($match[2]);
+        $handle=  fopen($prefix.".".$type, "w");
+        if(!$handle)
+            die("Can't save preview image.");
+        fwrite($handle, $data);
+        fclose($handle);
+        $image=imagecreatefromstring($data);
+        if($image!==FALSE)
+        {
+            $thumbnail=  image_resize($image, TWIDTH, THEIGHT);
+            imagepng($thumbnail, $prefix.'_mini.png');
+        }
+    }
+    else
+    {
+        echo "Wrong image data format.\n";
+    }
     echo "Success";
     
 } else {
     echo "Error.\nYou need to change figure's name.";
 }
-
-mysql_close($link);
+mysql_close($connection);
 ?>
