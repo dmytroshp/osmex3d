@@ -26,6 +26,7 @@ CREATE_DATABASE_2 = """CREATE TABLE IF NOT EXISTS objectInstance (
   rotationZ DOUBLE,
   positionLat DOUBLE,
   positionLon DOUBLE,
+  positionHeight DOUBLE,
   TypeID INT NOT NULL,
   PRIMARY KEY (id)
 );"""
@@ -54,7 +55,7 @@ CREATE_DATABASE_5 = """CREATE TABLE IF NOT EXISTS tile (
 );"""
 
 
-#connection.execute("DROP DATABASE osmex3d;")
+connection.execute("DROP DATABASE IF EXISTS osmex3d;")
 connection.execute("CREATE DATABASE IF NOT EXISTS osmex3d;")
 connection.execute("USE osmex3d;")
 connection.execute(CREATE_DATABASE)
