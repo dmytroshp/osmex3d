@@ -87,25 +87,26 @@ HERE;
                 
                 // Work area tabs
                 var initializator={
-                    tabMap:function(){alert('map');},
-                    tabGeo:function(){alert('geoBuilder');},
-                    tabTxt:function()
-                    {
-                        prepareTextureBuilder();
+                    tabMap:{
+                        url:'ajax/landscapeEditor.html',
+                        activator:function(){}
+                    },
+                    tabGeo:{
+                        url:'ajax/objectEditor.html',
+                        activator:function(){}
+                    },
+                    tabTxt:{
+                        url:'ajax/textureBuilder.html',
+                        activator:function(){prepareTextureBuilder();}
                     }
                 };
                 $("#objectEditor").tabs({
-                    load:function( event, ui )
+                    beforeActivate:function( event, ui )
                     {
+                        $('#txtBuilder').load(url, data, callback)
                         initializator[ui.tab.attr('id')].call(ui,null);
-                    },
-                    beforeLoad: function( event, ui ) {
-                        ui.jqXHR.error(function() {
-                        ui.panel.html(
-                                "Couldn't load this tab. We'll try to fix this as soon as possible. " +
-                                "If this wouldn't be a demo." );
-                        });
                     }
+                    
                 });
                 
                 $("#objectEditor").height($("#content").height() - 8);
@@ -280,6 +281,7 @@ HERE;
                          <input id="backBtn" type="button" value="Simple View">
                         <div id="map"></div>
                         <div id="geoBuilder"></div>
+                        <div id="txtBuilder"></div>
                     </div>
                 </div>
             </div>

@@ -49,8 +49,9 @@ var init_template="<div id='drop' class='drop-zone'>\
 
 function prepareTextureBuilder()
 {
-    
-    var ie=false;
+var mouseX=0;
+var mouseY=0;
+var ie=false;
 var mycanvas=null;
 var sourceImage=null;
 var jcropInstance=null;
@@ -75,7 +76,7 @@ function showInfoMessage(text)
         alert.remove();
     alert=$(info_alert_template);
     alert.find("#msgtext").html(text);
-    alert.appendTo('body');
+    alert.appendTo('#textureBuilder');
     //$("#msgtext").html(text);
     alert.fadeIn(600,function(){
        timeout_id=setTimeout(hideMessage, 4400); 
@@ -89,36 +90,53 @@ function showErrorMessage(text)
         alert.remove();
     alert=$(red_alert_template);
     alert.find("#msgtext").html(text);
-    alert.appendTo('body');
+    alert.appendTo('#textureBuilder');
     //$("#msgtext").html(text);
     alert.fadeIn(600,function(){
        timeout_id=setTimeout(hideMessage, 4400); 
     });
 }
+function relMouseCoords(event){
+    var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var canvasX = 0;
+    var canvasY = 0;
+    var currentElement = this;
 
+    do{
+        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent)
+
+    canvasX = event.pageX - totalOffsetX;
+    canvasY = event.pageY - totalOffsetY;
+
+    return {x:canvasX, y:canvasY}
+}
 function getMouseXY(e)
 {
-  if (ie) 
-  {
-	  mouseX = event.clientX + document.body.parentElement.scrollLeft;
-	  mouseY = event.clientY + document.body.parentElement.scrollTop;
-  } else { 
+  //if (ie) 
+  //{
+	  mouseX = event.clientX; /*+ document.body.parentElement.scrollLeft;*/
+	  mouseY = event.clientY; /*+ document.body.parentElement.scrollTop;*/
+  /*} else { 
     mouseX = e.pageX
     mouseY = e.pageY
-  }  
-
-  if (mouseX < 0){mouseX = 0}
-  if (mouseY < 0){mouseY = 0}  
-
+  } */ 
+  /*var coords=relMouseCoords(e);
+  mouseX=coords.x;
+  mouseY=coords.y;*/
   return true;
 }
 function drawPoint(e)
 {
-    var mouseX=e.clientX;
-    var mouseY=e.clientY;
+    //var mouseX=e.clientX;
+    //var mouseY=e.clientY;
     hideMessage();
     if(regions[currentIndex].addPoint)
-        regions[currentIndex].addPoint(mouseX-$('.jcrop-holder').position().left, mouseY-$('.jcrop-holder').position().top);
+        regions[currentIndex].addPoint(mouseX-$('#drop').offset().left, mouseY-$('#drop').offset().top);
+        //regions[currentIndex].addPoint(mouseX-$('.jcrop-holder').position().left, mouseY-$('.jcrop-holder').position().top);
 }
 function onPolygonStatusChanged(index)
 {
@@ -155,6 +173,7 @@ function onSelectRegionItem(index)
         {
             var mydialog=$(dialog_template).attr('title',title_discard_changes_onselect);
             mydialog.find('p').append(msg_discard_changes_onselect);
+            mydialog.appendTo('#textureBuilder');
             mydialog.dialog({
                 resizable: false,
                   height:140,
@@ -162,10 +181,12 @@ function onSelectRegionItem(index)
                   buttons: {
                     "Yes": function() {
                       regions[currentIndex].revert();
-                      continueSelect(r, index)
+                      continueSelect(r, index);
+                      mydialog.remove();
                       $( this ).dialog( "close" );
                     },
                     "No": function() {
+                       mydialog.remove();
                       $( this ).dialog( "close" );
                     }
                 }
@@ -187,6 +208,7 @@ function onRegionRemove(r)
 {
     var mydialog=$(dialog_template).attr('title',title_remove_region);
         mydialog.find('p').append(msg_remove_region);
+        mydialog.appendTo('#textureBuilder');
         mydialog.dialog({
             resizable: false,
               height:140,
@@ -207,12 +229,15 @@ function onRegionRemove(r)
                       //currentIndex=0;
                       regions[0].regionItem.trigger('click');
                   }
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 },
                 "No": function() {
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 },
                 "Cancel": function() {
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 }
             }
@@ -271,6 +296,7 @@ function onPolygonSelectionClick()
     {
         var mydialog=$(dialog_template).attr('title',title_new_region_discard_changes);
         mydialog.find('p').append(msg_new_region_discard_changes);
+        mydialog.appendTo('#textureBuilder');
         mydialog.dialog({
             resizable: false,
               height:140,
@@ -279,9 +305,11 @@ function onPolygonSelectionClick()
                 "Yes": function() {
                   regions[currentIndex].clear();
                   continueInit();
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 },
                 "No": function() {
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 }
             }
@@ -351,6 +379,7 @@ function onRectangleSelectionClick()
     {
         var mydialog=$(dialog_template).attr('title',title_new_region_discard_changes);
         mydialog.find('p').append(msg_new_region_discard_changes);
+        mydialog.appendTo('#textureBuilder');
         mydialog.dialog({
             resizable: false,
               height:140,
@@ -359,9 +388,11 @@ function onRectangleSelectionClick()
                 "Yes": function() {
                   regions[currentIndex].clear();
                   continueInit();
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 },
                 "No": function() {
+                  mydialog.remove();
                   $( this ).dialog( "close" );
                 }
             }
@@ -525,7 +556,7 @@ function initTextureEditor()
                 var drop_zone=$(init_template);
                 jcropInstance.destroy();
                 //drop_zone.attr('style', '');
-                drop_zone.prependTo('body');
+                drop_zone.prependTo('#textureBuilder');
                 //var dropZone = document.getElementById('drop');
 		drop_zone[0].addEventListener('dragover', handleDragOver, false);
 		drop_zone[0].addEventListener('drop', handleFileSelect, false);
@@ -541,6 +572,7 @@ function initTextureEditor()
             {
                 var mydialog=$(dialog_template).attr('title',title_clear_all);
                 mydialog.find('p').append(msg_clear_all);
+                mydialog.appendTo('#textureBuilder');
                 mydialog.dialog({
                     resizable: false,
                       height:140,
@@ -548,9 +580,11 @@ function initTextureEditor()
                       buttons: {
                         "Yes": function() {
                           continueClear();
+                          mydialog.remove();
                           $( this ).dialog( "close" );
                         },
                         "No": function() {
+                          mydialog.remove();
                           $( this ).dialog( "close" );
                         }
                     }
@@ -631,7 +665,14 @@ function initTextureEditor()
                 showErrorMessage('The File APIs are not fully supported in this browser.');
 	}
 }
-    
+    //var divp=$('<div>&nbsp;</div>').appendTo('body');
+    //divp.css({'background-color':'red','border':'1px #000000 solid','position':'absolute','z-index':'999','width':'6px','height':'6px'});
+    $("#textureBuilder").mousemove(function(e){
+        //alert(e);
+       getMouseXY(e);
+       //divp.css('left',e.clientX+5+'px');  
+       //divp.css('top',e.clientY+5+'px'); 
+    });
     initTextureEditor();
     $("#textureBuilder").bind("dragstart", function(e) {
         if (e.target.nodeName.toUpperCase() == "IMG") {

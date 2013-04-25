@@ -57,7 +57,7 @@ foreach ($pack as $region) {
         $image=imagecreatefromstring($data);
         if($image!==FALSE)
         {
-            $thumbnail=  image_resize($image, TWIDTH, THEIGHT);
+            $thumbnail=  image_resize($image, 96, 96);
             imagepng($thumbnail, $prefix.'_mini.png');
         }
             

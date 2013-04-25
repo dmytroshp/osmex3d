@@ -5,8 +5,9 @@
     Description:
         Purpose of the stylesheet follows.
 */
-body{
+#textureBuilder{
     font: 62.5% "Trebuchet MS", sans-serif;
+    padding: 5px;
     /*margin: 50px;*/
 }
 .point
@@ -44,7 +45,7 @@ body{
     border-radius: 5px;
     padding: 25px;
     float:left;
-    width:58%;
+    width:50%;
 }
 .tool-button
 {

@@ -439,7 +439,7 @@ PolygonRegion.prototype.createHandle=function(x,y)
         });
     }
     handle.draggable({ 
-            containment: "parent", 
+            containment: ".jcrop-holder", 
             scroll: false ,
             start: function()
             {
@@ -489,6 +489,7 @@ PolygonRegion.prototype.createHandle=function(x,y)
             }
     });
     handle.css({'top':y+this.handlesContainer.position().top-3, 'left':x+this.handlesContainer.position().left-3});
+    //handle.css({'top':y-3, 'left':x-3});
 };
 PolygonRegion.prototype.addPoint=function(x,y)
 {
