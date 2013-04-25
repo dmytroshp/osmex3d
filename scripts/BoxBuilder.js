@@ -55,47 +55,52 @@ OSMEX.BoxBuilder.prototype.onLeftClick = function ( mouse ) {
 
     var projector = new THREE.Projector();
     projector.unprojectVector(vector, camera);
-    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-    var intersectPoint = ray.intersectPlane(groundPlane);
-    var pos3d = intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(this.matrixWorld));
+    //var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+    //var intersectPoint = ray.intersectPlane(groundPlane);
+    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+    var intersects = raycaster.intersectObject( gridPlane );
     
-    if (this.currentState !== BoxBuilderState.NOT_STARTED) {
-        
-        if (this.currentState === BoxBuilderState.PICKING_POINT) {
-            
-            this.startPos = pos3d.clone();
-            
-            this.currentState = BoxBuilderState.PICKING_LENGTH;
-        }
-        
-        else if (this.currentState === BoxBuilderState.PICKING_LENGTH) {
-            
-            this.endPos = pos3d.clone();
-            this.centerPos = this.box.position.clone();
-
-            this.currentState = BoxBuilderState.PICKING_WIDTH;
-        }
-        
-        else if (this.currentState === BoxBuilderState.PICKING_WIDTH) {
-            
-            this.centerPos = this.box.position.clone();
-            this.updateHeightPlane();
-            
-            this.currentState = BoxBuilderState.PICKING_HEIGHT;
-        }
-        
-        else if (this.currentState === BoxBuilderState.PICKING_HEIGHT) {
-            
-            this.build();
-            
-            this.currentState = BoxBuilderState.NOT_STARTED;
-        }
-        
-        else {
-            
-            alert("OSMEX.BoxBuilder.prototype.onLeftClick picking error!");
-        }
+    if( intersects.length > 0 ){
+        var pos3d = intersects[0].point.sub(new THREE.Vector3().getPositionFromMatrix(this.matrixWorld));
     }
+
+        if (this.currentState !== BoxBuilderState.NOT_STARTED) {
+
+            if (this.currentState === BoxBuilderState.PICKING_POINT) {
+
+                this.startPos = pos3d.clone();
+
+                this.currentState = BoxBuilderState.PICKING_LENGTH;
+            }
+
+            else if (this.currentState === BoxBuilderState.PICKING_LENGTH) {
+
+                this.endPos = pos3d.clone();
+                this.centerPos = this.box.position.clone();
+
+                this.currentState = BoxBuilderState.PICKING_WIDTH;
+            }
+
+            else if (this.currentState === BoxBuilderState.PICKING_WIDTH) {
+
+                this.centerPos = this.box.position.clone();
+                this.updateHeightPlane();
+
+                this.currentState = BoxBuilderState.PICKING_HEIGHT;
+            }
+
+            else if (this.currentState === BoxBuilderState.PICKING_HEIGHT) {
+
+                this.build();
+
+                this.currentState = BoxBuilderState.NOT_STARTED;
+            }
+
+            else {
+
+                alert("OSMEX.BoxBuilder.prototype.onLeftClick picking error!");
+            }
+        }
 };
 
 OSMEX.BoxBuilder.prototype.onRightClick = function ( pos3d ) {
@@ -117,101 +122,105 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
         var projector = new THREE.Projector();
         projector.unprojectVector(vector, camera);
-        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-        var intersectPoint = ray.intersectPlane(groundPlane);
-        var pos3d = intersectPoint.sub(new THREE.Vector3().getPositionFromMatrix(this.matrixWorld));
-    
-        if (this.currentState === BoxBuilderState.PICKING_POINT) {
-        
-            this.box.position = pos3d;
-        }
-    
-        else if (this.currentState === BoxBuilderState.PICKING_LENGTH) {
-        
-            var lengthVec = pos3d.clone().sub(this.startPos);
-            var len = lengthVec.length();
-            var lengthDir = lengthVec.divideScalar(len);
-        
-            this.box.position = this.startPos.clone();
-            this.box.lookAt(pos3d);
-        
-            if (len > this.MIN_LENGTH) {
-                
-                len = Math.min(len, this.MAX_LENGTH);
-            
-                this.box.position.add(lengthDir.multiplyScalar(len / 2));
+        //var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+        //var intersectPoint = ray.intersectPlane(groundPlane);
+        var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+        var intersects = raycaster.intersectObject( gridPlane );
+        if( intersects.length > 0 ){
+            var pos3d = intersects[0].point.sub(new THREE.Vector3().getPositionFromMatrix(this.matrixWorld));
+
+            if (this.currentState === BoxBuilderState.PICKING_POINT) {
+
+                this.box.position = pos3d;
             }
-            else {
 
-                len = this.MIN_LENGTH; // do not rotate the box if a direction vector is very short      
-            }
-        
-            this.box.scale.z = len;
-            this.text.innerHTML = 'length: ' + len.toFixed(1) + 'm';
-        }
-        
-        else if (this.currentState === BoxBuilderState.PICKING_WIDTH) {
-            
-            var dir = this.endPos.clone().sub(this.startPos).normalize();
-            var expandVec = pos3d.clone().sub(this.startPos);
-            var dot = dir.dot(expandVec);
-            
-            var intersect = this.startPos.clone().add(dir.clone().multiplyScalar(dot));
-            
-            var widthVec = pos3d.clone().sub(intersect);
-            var width = widthVec.length();
-            var widthDir = widthVec.divideScalar(width);
-        
-            this.box.position = this.centerPos.clone();
-        
-            if (width > this.MIN_WIDTH) {  
-                
-                width = Math.min(width, this.MAX_WIDTH);
-            
-                this.box.position.add(widthDir.multiplyScalar(width / 2));
-            }
-            else {
+            else if (this.currentState === BoxBuilderState.PICKING_LENGTH) {
 
-                width = this.MIN_WIDTH; // do not rotate the box if a direction vector is very short      
-            }
-        
-            this.box.scale.x = width;
-            this.text.innerHTML = 'width: ' + width.toFixed(1) + 'm';
-        }
-        
-        else if (this.currentState === BoxBuilderState.PICKING_HEIGHT) {
-            
-            var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-            projector.unprojectVector(vector, camera);
-            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-            var intersectPoint = ray.intersectPlane(this.heightPlane);
+                var lengthVec = pos3d.clone().sub(this.startPos);
+                var len = lengthVec.length();
+                var lengthDir = lengthVec.divideScalar(len);
 
-            if (intersectPoint !== undefined) {
-                
-                var heightVec = intersectPoint.clone().sub(this.centerPos);
-                var height = this.heightNormal.dot(heightVec);
-                
-                if (Math.abs(this.box.scale.y - height) < this.MAX_DELTA_HEIGHT) {
+                this.box.position = this.startPos.clone();
+                this.box.lookAt(pos3d);
 
-                    this.box.position = this.centerPos.clone();
+                if (len > this.MIN_LENGTH) {
 
-                    if (height > this.MIN_HEIGHT) {
+                    len = Math.min(len, this.MAX_LENGTH);
 
-                        height = Math.min(height, this.MAX_HEIGHT);
-
-                        this.box.position.add(this.heightNormal.clone().multiplyScalar(height / 2));
-                    }
-                    else {
-
-                        height = this.MIN_HEIGHT; // do not rotate the box if a direction vector is very short      
-                    }
-
-                    this.box.scale.y = height;
-                    this.text.innerHTML = 'height: ' + height.toFixed(1) + 'm';
+                    this.box.position.add(lengthDir.multiplyScalar(len / 2));
                 }
-            }  
-           
+                else {
+
+                    len = this.MIN_LENGTH; // do not rotate the box if a direction vector is very short      
+                }
+
+                this.box.scale.z = len;
+                this.text.innerHTML = 'length: ' + len.toFixed(1) + 'm';
+            }
+
+            else if (this.currentState === BoxBuilderState.PICKING_WIDTH) {
+
+                var dir = this.endPos.clone().sub(this.startPos).normalize();
+                var expandVec = pos3d.clone().sub(this.startPos);
+                var dot = dir.dot(expandVec);
+
+                var intersect = this.startPos.clone().add(dir.clone().multiplyScalar(dot));
+
+                var widthVec = pos3d.clone().sub(intersect);
+                var width = widthVec.length();
+                var widthDir = widthVec.divideScalar(width);
+
+                this.box.position = this.centerPos.clone();
+
+                if (width > this.MIN_WIDTH) {  
+
+                    width = Math.min(width, this.MAX_WIDTH);
+
+                    this.box.position.add(widthDir.multiplyScalar(width / 2));
+                }
+                else {
+
+                    width = this.MIN_WIDTH; // do not rotate the box if a direction vector is very short      
+                }
+
+                this.box.scale.x = width;
+                this.text.innerHTML = 'width: ' + width.toFixed(1) + 'm';
+            }
         }
+        if (this.currentState === BoxBuilderState.PICKING_HEIGHT) {
+
+                var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                projector.unprojectVector(vector, camera);
+                var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                var intersectPoint = ray.intersectPlane(this.heightPlane);
+
+                if (intersectPoint !== undefined) {
+
+                    var heightVec = intersectPoint.clone().sub(this.centerPos);
+                    var height = this.heightNormal.dot(heightVec);
+
+                    if (Math.abs(this.box.scale.y - height) < this.MAX_DELTA_HEIGHT) {
+
+                        this.box.position = this.centerPos.clone();
+
+                        if (height > this.MIN_HEIGHT) {
+
+                            height = Math.min(height, this.MAX_HEIGHT);
+
+                            this.box.position.add(this.heightNormal.clone().multiplyScalar(height / 2));
+                        }
+                        else {
+
+                            height = this.MIN_HEIGHT; // do not rotate the box if a direction vector is very short      
+                        }
+
+                        this.box.scale.y = height;
+                        this.text.innerHTML = 'height: ' + height.toFixed(1) + 'm';
+                    }
+                }  
+
+            }
+        
     }
 };
 
@@ -235,10 +244,14 @@ OSMEX.BoxBuilder.prototype.build = function () {
     buildedBox.material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
     if ($("#BBox").prop("checked")) buildedBox.add(new OSMEX.BoundingBox(buildedBox));
     buildedBox.name = "cube";
-    addToAdded(buildedBox);
+    buildedBox.typeID = 1;
+    buildedBox.isCreated = true;
+    buildedBox.isModified = false;
+    buildedBox.isDeleted = false;
     objectScene.add(buildedBox);
 
     this.finishBuild();
+    document.getElementById("dragging").click();
 };
 
 OSMEX.BoxBuilder.prototype.finishBuild = function () {
