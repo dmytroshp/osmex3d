@@ -191,7 +191,7 @@ def createRectangle(boundBox, building, database):
         print "left %f and right %f" %(horizontalAngleleft , horizontalAngleright)
         horizontalAngleleft = 999
 
-    if abs(horizontalAngleleft - horizontalAngleright) < 15:
+    if abs(horizontalAngleleft - horizontalAngleright) < 10:
         topLine = [leftLine[1], rightLine[1]]
         bottomLine = [leftLine[0], rightLine[0]]
         BGN = leftLine[1]
@@ -256,6 +256,7 @@ class OSMHandler(ContentHandler):
         if name == "way":
             self.idway = attrs.get("id")
             self.buildmas = []
+            self.accept = False
         if name == "nd":
             self.idnd = attrs.get("ref")
             self.buildmas.append(self.idnd)
@@ -263,8 +264,7 @@ class OSMHandler(ContentHandler):
             tagname = attrs.get("k")
             if tagname == "building" or tagname == "amenity":
                 self.accept = True
-            else:
-                self.accept = False
+
     def endElement(self,name):
         if name == "way":
             try:

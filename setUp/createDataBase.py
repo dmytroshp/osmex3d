@@ -26,6 +26,7 @@ CREATE_DATABASE_2 = """CREATE TABLE IF NOT EXISTS objectInstance (
   rotationZ DOUBLE,
   positionLat DOUBLE,
   positionLon DOUBLE,
+  positionHeight DOUBLE,
   TypeID INT NOT NULL,
   PRIMARY KEY (id)
 );"""
