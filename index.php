@@ -101,12 +101,15 @@ HERE;
                     }
                 };
                 $("#objectEditor").tabs({
-                    beforeActivate:function( event, ui )
-                    {
-                        $('#txtBuilder').load(url, data, callback)
-                        initializator[ui.tab.attr('id')].call(ui,null);
+                    beforeActivate:function(event, ui){
+                        if(ui.newPanel.is(':empty'))
+                        {
+                            var key=ui.newTab.attr('id');
+                            ui.newPanel.load(initializator[key].url,'',function(){
+                                initializator[key].activator.call(this,event,ui);
+                            });
+                        }
                     }
-                    
                 });
                 
                 $("#objectEditor").height($("#content").height() - 8);
@@ -275,7 +278,7 @@ HERE;
                         <ul>
                             <li id="tabMap"><a href="#map">Map</a></li>
                             <li id="tabGeo"><a href="#geoBuilder">Geometry Builder</a></li>
-                            <li id="tabTxt"><a href="ajax/textureBuilder.html">Texture Builder</a></li>
+                            <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
                         <input id="editBtn" type="button" value="Save">
                          <input id="backBtn" type="button" value="Simple View">

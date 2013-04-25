@@ -173,7 +173,6 @@ function onSelectRegionItem(index)
         {
             var mydialog=$(dialog_template).attr('title',title_discard_changes_onselect);
             mydialog.find('p').append(msg_discard_changes_onselect);
-            mydialog.appendTo('#textureBuilder');
             mydialog.dialog({
                 resizable: false,
                   height:140,
@@ -182,11 +181,9 @@ function onSelectRegionItem(index)
                     "Yes": function() {
                       regions[currentIndex].revert();
                       continueSelect(r, index);
-                      mydialog.remove();
                       $( this ).dialog( "close" );
                     },
                     "No": function() {
-                       mydialog.remove();
                       $( this ).dialog( "close" );
                     }
                 }
@@ -208,7 +205,7 @@ function onRegionRemove(r)
 {
     var mydialog=$(dialog_template).attr('title',title_remove_region);
         mydialog.find('p').append(msg_remove_region);
-        mydialog.appendTo('#textureBuilder');
+        
         mydialog.dialog({
             resizable: false,
               height:140,
@@ -229,15 +226,15 @@ function onRegionRemove(r)
                       //currentIndex=0;
                       regions[0].regionItem.trigger('click');
                   }
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 },
                 "No": function() {
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 },
                 "Cancel": function() {
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 }
             }
@@ -296,7 +293,7 @@ function onPolygonSelectionClick()
     {
         var mydialog=$(dialog_template).attr('title',title_new_region_discard_changes);
         mydialog.find('p').append(msg_new_region_discard_changes);
-        mydialog.appendTo('#textureBuilder');
+        
         mydialog.dialog({
             resizable: false,
               height:140,
@@ -305,11 +302,11 @@ function onPolygonSelectionClick()
                 "Yes": function() {
                   regions[currentIndex].clear();
                   continueInit();
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 },
                 "No": function() {
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 }
             }
@@ -379,7 +376,7 @@ function onRectangleSelectionClick()
     {
         var mydialog=$(dialog_template).attr('title',title_new_region_discard_changes);
         mydialog.find('p').append(msg_new_region_discard_changes);
-        mydialog.appendTo('#textureBuilder');
+        
         mydialog.dialog({
             resizable: false,
               height:140,
@@ -388,11 +385,11 @@ function onRectangleSelectionClick()
                 "Yes": function() {
                   regions[currentIndex].clear();
                   continueInit();
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 },
                 "No": function() {
-                  mydialog.remove();
+                  
                   $( this ).dialog( "close" );
                 }
             }
@@ -572,7 +569,7 @@ function initTextureEditor()
             {
                 var mydialog=$(dialog_template).attr('title',title_clear_all);
                 mydialog.find('p').append(msg_clear_all);
-                mydialog.appendTo('#textureBuilder');
+                
                 mydialog.dialog({
                     resizable: false,
                       height:140,
@@ -580,11 +577,11 @@ function initTextureEditor()
                       buttons: {
                         "Yes": function() {
                           continueClear();
-                          mydialog.remove();
+                          
                           $( this ).dialog( "close" );
                         },
                         "No": function() {
-                          mydialog.remove();
+                          
                           $( this ).dialog( "close" );
                         }
                     }
@@ -600,11 +597,17 @@ function initTextureEditor()
             for(var i=0;i<regions.length;i++)
             {
                 var result=regions[i].getRegion(sourceImage);
+                if(!result.completed)
+                {
+                    showErrorMessage('Please, complete region #'+(i+1)+'.');
+                    return;
+                }
                 if(result.name==='' || result.name.length>254)
                 {
                     showErrorMessage('Please, enter valid name for region #'+(i+1)+'.');
                     return;
                 }
+                
                 var jsonString=JSON.stringify(result);
                 if(pack.length+jsonString.length<18*1024*1024)
                 {

@@ -10,6 +10,11 @@
     padding: 5px;
     /*margin: 50px;*/
 }
+.ui-dialog
+{
+    font: 70.5% "Trebuchet MS", sans-serif;
+    z-index: 990;
+}
 .point
 {
     width: 6px; 
