@@ -2,6 +2,8 @@
 
     //header('Content-Type: text/xml; utf-8');
 	
+	require_once("config.php");
+	
     $login_db = 'root';
     $password_db = '';
 
