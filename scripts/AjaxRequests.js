@@ -1,9 +1,14 @@
 
 
-function postScene(ADDED, MODIFIED, REMOVED) {
-    ajaxPostScene(ADDED);
-    ajaxPostScene(MODIFIED);
-    ajaxPostScene(REMOVED);
+function postScene(scene) {
+    var objArray = new Array();
+    for (var i = FIRST_PICKABLE_OBJ, l = scene.children.length; i < l; i++){
+        if (scene.children[i].isDeleted === true && scene.children[i].isCreated === false) objArray.push(scene.children[i]);
+            else if(scene.children[i].isDeleted === false && scene.children[i].isCreated === true) objArray.push(scene.children[i]);
+                else if (scene.children[i].isDeleted === false && scene.children[i].isCreated === false && scene.children[i].isModified === true)
+                    objArray.push(scene.children[i])
+    }
+    ajaxPostScene(objArray)
 }
 
 function ajaxPostScene(array) {
@@ -13,7 +18,7 @@ function ajaxPostScene(array) {
             type: "POST",
             url: "server_scripts/AddInstance.php",
             cache: false,
-            data: {object_uid: array[i].id, object_scaleX: array[i].scale.x, object_scaleY: array[i].scale.y, object_scaleZ: array[i].scale.z, object_rotationX: array[i].rotation.x, object_rotationY: array[i].rotation.y, object_rotationZ: array[i].rotation.z, object_positionLat: coords.lat, object_positionLon: coords.lon, object_referID: array[i].name, isDeleted: array[i].isDeleted},
+            data: {object_uid: array[i].id, object_scaleX: array[i].scale.x, object_scaleY: array[i].scale.y, object_scaleZ: array[i].scale.z, object_rotationX: array[i].rotation.x, object_rotationY: array[i].rotation.y, object_rotationZ: array[i].rotation.z, object_positionLat: coords.lat, object_positionLon: coords.lon,object_positionHeight:array[i].position.y, object_referID: array[i].typeID, isDeleted: array[i].isDeleted},
             success: function(data) {
                 alert(data);
             }
