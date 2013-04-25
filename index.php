@@ -100,6 +100,15 @@ HERE;
                         activator:function(){prepareTextureBuilder();}
                     }
                 };
+                function forceRefreshPanel(index)
+                {
+                    var key=$('#objectEditor ul li:eq('+index+')').attr('id');
+                    var panel=$('#objectEditor').children('div:eq('+index+')');
+                    panel.load(initializator[key].url,'',function(){
+                                initializator[key].activator.call(this,index);
+                    });
+                    $("#objectEditor").tabs({active:index});
+                }
                 $("#objectEditor").tabs({
                     beforeActivate:function(event, ui){
                         if(ui.newPanel.is(':empty'))
@@ -135,64 +144,64 @@ HERE;
                             $(".accordion").empty();
                             $(".accordion").html(result);
                             $(".flip").click(function(){
-                    $(this).next(".slidingPanel").slideToggle(500);
-                });
-                $(".prev").mouseenter(function (){
-                    var position = $(this).position();
-                    var src = $(this).attr("src");
-                    var res = src.substring(0, src.length-9);
-                    var ending = ".png";
-                    res+=ending;
-                    $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
-                    $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
-                    
-                });
-                $(".prev").mouseleave(function (){
-                  $("#fullPic").remove();
-                });
+                                $(this).next(".slidingPanel").slideToggle(500);
+                            });
+                            $(".prev").mouseenter(function (){
+                                var position = $(this).position();
+                                var src = $(this).attr("src");
+                                var res = src.substring(0, src.length-9);
+                                var ending = ".png";
+                                res+=ending;
+                                $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
+                                $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
+                            });
+                            $(".prev").mouseleave(function (){
+                                $("#fullPic").remove();
+                            });
                         }
                     });
                 });
                 $("#tabGeo").css("display","none");
-                            $("#tabTxt").css("display","none");
-                            $("#backBtn").css("display","none");
-                            $("#editBtn").val("Edit");
-                            $(".accordionContainer").css("display", "none");
-                            width=$("#searchDivc").width();
-                            $("#searchDivc").width(width-150);
-                            $("#sidebar").width(width-150);
-                            $("#content").css("width", "75%");
-                            flag=0;
+                $("#tabTxt").css("display","none");
+                $("#backBtn").css("display","none");
+                $("#editBtn").val("Edit");
+                $(".accordionContainer").css("display", "none");
+                width=$("#searchDivc").width();
+                $("#searchDivc").width(width-150);
+                $("#sidebar").width(width-150);
+                $("#content").css("width", "75%");
+                flag=0;
                 $("#collapseImg").click(function (){
                     $(".slidingPanel").slideUp("fast");
                 });
                 $("#backBtn").click(function (){
                     if(flag){
-                            $("#tabGeo").css("display","none");
-                            $("#tabTxt").css("display","none");
-                            $(this).css("display","none");
-                            $("#editBtn").val("Edit");
-                            $(".accordionContainer").css("display", "none");
-                            width=$("#searchDivc").width();
-                            $("#searchDivc").width(width-150);
-                            $("#sidebar").width(width-150);
-                            $("#content").css("width", "75%");
-                            flag=0;
+                        forceRefreshPanel(0);
+                        $("#tabGeo").css("display","none");
+                        $("#tabTxt").css("display","none");
+                        $(this).css("display","none");
+                        $("#editBtn").val("Edit");
+                        $(".accordionContainer").css("display", "none");
+                        width=$("#searchDivc").width();
+                        $("#searchDivc").width(width-150);
+                        $("#sidebar").width(width-150);
+                        $("#content").css("width", "75%");
+                        flag=0;
                     }
 
                 });
                 $("#editBtn").click(function (){
                     if(!flag){
                         flag=1;
-                    $("#tabGeo").css("display","block");
-                            $("#tabTxt").css("display","block");
-                            $("#backBtn").css("display","block");
-                            $("#editBtn").val("Save");
-                            $(".accordionContainer").css("display", "block");
-                            width=$("#searchDivc").width();
-                            $("#searchDivc").width(width+150);
-                            $("#sidebar").width(width+150);
-                            $("#content").css("width", "62%");
+                        $("#tabGeo").css("display","block");
+                        $("#tabTxt").css("display","block");
+                        $("#backBtn").css("display","block");
+                        $("#editBtn").val("Save");
+                        $(".accordionContainer").css("display", "block");
+                        width=$("#searchDivc").width();
+                        $("#searchDivc").width(width+150);
+                        $("#sidebar").width(width+150);
+                        $("#content").css("width", "62%");
                     }
                 });
                 //var searchbar=$(searchbar_template);
@@ -228,7 +237,10 @@ HERE;
                         }
                      });
                      return false;
-                });                
+                });
+                forceRefreshPanel(0);
+                //
+                //$("#objectEditor").tabs({active:0});
             });
         </script>
     </head>

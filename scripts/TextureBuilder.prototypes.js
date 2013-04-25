@@ -13,6 +13,7 @@ function RectangleRegion(emptyPointArray,index)
    this.name="Unnamed "+(PolygonRegion.prototype.regions.length+1);
    this.points=emptyPointArray;
    this.regionItem=null;
+   this.completed=true;
    this.index=PolygonRegion.prototype.regions.length;
    PolygonRegion.prototype.regions.push(this);
 }

@@ -596,12 +596,12 @@ function initTextureEditor()
             var result;
             for(var i=0;i<regions.length;i++)
             {
-                var result=regions[i].getRegion(sourceImage);
-                if(!result.completed)
+                if(!regions[i].completed)
                 {
                     showErrorMessage('Please, complete region #'+(i+1)+'.');
                     return;
                 }
+                var result=regions[i].getRegion(sourceImage);
                 if(result.name==='' || result.name.length>254)
                 {
                     showErrorMessage('Please, enter valid name for region #'+(i+1)+'.');
