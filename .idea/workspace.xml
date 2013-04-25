@@ -20,11 +20,42 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="INSTALL.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="INSTALL.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setUp/INSTALL.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="0" selection-start="421" selection-end="421" vertical-scroll-proportion="0.39534885">
+            <state line="11" column="47" selection-start="384" selection-end="384" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#17#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FillDataBase.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/setUp/FillDataBase.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="createDataBase.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/setUp/createDataBase.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="45" column="21" selection-start="1228" selection-end="1228" vertical-scroll-proportion="1.2142857">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OSMSAXParser[OPTIMIZED].py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/setUp/OSMSAXParser[OPTIMIZED].py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="358" column="33" selection-start="15157" selection-end="15196" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#42#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -42,9 +73,10 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/setUp/INSTALL.py" />
         <option value="$PROJECT_DIR$/setUp/OSMSAXParser[OPTIMIZED].py" />
         <option value="$PROJECT_DIR$/setUp/createDataBase.py" />
+        <option value="$PROJECT_DIR$/setUp/fillDataBase.py" />
+        <option value="$PROJECT_DIR$/setUp/INSTALL.py" />
       </list>
     </option>
   </component>
@@ -122,7 +154,7 @@
     <property name="recentsLimit" value="5" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
-  <component name="RunManager" selected="Python.INSTALL">
+  <component name="RunManager" selected="Python.fillDataBase">
     <configuration default="false" name="INSTALL" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -152,6 +184,23 @@
       <module name="osmScript" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/setUp/createDataBase.py" />
+      <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="fillDataBase" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/setUp" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <module name="osmScript" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/setUp/fillDataBase.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
@@ -191,14 +240,34 @@
       <option name="PUREUNITTEST" value="true" />
       <method />
     </configuration>
-    <list size="2">
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <module name="osmScript" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Python.INSTALL" />
       <item index="1" class="java.lang.String" itemvalue="Python.createDataBase" />
+      <item index="2" class="java.lang.String" itemvalue="Python.fillDataBase" />
     </list>
     <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Python.INSTALL" />
-        <item index="1" class="java.lang.String" itemvalue="Python.createDataBase" />
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="Python.fillDataBase" />
+        <item index="1" class="java.lang.String" itemvalue="Python.INSTALL" />
+        <item index="2" class="java.lang.String" itemvalue="Python.createDataBase" />
       </list>
     </recent_temporary>
   </component>
@@ -212,8 +281,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1040" height="744" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -290,13 +359,31 @@
     <entry file="file://$PROJECT_DIR$/setUp/INSTALL.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1" column="0" selection-start="18" selection-end="18" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setUp/INSTALL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="47" selection-start="384" selection-end="384" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setUp/FillDataBase.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/setUp/OSMSAXParser[OPTIMIZED].py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="234" column="30" selection-start="9809" selection-end="9809" vertical-scroll-proportion="-0.4010989">
+        <state line="358" column="33" selection-start="15157" selection-end="15196" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#0#42#0" expanded="true" />
           </folding>
@@ -305,14 +392,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/setUp/createDataBase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="24" selection-start="774" selection-end="774" vertical-scroll-proportion="0.6849817">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/setUp/INSTALL.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="421" selection-end="421" vertical-scroll-proportion="0.39534885">
+        <state line="45" column="21" selection-start="1228" selection-end="1228" vertical-scroll-proportion="1.2142857">
           <folding />
         </state>
       </provider>
