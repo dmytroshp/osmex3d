@@ -28,10 +28,11 @@
 		
         <script src="scripts/Camera.js"></script>
         <script src="scripts/CameraController.js"></script>
+        <script src="scripts/TileMesh.js"></script>
+        <script src="scripts/AreaSelector.js"></script>
 		
 
 		<script src="scripts/Detector.js"></script>
-		<script src="scripts/stats.min.js"></script>
 		
 		<script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
         <script type="text/javascript" src="server_scripts/Functions.js"></script> 
@@ -84,7 +85,7 @@ function TileBlds () {
 		 delete this.minlat;
 		 delete this.x;
 		 delete this.z;
-		delete this.arrIndxsBlds
+		delete this.arrIndxsBlds;
 		this.arrIndxsBlds=null;
     };
 	
@@ -93,7 +94,7 @@ function TileBlds () {
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-			var container, stats;
+			var container;
 			
 			var arrCurRoot = new Array();
 			var arrTile = new Array();
@@ -108,8 +109,12 @@ function TileBlds () {
 			var lvlbldactive=-1;
 			var maxidinque=-1;
 			
-			var camera, controls, scene, renderer;
+			var camera, cameraController, scene, renderer;
 			var maxAnisotropy;
+                        
+                        var areaSelector;
+                        
+                        var mouse = new THREE.Vector2(0, 0);
 			
 			var texture;
 
@@ -195,7 +200,8 @@ this.loadTile = function () {
 		 {
 		    this.indx++;
 			this.ready=false;
-			land_func(id);
+			//land_func(id);
+                        responseServer(id);
 			if(this.indxCube<this.arTileCubeForAdd.length)this.requestBld=false;
 		 }
 	  }
@@ -205,7 +211,7 @@ this.loadTile = function () {
 		    if(id.length>0){
 			   this.indxCube++;this.ready=false;
 			   var lanlot=id.split(' ');//console.debug(parseInt(xz[0])+" "+parseInt(xz[1]));
-			   build_func(parseFloat(lanlot[0]),parseFloat(lanlot[1]),parseFloat(lanlot[2]),parseFloat(lanlot[3]),parseFloat(lanlot[4]));
+			   //build_func(parseFloat(lanlot[0]),parseFloat(lanlot[1]),parseFloat(lanlot[2]),parseFloat(lanlot[3]),parseFloat(lanlot[4]));
 			   //var xz=id.split(' ');//console.debug(parseInt(xz[0])+" "+parseInt(xz[1]));
 			   //build_func(parseInt(xz[0]),parseInt(xz[1]));
 			   this.requestBld=true;
@@ -320,71 +326,72 @@ this.loaded = function () {
               var maxlon = maxlon;
               var maxlat = maxlat;
 
-              var cenlon=(maxlon-minlon)/2 + minlon
-              var cenlat=(maxlat-minlat)/2 + minlat
-              var _x=lon2tile(cenlon,18)
-              var _z=lat2tile(cenlat,18)
-              var num18trow=Math.pow(2,18)-1
-              var _k=tileSizeRoot/num18trow
-              var coordx=_x*_k-1727122.6368
-              var coordz=_z*_k-1727122.6368
-              var tilesize=(lon2tile(maxlon,18)-lon2tile(minlon,18))*13.1769
+              var cenlon=(maxlon-minlon)/2 + minlon;
+              var cenlat=(maxlat-minlat)/2 + minlat;
+              var _x=lon2tile(cenlon,18);
+              var _z=lat2tile(cenlat,18);
+              var num18trow=Math.pow(2,18)-1;
+              var _k=tileSizeRoot/num18trow;
+              var coordx=_x*_k-1727122.6368;
+              var coordz=_z*_k-1727122.6368;
+              var tilesize=(lon2tile(maxlon,18)-lon2tile(minlon,18))*13.1769;
               var coordy=tilesize*UnitToPixelScale/256  ; //256-na lvl nige512	
               Camera.position.set(coordx, coordy, coordz);
-              CameraController.target.x+=coordx
-              CameraController.target.z+=coordz
+              CameraController.target.x+=coordx;
+              CameraController.target.z+=coordz;
             }
 
             function setPointZoom(cenlon,cenlat,zoom,Camera,CameraController)
             {	
-              var cenlon=cenlon
-              var cenlat=cenlat
-              var zoom=zoom
-              var _x=lon2tile(cenlon,18)
-              var _z=lat2tile(cenlat,18)
+              var cenlon=cenlon;
+              var cenlat=cenlat;
+              var zoom=zoom;
+              var _x=lon2tile(cenlon,18);
+              var _z=lat2tile(cenlat,18);
               var lon1=tile2lon(_x,zoom);
               var lon2=tile2lon(_x+1,zoom);
-              var numzoomtrow=Math.pow(2,18)-1
-              var _k=tileSizeRoot/numzoomtrow
-              var coordx=_x*_k-1727122.6368
-              var coordz=_z*_k-1727122.6368
-              var tilesize=(lon2tile(Math.max(lon2,lon1),zoom)-lon2tile(Math.min(lon2,lon1),zoom))*Math.pow(2,18-zoom)*13.1769
+              var numzoomtrow=Math.pow(2,18)-1;
+              var _k=tileSizeRoot/numzoomtrow;
+              var coordx=_x*_k-1727122.6368;
+              var coordz=_z*_k-1727122.6368;
+              var tilesize=(lon2tile(Math.max(lon2,lon1),zoom)-lon2tile(Math.min(lon2,lon1),zoom))*Math.pow(2,18-zoom)*13.1769;
               var coordy=tilesize*UnitToPixelScale/256  ; //256-na lvl nige	
               Camera.position.set(coordx, coordy, coordz);
-              CameraController.target.x+=coordx
-              CameraController.target.z+=coordz
+              CameraController.target.x+=coordx;
+              CameraController.target.z+=coordz;
             }			
 
 			function init() {
 			    //land_func(0);// load 1st tileroots
 				//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 10000000 );
-				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 0.01, 10000000 , 0.01, 10000000 );
+				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight, 45, 1, 20000000, 10, 10000000);//0.01, 10000000 , 0.01, 10000000 );
 				//camera.position.set(0, 3454245.2736, 0.0);
 				UnitToPixelScale = window.innerHeight /( 2.0 * getTanDeg(camera.fov / 2.0));
 
-                controls = new OSMEX.CameraController( camera );
-                //controls.userZoomSpeed = 0.43;
-				controls.ZoomSpeed = 0.43;
+                cameraController = new OSMEX.CameraController( camera );
+                //cameraController.userZoomSpeed = 0.43;
+				cameraController.ZoomSpeed = 0.43;
+                                cameraController.noPan = true;
 				
 				
 				if(typeof(landscapeMode) != "undefined" && landscapeMode !== null)
 				{
 	               if(landscapeMode.toString=='boundary')
 	               {
-	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls)
+	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,cameraController)
 	               }
 	               else if(landscapeMode.toString=='zoom')
 	               {
-	                 setPointZoom(mlon,mlat,zoom,camera,controls)
+	                 setPointZoom(mlon,mlat,zoom,camera,cameraController)
 	               }
 				}else
 				{
-				  setPointZoom(0,0,0,camera,controls)
+				  setPointZoom(0,0,0,camera,cameraController)
 				}
 
-				//controls.rotateSpeed = 0.01;
+				//cameraController.rotateSpeed = 0.01;
 
-				controls.addEventListener( 'change', checkTiles );
+				cameraController.addEventListener( 'change', checkTiles );
                 timerid=setTimeout(verify, 35);
 				
 				//scene
@@ -419,14 +426,15 @@ this.loaded = function () {
 				
 				maxAnisotropy = renderer.getMaxAnisotropy();
 
-				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				stats.domElement.style.zIndex = 100;
-				container.appendChild( stats.domElement );
-
 				//
+                                
+                                areaSelector = new OSMEX.AreaSelector();
+                                scene.add(areaSelector);
+                                areaSelector.startBuild();
 
+                                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                                document.addEventListener('mousedown', onDocumentMouseDown, false);
+                                document.addEventListener('mouseup', onDocumentMouseUp, false);
 				window.addEventListener( 'resize', onWindowResize, false );
                //wrt("clear")
 			  /* for(var i = 0; i < tiles[0].triangleGeometry.vertices.length; i++) {
@@ -455,40 +463,7 @@ this.loaded = function () {
               for (var beg=0;beg<initTiles.length;beg++)TLoad.pushTile(initTiles[beg]);
 			  //document.addEventListener('keydown',onDocumentKeyDown,false);
 
-			}
-			
-			function onDocumentKeyDown(event){
-			   var k = 20000.0/3454245.2736;
-			   var delta = k * camera.position.y;
-			   var dx=0,dz=0;
-			   event = event || window.event;
-			   var keycode = event.keyCode;
-			   switch(keycode){
-			   case 37 : //left
-			   dx=(-1)*delta*Math.cos( controls.theta );
-			   dz=delta*Math.sin( controls.theta );
-			   break;
-			   case 38 : // up 
-			   dx=(-1)*delta*Math.sin( controls.theta );
-			   dz=(-1)*delta*Math.cos( controls.theta );
-			   break;
-			   case 39 : // right
-			   dx=delta*Math.cos( controls.theta );
-			   dz=(-1)*delta*Math.sin( controls.theta );
-			   break;
-			   case 40 : //down
-			   dx=delta*Math.sin( controls.theta );
-			   dz=delta*Math.cos( controls.theta );
-			   break;
-			   }
-			   camera.position.x +=dx;
-			   controls.center.x +=dx;
-			   camera.position.z +=dz;
-			   controls.center.z +=dz;
-               checkTiles();
-			   }
-			   
-			   
+			}  
 			
 			function initFaceTex(tile) {
 					//Faces
@@ -520,34 +495,28 @@ this.loaded = function () {
 
 			
 			//function is called in response to a request from the server to get the tile by id
-			function responseServer(s) {
+			function responseServer(tileId) {
 			
-				var tileId=-1;
 				var flagroot=false;
 				var findtile=false;
-				var jstr;
-				var flg_empty=false;
-				jstr=JSON.parse(''+s);
-				if(jstr.id<0){
+				if(tileId<0){
 				var lvl=-1;
-				var id =Math.abs(jstr.id);
+				var id =Math.abs(tileId);
 				for(t=0;/*t<=TLoad.maxid*/;t=(t*4+4)){lvl++;if(id<=t)break}
-				if(lvl<=18)jstr.id=id;
+				if(lvl<=18)tileId=id;
 				}
-				if(jstr.verts[0]==undefined)flg_empty=true;
 
 				
-                if(jstr.id>=0){	
+                if(tileId>=0){	
 
 				/***************/
-				if(arrTile[jstr.id]!=undefined){
-				var tileId=jstr.id
-				arrTile[tileId].prnt=jstr.id==0?-1:((jstr.id-1)-((jstr.id-1)%4))/4;
+				if(arrTile[tileId]!=undefined){
+				arrTile[tileId].prnt=tileId==0?-1:((tileId-1)-((tileId-1)%4))/4;
 
 				var var1=Math.pow(2,arrTile[tileId].lvl);//number of tiles in row (specific lvl) 
-				scale=jstr.id==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
+				scale=tileId==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
 				//console.debug("scale "+scale+" tile.id "+arrTile[tileId].id+" tile.lvl "+arrTile[tileId].lvl)
-				var offset=jstr.id==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
+				var offset=tileId==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
 				//count 1st coordinates for concrete tile
 				var startX=TLoad.startX+offset*arrTile[tileId].tex_x;
 				var startZ=TLoad.startZ+offset*arrTile[tileId].tex_z;
@@ -564,7 +533,7 @@ this.loaded = function () {
 					    z_=startZ+(scale)*i_;
 					   for(;j_<9;j_++){
 					      x_=startX+(scale)*j_;
-		                  arrTile[tileId].triangleGeometry.vertices.push(new THREE.Vector3( x_,flg_empty?0.0:(0.1*parseFloat(jstr.verts[index_])),z_));
+		                  arrTile[tileId].triangleGeometry.vertices.push(new THREE.Vector3( x_,0.0,z_));
 						  //if(!flg_empty)alert(jstr.id+" "+parseFloat(jstr.verts[0]))
 						  //console.debug("flg_empty "+flg_empty);
 				          //console.debug("index "+index_+" x "+x_+" jstr.verts[index] "+jstr.verts[index_]+" z "+z_);
@@ -579,7 +548,6 @@ this.loaded = function () {
 				 {
 				   crtMesh(tileId);
 				   arrCurRoot.push(tileId);
-				   render();
 				 })
                 //arrTile[tileId].texExist=true;
 				
@@ -588,34 +556,33 @@ this.loaded = function () {
 				 for(j in arrCurRoot){
 				     cur_ID=arrCurRoot[j];
 		
-                       if(cur_ID*4+1==jstr.id){tileId=cur_ID*4+1;arrTile[tileId]=new Tile();arrTile[tileId].id=jstr.id;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z;arrTile[cur_ID].childs[0]=jstr.id;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
-					   if(cur_ID*4+2==jstr.id){tileId=cur_ID*4+2;arrTile[tileId]=new Tile();arrTile[tileId].id=jstr.id;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z;arrTile[cur_ID].childs[1]=jstr.id;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
-					   if(cur_ID*4+3==jstr.id){tileId=cur_ID*4+3;arrTile[tileId]=new Tile();arrTile[tileId].id=jstr.id;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[cur_ID].childs[2]=jstr.id;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
-					   if(cur_ID*4+4==jstr.id){tileId=cur_ID*4+4;arrTile[tileId]=new Tile();arrTile[tileId].id=jstr.id;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[cur_ID].childs[3]=jstr.id;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
+                       if(cur_ID*4+1==tileId){tileId=cur_ID*4+1;arrTile[tileId]=new Tile();arrTile[tileId].id=tileId;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z;arrTile[cur_ID].childs[0]=tileId;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
+					   if(cur_ID*4+2==tileId){tileId=cur_ID*4+2;arrTile[tileId]=new Tile();arrTile[tileId].id=tileId;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z;arrTile[cur_ID].childs[1]=tileId;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
+					   if(cur_ID*4+3==tileId){tileId=cur_ID*4+3;arrTile[tileId]=new Tile();arrTile[tileId].id=tileId;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[cur_ID].childs[2]=tileId;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
+					   if(cur_ID*4+4==tileId){tileId=cur_ID*4+4;arrTile[tileId]=new Tile();arrTile[tileId].id=tileId;arrTile[tileId].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[tileId].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[cur_ID].childs[3]=tileId;arrTile[tileId].lvl=arrTile[cur_ID].lvl+1;findtile=true;break;}
 
                      cur_ID=null					 
 					}
 
-				if(!findtile&&triangleMesh[(jstr.id*4+1)]&&triangleMesh[(jstr.id*4+2)]&&triangleMesh[(jstr.id*4+3)]&&triangleMesh[(jstr.id*4+4)]/*&&arrTile[jstr.id]*/){
+				if(!findtile&&triangleMesh[(tileId*4+1)]&&triangleMesh[(tileId*4+2)]&&triangleMesh[(tileId*4+3)]&&triangleMesh[(tileId*4+4)]/*&&arrTile[jstr.id]*/){
 				/*console.debug("create tile  "+jstr.id+" "+arrTile[jstr.id]);*/
-				tileId=jstr.id;
 				arrTile[tileId]=new Tile();
-				arrTile[tileId].id=jstr.id;
+				arrTile[tileId].id=tileId;
 				var lvl=-1;
-				for(t=0;t<=TLoad.maxid;t=(t*4+4)){lvl++;if(jstr.id<=t)break}
-				arrTile[tileId].lvl=lvl
+				for(t=0;t<=TLoad.maxid;t=(t*4+4)){lvl++;if(tileId<=t)break}
+				arrTile[tileId].lvl=lvl;
 				arrTile[tileId].tex_x=arrTile[(tileId*4+1)].tex_x/2;
 				arrTile[tileId].tex_z=arrTile[(tileId*4+1)].tex_z/2;
 				flagroot=true;}
 								
                 if(tileId>=0){
 
-				arrTile[tileId].prnt=jstr.id==0?-1:((jstr.id-1)-((jstr.id-1)%4))/4;
+				arrTile[tileId].prnt=tileId==0?-1:((tileId-1)-((tileId-1)%4))/4;
 
 				var var1=Math.pow(2,arrTile[tileId].lvl);//number of tiles in row (specific lvl) 
-				scale=jstr.id==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
+				scale=tileId==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
 				//console.debug("scale "+scale+" tile.id "+arrTile[tileId].id+" tile.lvl "+arrTile[tileId].lvl)
-				var offset=jstr.id==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
+				var offset=tileId==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
 				//count 1st coordinates for concrete tile
 				var startX=TLoad.startX+offset*arrTile[tileId].tex_x;
 				var startZ=TLoad.startZ+offset*arrTile[tileId].tex_z;
@@ -632,7 +599,7 @@ this.loaded = function () {
 					    z_=startZ+(scale)*i_;
 					   for(;j_<9;j_++){
 					      x_=startX+(scale)*j_;
-		                  arrTile[tileId].triangleGeometry.vertices.push(new THREE.Vector3( x_,flg_empty?0.0:(0.1*parseFloat(jstr.verts[index_])),z_));
+		                  arrTile[tileId].triangleGeometry.vertices.push(new THREE.Vector3( x_,0.0,z_));
 						  //console.debug("flg_empty "+flg_empty);
 				          //console.debug("index "+index_+" x "+x_+" jstr.verts[index] "+jstr.verts[index_]+" z "+z_);
 						  index_++;
@@ -677,7 +644,6 @@ this.loaded = function () {
 					TLoad.arTileForAdd.splice(0,TLoad.arTileForAdd.length);
 					TLoad.indx=0;
 					
-					render();
                             }
 					 })			    
 				
@@ -689,8 +655,7 @@ this.loaded = function () {
 				
                     }else{console.debug("! Reject request id is out of range!");}
 					 //r=(delete tile);
-                    // console.debug("del  "+r);
-                      jstr=null;					
+                    // console.debug("del  "+r);					
 					  TLoad.loaded()
 //console.debug("load id  "+TLoad.loaded())
                /*var c0=triangleMesh[0].geometry.vertices[0];
@@ -737,8 +702,7 @@ this.loaded = function () {
 			    MeshOfBlds[b].rotation.set(parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY), parseFloat(jstr.builds[j].rotationZ));
                 scene.add( MeshOfBlds[b]);
 				arrTileBlds[id].arrIndxsBlds[j]=b;
-					   }
-				render();	   
+					   }	   
 				}
 				jstr=null;
 				TLoad.loaded()	
@@ -754,15 +718,14 @@ this.loaded = function () {
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
-				render();
-
 			}
 
 			function animate() {
 
 				requestAnimationFrame( animate );
-				//render();
-				controls.update();
+				
+				cameraController.update();
+                                render();
 
 			}
 			
@@ -899,7 +862,7 @@ this.loaded = function () {
                 //'overdraw': false
 				                });				
 
-                triangleMesh[id] = new THREE.Mesh(arrTile[id].triangleGeometry, triangleMaterial);
+                triangleMesh[id] = new OSMEX.TileMesh(id, arrTile[id].triangleGeometry, triangleMaterial);
 				triangleMesh[id].position.set(0.0, 0.0, 0.0);
 				scene.add(triangleMesh[id]);
 				triangleMesh[id].visible=true;
@@ -913,8 +876,8 @@ this.loaded = function () {
 			
 				console.debug(" ")
 				console.debug(" ")
-				/*console.debug("camera.phi "+controls.phi)
-				console.debug("camera.theta "+controls.theta)*/
+				/*console.debug("camera.phi "+cameraController.phi)
+				console.debug("camera.theta "+cameraController.theta)*/
 				//console.debug("fov "+camera.fov)
 
 				console.debug("arrCurRoot.length "+arrCurRoot.length)	
@@ -1005,7 +968,7 @@ this.loaded = function () {
 							
 							
 				 flagRise=false;
-				 //does tile have à parent
+				 //does tile have ï¿½ parent
 				 if(TLoad.ReadyForRoot&&arrTile[cur_ID].prnt>=0){
 				    //console.debug("(arrTile[cur_ID].lvl-1) "+(arrTile[cur_ID].lvl-1))
 				    prntId=(1*arrTile[cur_ID].prnt);
@@ -1065,7 +1028,6 @@ this.loaded = function () {
                                        }
 					
 				//if(TLoad)TLoad.loadTile();
-                render();
 				
 				if(TLoad&&!bverify){
 			     if(TLoad.needforload()){bverify=true;timerid=setTimeout(verify, 35);}
@@ -1088,9 +1050,8 @@ this.loaded = function () {
 				*/
                 //renderer.clear(true, true, true);
 				//renderer.context.depthMask( true );
-				//controls.update();
+				//cameraController.update();
                 renderer.render( scene, camera);
-				stats.update();
 			}
 
 			
@@ -1098,7 +1059,7 @@ this.loaded = function () {
 			function lon2tile(lon,zoom) {
 			     return (Math.floor((lon+180)/360*Math.pow(2,zoom)));
 			 }
-            function lat2tile(lat,zoom)  { 
+                        function lat2tile(lat,zoom)  { 
 			    return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom)));
 			}
 			
@@ -1109,6 +1070,42 @@ this.loaded = function () {
  			    var n=Math.PI-2*Math.PI*y/Math.pow(2,z);
  			    return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
  			}
+                        
+            function onDocumentMouseDown(event) {
+
+                event.preventDefault();
+
+                if (event.button == 0) {
+                    
+                    console.log("ABC");
+                    
+                    areaSelector.onLeftMouseButtonDown(mouse);
+
+                }
+            }
+            
+            function onDocumentMouseUp(event) {
+
+                event.preventDefault();
+
+                if (event.button == 0) {
+                    
+                    areaSelector.onLeftMouseButtonUp(mouse);
+
+                }
+            }
+            
+            function onDocumentMouseMove(event) {
+                
+                
+
+                event.preventDefault();
+
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                
+                areaSelector.onMouseMove(mouse);
+            }
 
 
 
