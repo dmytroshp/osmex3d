@@ -657,6 +657,10 @@
                         resultObj.pickable = true;
                         resultObj.visible = true;
                         resultObj.name = "undef"; 
+                        resultObj.bbox = new OSMEX.BoundingBox(resultObj);
+                        resultObj.bbox.scale = new THREE.Vector3(10,10,10);
+                        resultObj.add(this.bbox);
+                        resultObj.bbox.setVisibility(true);
                         objectScene.add(resultObj);
 
                         CLICKED[0].visible = false;
@@ -1031,7 +1035,6 @@
 
                 event.preventDefault();
                 if (event.button == 0) {
-
 
                     if (SIZING) {
 

@@ -62,10 +62,6 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     this.currentObject.pickable = false;
     this.currentObject.setVisibility(false);
     this.currentObject.name = this.name;
-    this.currentObject.isCreated = true;
-    this.currentObject.isModified = false;
-    this.currentObject.isDeleted = false;
-    this.currentObject.id = 0;
     this.add(this.currentObject);
 };
 
@@ -378,3 +374,21 @@ function getUnpackedGeometry( packedGeometry ) {
     
     return geometry;
 }
+
+OSMEX.SketchFactory.prototype.createObject = function( objectTypeId ) {
+
+    
+
+    var geometry = this.makeGeometry(objectTypeId);
+
+    
+
+    var obj = new OSMEX.Block( geometry, this.usualMaterial.clone() );
+
+    obj.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
+
+    
+
+    return obj;
+
+};
