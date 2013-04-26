@@ -978,7 +978,7 @@ this.loaded = function () {
               if(dist<=140&&lvlbldactive<0)lvlbldactive=arrTile[cur_ID].lvl;
 			  if(arrTile[cur_ID].lvl==lvlbldactive)
 			  {
-                if(typeof(arrTileBlds[cur_ID]) == "undefined" && arrTileBlds[cur_ID] == null)
+                if(typeof(arrTileBlds[cur_ID]) == "undefined" || arrTileBlds[cur_ID] == null)
 				{
 				 arrTileBlds[cur_ID]=new TileBlds();
 				 arrTileBlds[cur_ID].id=cur_ID;
