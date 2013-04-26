@@ -13,14 +13,14 @@ $object_rotationY = $_POST['rotationY'];
 $object_rotationZ = $_POST['rotationZ'];
 $object_positionLat = $_POST['positionLat'];
 $object_positionLon = $_POST['positionLon'];
-$object_positionHeight = $_POST['positionHeight']
+$object_positionHeight = $_POST['positionHeight'];
 $object_referID = $_POST['objectType'];
 $object_isDeleted = $_POST['isDeleted'];
 
 if ($object_uid == 0) {
     $INSERT_OBJECT = "INSERT INTO objectInstance VALUE (NULL, " . $object_scaleX . ", "
             . $object_scaleY . ", " . $object_scaleZ . ", " . $object_rotationX . ", " . $object_rotationY . ", "
-            . $object_rotationZ . ", " . $object_positionLat . ", " . $object_positionLon . ", " . $object_positionHeight .
+            . $object_rotationZ . ", " . $object_positionLat . ", " . $object_positionLon . ", " . $object_positionHeight
             . ", " . $object_referID . ");";
     mysql_query($INSERT_OBJECT);
     //$db->exec($INSERT_OBJECT);
