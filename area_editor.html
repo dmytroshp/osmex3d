@@ -7,6 +7,7 @@
         <script src="threejs/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
 
+        <script src="scripts/SketchBuilder.js"></script>
         <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
@@ -27,7 +28,6 @@
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
         <script src="scripts/BoxBuilder.js"></script>
-        <script src="scripts/SketchFactory.js"></script>
 
         <script src="scripts/AjaxRequests.js"></script>
         
@@ -148,15 +148,15 @@
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
-            <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="cube" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cube.png'>
             </div>
             <br/>
-            <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="cylinder" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cylinder.png'>
             </div>
             <br/>
-            <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="sphere" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/sphere.png'>
             </div>
 
@@ -168,7 +168,7 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var FIRST_PICKABLE_OBJ = 6;
+            var FIRST_PICKABLE_OBJ = 5;
             var GRID_SIZE = 60;
             var MIN_LON = 30.73699951171875;
             var MIN_LAT = 46.470970513345925;
@@ -193,8 +193,6 @@
             var groundGrid, groundPlane;
 
             var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
-
-            var boxBuilder, sketchFactory;
 
             var arrowMode, objectType;
             
@@ -241,8 +239,7 @@
                     $(".group2").click(function() {
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
-                        //addObject(this);
-                        sketchFactory.startBuild($(this).attr('id'));
+                        addObject(this);
                     });
 
                 });
@@ -301,9 +298,6 @@
                 boxBuilder = new OSMEX.BoxBuilder();
                 objectScene.add(boxBuilder);
 
-                sketchFactory = new OSMEX.SketchFactory();
-                objectScene.add(sketchFactory);
-
                 actionPlane = new THREE.Plane();
 
                 projector = new THREE.Projector();
@@ -349,16 +343,17 @@
             function addBoundingBox() {
                 if ($("#BBox").prop("checked")) {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
-                            objectScene.children[i].bbox.setVisibility(true);
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined && objectScene.children[i].visible != false)
+                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
                         else {
-                            objectScene.children[i].bbox.setVisibility(false);
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
                         }
 
                 } else {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
-                            objectScene.children[i].bbox.setVisibility(false);
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+
                 }
             }
 
@@ -375,7 +370,7 @@
                     boxBuilder.finishBuild();
                 }
             }
-            /*function addObject(element) {
+            function addObject(element) {
                 //alert($(element).attr('id'));
                 if ($(element).attr('id') != "noarrows") {
                     BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
@@ -383,7 +378,7 @@
                     BUILDING.position.set(-1000, -1000, -1000);
                     objectScene.add(BUILDING);
                 }
-            }*/
+            }
 
 
 
@@ -451,8 +446,7 @@
 
                 boxBuilder.onMouseMove(mouse);
                 
-                sketchFactory.onMouseMove(mouse);                
-                /*if (BUILDING) {
+                if (BUILDING) {
 
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
@@ -463,10 +457,12 @@
 
                         BUILDING.position.copy(intersectPoint);
                     }
-                }*/
-        
+                }
+
                 if (DRAGGING) {
                     
+                    cameraController.noPan = true;
+                    cameraController.noRotate = true;
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
@@ -480,6 +476,8 @@
                 }
                 else if (SIZING) {
                     
+                    cameraController.noPan = true;
+                    cameraController.noRotate = true;
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
@@ -494,6 +492,8 @@
                 }
                 else if (MOVING) {
                     
+                    cameraController.noPan = true;
+                    cameraController.noRotate = true;
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
@@ -508,6 +508,8 @@
                 }
                 else if (SCALING) {
                     
+                    cameraController.noPan = true;
+                    cameraController.noRotate = true;
                     var mouseX = (mouse.x * SCREEN_WIDTH / 2) / 10;
                     var sizingPos = projector.projectVector(new THREE.Vector3().getPositionFromMatrix(SCALING.matrixWorld).clone(), camera);
                     sizingPos.x = (sizingPos.x * SCREEN_WIDTH / 2) / 10;
@@ -517,6 +519,8 @@
                 }
                 else if (ROTATING) {
                     
+                    cameraController.noPan = true;
+                    cameraController.noRotate = true;
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
@@ -565,14 +569,8 @@
                         return;
                     }
                     
-                    if (sketchFactory.isBuilding()) {
-                        
-                        sketchFactory.onLeftClick(mouse);
-                        return;
-                    }
                     
-                    
-                    /*if (BUILDING) {
+                    if (BUILDING) {
 
                         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                         projector.unprojectVector(vector, camera);
@@ -596,13 +594,9 @@
                         //}
                         objectScene.remove(BUILDING);
 
-                    }*/
-            
+                    }
 
                     if (PICKED) {
-                        
-                        cameraController.noPan = true;
-                        cameraController.noRotate = true;
 
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
 
@@ -625,6 +619,7 @@
                             //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
                             //var intersects = raycaster.intersectObject( gridPlane );
                             offsetVector.copy(intersectPoint).sub(DRAGGING.position);
+                            
                         }
                         else if (pickRef instanceof OSMEX.SizerArrow) {
 
@@ -697,13 +692,12 @@
 
                         }
                         else {
-
                             SELECTED = null;
                         }
                     }
                     else {
-
                         SELECTED = null;
+                        
                     }
                     if (arrowMode == "scaling")
                         sizerGizmo.setTarget(SELECTED)
@@ -719,7 +713,7 @@
 
                 event.preventDefault();
                 if (event.button == 0) {
-                    console.log (objectScene);
+                    postScene(objectScene);
                     cameraController.noPan = false;
                     cameraController.noRotate = false;
 
@@ -749,6 +743,7 @@
                requestAnimationFrame(animate);
                update();
                render();
+                
             }
 
             function update() {

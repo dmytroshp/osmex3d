@@ -49,8 +49,3 @@ OSMEX.BoundingBox = function ( target ) {
 };
 
 OSMEX.BoundingBox.prototype = Object.create( THREE.Object3D.prototype );
-
-OSMEX.BoundingBox.prototype.setVisibility = function ( visibility ) {
-    
-    this.traverse( function( object ) { object.visible = visibility; } );
-};

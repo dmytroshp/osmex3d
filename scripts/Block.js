@@ -5,14 +5,6 @@ OSMEX.Block = function ( geometry, material ) {
     THREE.Mesh.call( this, geometry, material );
 	
     this.pickable = true;
-    this.isCreated = true;
-    this.isModified = false;
-    this.isDeleted = false;
-    this.id = 0;
-    
-    this.bbox = new OSMEX.BoundingBox(this);
-    this.add(this.bbox);
-    this.bbox.setVisibility(false);
 };
 
 OSMEX.Block.prototype = Object.create( THREE.Mesh.prototype );
@@ -26,9 +18,4 @@ OSMEX.Block.prototype.clone = function ( object ) {
 
 	return object;
 
-};
-
-OSMEX.Block.prototype.setVisibility = function ( visibility ) {
-    
-    this.traverse( function( object ) { object.visible = visibility; } );
 };

@@ -11,6 +11,7 @@
         <script src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
         <link rel="stylesheet" href="jquery/smoothness/jquery-ui-1.10.2.custom.min.css">
 
+        <script src="scripts/SketchBuilder.js"></script>
         <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
@@ -31,7 +32,6 @@
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
         <script src="scripts/BoxBuilder.js"></script>
-        <script src="scripts/SketchFactory.js"></script>
 
         <script src="scripts/AjaxRequests.js"></script>
         
@@ -204,15 +204,15 @@
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
-            <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="cube" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cube.png'>
             </div>
             <br/>
-            <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="cylinder" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cylinder.png'>
             </div>
             <br/>
-            <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="sphere" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/sphere.png'>
             </div>
 
@@ -244,7 +244,7 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var FIRST_PICKABLE_OBJ = 6;
+            var FIRST_PICKABLE_OBJ = 5;
             var GRID_SIZE = 60;
             var MIN_LON = 30.73699951171875;
             var MIN_LAT = 46.470970513345925;
@@ -262,15 +262,13 @@
 
             var CLICKED = [null, null];
 
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
             var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
             var groundGrid, groundPlane;
 
             var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
-            
-            var boxBuilder, sketchFactory;
 
             var arrowMode, objectType;
 
@@ -343,8 +341,7 @@
                     $(".group2").click(function() {
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
-                        //addObject(this);
-                        sketchFactory.startBuild($(this).attr('id'));
+                        addObject(this);
                     });
 
                     $(".group3").click(function() {
@@ -506,9 +503,6 @@
 
                 boxBuilder = new OSMEX.BoxBuilder();
                 objectScene.add(boxBuilder);
-                
-                sketchFactory = new OSMEX.SketchFactory();
-                objectScene.add(sketchFactory);
 
                 actionPlane = new THREE.Plane();
 
@@ -552,6 +546,43 @@
                 });
             }
 
+            function addToAdded(obj) {
+                var OBJ = obj;
+                OBJ.id = 0;
+                OBJ.isDeleted = false;
+                ADDED.push(OBJ);
+            }
+
+            function addToModified(obj) {
+                var already_in = false;
+                for (var i = 0; i < MODIFIED.length; i++) {
+                    if (obj == MODIFIED[i]) {
+                        already_in = true
+                    }
+                }
+                if (!already_in) {
+                    obj.isDeleted = false;
+                    MODIFIED.push(obj);
+                }
+            }
+
+            function addToRemoved(obj) {
+                for (var i = 0; i < ADDED.length; i++) {
+                    if (ADDED[i].id == obj.id) {
+                        obj.isDeleted = true;
+                        REMOVED.push(ADDED[i]);
+                        ADDED.splice(i, 1);
+                    }
+                }
+                for (var i = 0; i < MODIFIED.length; i++) {
+                    if (MODIFIED[i].id == PICKED.id) {
+                        obj.isDeleted = true;
+                        REMOVED.push(MODIFIED[i]);
+                        MODIFIED.splice(i, 1);
+                    }
+                }
+            }
+
             function coordinates() {
                 this.lat = 0;
                 this.lon = 0;
@@ -574,16 +605,17 @@
             function addBoundingBox() {
                 if ($("#BBox").prop("checked")) {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
-                            objectScene.children[i].bbox.setVisibility(true);
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined && objectScene.children[i].visible != false)
+                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
                         else {
-                            objectScene.children[i].bbox.setVisibility(false);
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
                         }
 
                 } else {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
-                            objectScene.children[i].bbox.setVisibility(false);
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
+                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+
                 }
             }
 
@@ -598,6 +630,15 @@
                 else {
                     
                     boxBuilder.finishBuild();
+                }
+            }
+            function addObject(element) {
+                //alert($(element).attr('id'));
+                if ($(element).attr('id') != "noarrows") {
+                    BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
+                    BUILDING.Sketch.pickable = false;
+                    BUILDING.position.set(-1000, -1000, -1000);
+                    objectScene.add(BUILDING);
                 }
             }
 
@@ -657,10 +698,6 @@
                         resultObj.pickable = true;
                         resultObj.visible = true;
                         resultObj.name = "undef"; 
-                        resultObj.bbox = new OSMEX.BoundingBox(resultObj);
-                        resultObj.bbox.scale = new THREE.Vector3(10,10,10);
-                        resultObj.add(this.bbox);
-                        resultObj.bbox.setVisibility(true);
                         objectScene.add(resultObj);
 
                         CLICKED[0].visible = false;
@@ -765,46 +802,24 @@
                     if (pickedObject != null && (pickedObject instanceof OSMEX.Block || pickedObject.name === "undef") ) {
 
                         if (!CLICKED[0] && !CLICKED[1]) {
-                            
-                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x008000 ); 
-                            
+                            pickedObject.material.emissive.setHex(0x00aa00);
                             CLICKED[0] = pickedObject;
                             selectedObj.push(pickedObject);
-                            
-                        }
-                        else if (CLICKED[0] == pickedObject) {
-                            
-                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
-
+                        } else if (CLICKED[0] == pickedObject) {
                             CLICKED[0] = null;
+                            pickedObject.material.emissive.setHex(0x000000);
                             selectedObj.shift();
-                            
-                        }
-                        else if (!CLICKED[1]) {
-                            
-                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x004080 ); 
-                            
+                        } else if (!CLICKED[1]) {
+                            pickedObject.material.emissive.setHex(0x0000aa);
                             CLICKED[1] = pickedObject;
                             selectedObj.push(pickedObject);
-                            
-                        }
-                        else if (CLICKED[1] == pickedObject) {
-                            
-                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
-                            
+                        } else if (CLICKED[1] == pickedObject) {
                             CLICKED[1] = null;
+                            pickedObject.material.emissive.setHex(0x000000);
                             selectedObj.pop();
-                            
-                        }
-                        else if (CLICKED[0] && CLICKED[1]) {
-                        }
-                        else {
-                            
-                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x004080 ); 
-                            
+                        } else if (CLICKED[0] && CLICKED[1]) {
+                        } else {
+                            pickedObject.material.emissive.setHex(0x00aa00);
                             CLICKED[0] = pickedObject;
                             selectedObj.unshift(pickedObject);
                         }
@@ -821,8 +836,19 @@
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
                 boxBuilder.onMouseMove(mouse);
-                
-                sketchFactory.onMouseMove(mouse);
+
+                if (BUILDING) {
+
+                    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                    projector.unprojectVector(vector, camera);
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                    var intersectPoint = ray.intersectPlane(groundPlane);
+
+                    if (intersectPoint !== undefined) {
+
+                        BUILDING.position.copy(intersectPoint);
+                    }
+                }
 
                 if (DRAGGING) {
 
@@ -886,39 +912,34 @@
                     ROTATING.finishRotation(intersectPoint.clone().normalize());
                 }
                 else {
-                    
+
                     var pickedObject = getPickedObject();
                     
-                    if ( PICKED != pickedObject ) {
- 
-                         if ( PICKED ) {
-                            
-                            if ( PICKED.material.emissive ) {
-                                
-                                 PICKED.material.emissive.setHex( PICKED.oldEmissive );
-                             }
-                             else {
-                                 
-                                 PICKED.material.color.setHex( PICKED.oldColor );
-                             }
-                         }
- 
-                         PICKED = pickedObject;
- 
-                         if ( PICKED ) {
-                             
-                             if ( PICKED.material.emissive ) {
-                                 
-                                 PICKED.oldEmissive = PICKED.material.emissive.getHex();
-                                 PICKED.material.emissive.setHex( 0xff0000 );
-                             }
-                             else {
-                             
-                                 PICKED.oldColor = PICKED.material.color.getHex();
-                                 PICKED.material.color.setHex( 0xffff00 );
-                             }
-                         }
-                     }
+                        if (PICKED != pickedObject) {
+                            if (PICKED) {
+                                if (CLICKED[0] != PICKED && CLICKED[1] != PICKED) {
+                                    if (PICKED.material.emissive) {
+                                        PICKED.material.emissive.setHex(PICKED.oldEmissive);
+                                    }
+                                }
+                            }
+
+                            PICKED = pickedObject;
+
+                            if (PICKED) {
+                                if (CLICKED[0] != PICKED || CLICKED[1] != PICKED) {
+                                    if (CLICKED[0] != PICKED && CLICKED[1] != PICKED) {
+                                        if (PICKED.material.emissive) {
+                                            PICKED.oldEmissive = PICKED.material.emissive.getHex();
+                                            PICKED.material.emissive.setHex(0xff0000);
+                                        }
+                                    } else {
+                                        PICKED.oldEmissive = 0x000000;
+                                    }
+
+                                }
+                            }
+                        }
                     
                 }
             }
@@ -934,20 +955,32 @@
                         boxBuilder.onLeftClick(mouse);
                         return;
                     }
-                    
-                    if (sketchFactory.isBuilding()) {
-                        
-                        sketchFactory.onLeftClick(mouse);
-                        return;
+
+                    if (BUILDING) {
+
+                        var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
+                        projector.unprojectVector(vector, camera);
+                        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                        var intersectPoint = ray.intersectPlane(groundPlane);
+
+                        var object = new OSMEX.SketchBuilder(BUILDING.name);
+                        object.Sketch.position.copy(intersectPoint);
+                        object.Sketch.material.color.setHex(0xffffff);
+                        if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked")) 
+                            object.Sketch.remove(object.Sketch.children[0]);
+                        addToAdded(object.Sketch);
+                        objectScene.add(object.Sketch);
+
+                        objectScene.remove(BUILDING);
+
                     }
 
                     if (PICKED) {
-                        
-                        cameraController.noPan = true;
 
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
 
                         if (arrowMode == "deleting") {
+                            addToRemoved(PICKED);
                             if (CLICKED[0] != null)
                             CLICKED[0].material.emissive.setHex(0x000000);
                             if (CLICKED[1] != null)
@@ -1063,6 +1096,10 @@
                 event.preventDefault();
                 if (event.button == 0) {
 
+                    if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
+                        addToModified(SELECTED);
+                    }
+
                     if (SIZING) {
 
                         SIZING.restoreDefaultLength();
@@ -1071,13 +1108,12 @@
                     if (SCALING)
                         SCALING.restoreDefaultScale();
 
+                    BUILDING = null;
                     DRAGGING = null;
                     SIZING = null;
                     SCALING = null;
                     ROTATING = null;
                     MOVING = null;
-                    
-                    cameraController.noPan = false;
                 }
             }
 

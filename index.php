@@ -247,6 +247,14 @@ HERE;
                      });
                      return false;
                 });
+//           6. Image Container handlers                
+                $(".imgContainer").mouseenter(function(){
+                    $(this).css("cursor", "pointer");
+                    $(this).css("")
+                });
+                $(".imgContainer").mouseleave(function(){
+                    $(this).css("cursor", "default");
+                });
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
                 $("#tabGeo").css("display","block");
@@ -267,7 +275,7 @@ HERE;
         <body>
             <div id="mainContainer">
                 <div id="sidebar">
-		    <div id="logo"><img src="img/logo.jpg" height="50" width="100"></div>
+		    <div id="logo"><img src="img/logo.jpg" height="50" width="50"></div>
                     <div id="searchDivc">
                     <div id="osmSearch">
                         <form id="osmSearchForm">
@@ -286,10 +294,10 @@ HERE;
                         <div id="acc" class="accordion ui-widget ui-widget-content ui-corner-all">
                             <?php
                             global $array;
-                            foreach ($array as $nameFigureType => $instances) {
+                            foreach ($array as $nameFigureType => $instances)
+                            {
                                 echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
-                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
-                                
+                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all">';
                                 for($i=0;$i<sizeof($instances);$i++)
                                 {
                                     echo '<div class=imgContainer>';
