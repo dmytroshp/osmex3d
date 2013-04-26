@@ -236,3 +236,15 @@ ul.results-list li p{
     width: 256px;
     height: 256px;
 }
+#map
+{
+    color: #000;
+    font-family:Monospace;
+    font-size:13px;
+    text-align:center;
+    font-weight: bold;
+
+    background-color: #fff;
+    margin: 0px;
+    overflow: hidden;
+}

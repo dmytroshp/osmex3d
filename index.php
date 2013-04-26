@@ -288,7 +288,7 @@ HERE;
                             global $array;
                             foreach ($array as $nameFigureType => $instances) {
                                 echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
-                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
+                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all">';
                                 
                                 for($i=0;$i<sizeof($instances);$i++)
                                 {
