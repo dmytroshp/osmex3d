@@ -15,7 +15,10 @@ mysql_close($connection);
 
 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
 if(!isset($_GET['zoom']))
+{
     $landscapeMode='boundary';
+    $zoom=0;
+}
 else
 {
     $landscapeMode='zoom';
@@ -91,7 +94,7 @@ HERE;
                 });
 //         Making tabs from containers                                              
                 $(".accordionContainer").tabs();
-                $("#objectEditor").tabs();
+                //$("#objectEditor").tabs();
 //         Calculating height for containers                         
                 var heightObj = $(window).height()*0.95;
                 $("#sidebar").css("height", heightObj);
@@ -141,20 +144,6 @@ HERE;
                     }
                 });
                 
-                $("#objectEditor").height($("#content").height() - 8);
-                $(".prev").mouseenter(function (){
-                    var position = $(this).position();
-                    var src = $(this).attr("src");
-                    var res = src.substring(0, src.length-9);
-                    var ending = ".png";
-                    res+=ending;
-                    $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
-                    $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
-                    
-                });
-                $(".prev").mouseleave(function (){
-                  $("#fullPic").remove();
-                });
                 $("#accSearch").keyup(function (){
                     $.ajax({
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
@@ -168,21 +157,6 @@ HERE;
                             $(".flip").click(function(){
                                 $(this).next(".slidingPanel").slideToggle(500);
                             });          
-                            $(".prev").mouseenter(function (){
-                                var position = $(this).position();
-                                var src = $(this).attr("src");
-                                var res = src.substring(0, src.length-9);
-                                var ending = ".png";
-                                res+=ending;
-                                $("#sidebar").append('<div id="fullPic">\n\
-                                                      <img src='+res+' height=128 width=128></div>');
-                                $("#fullPic").css("top", position.top+"px")
-                                             .css("left", (position.left+60)+"px")
-                                             .fadeIn("slow");
-                            });
-                            $(".prev").mouseleave(function (){
-                                $("#fullPic").remove();
-                            });
                         }
                     }); //end of ajax
                 }); //end of search input handler
@@ -204,17 +178,17 @@ HERE;
                         }
                         else
                         {
-                        forceRefreshPanel(0);
-                        $("#tabGeo").css("display","none");
-                        $("#tabTxt").css("display","none");
-                        $(this).css("display","none");
-                        $("#editBtn").val("Edit");
-                        $(".accordionContainer").css("display", "none");
-                        width=$("#searchDivc").width();
-                        $("#searchDivc").width(width-150);
-                        $("#sidebar").width(width-150);
-                        $("#content").css("width", "75%");
-                        flag=0;
+                            forceRefreshPanel(0);
+                            $("#tabGeo").css("display","none");
+                            $("#tabTxt").css("display","none");
+                            $(this).css("display","none");
+                            $("#editBtn").val("Edit");
+                            $(".accordionContainer").css("display", "none");
+                            width=$("#searchDivc").width();
+                            $("#searchDivc").width(width-150);
+                            $("#sidebar").width(width-150);
+                            $("#content").css("width", "75%");
+                            //flag=0;
                     }
 
                 });
