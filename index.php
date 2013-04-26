@@ -51,13 +51,14 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
             <?php
                 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
                 echo<<<HERE
-                    var landscapeMode='$landscapeMode';
-                    var minlon=$minlon;
-                    var minlat=$minlat;
-                    var maxlon=$maxlon;
-                    var maxlat=$maxlat;
-                    var mlon=$mlon;
-                    var mlat=$mlat;
+                    landscapeMode='$landscapeMode';
+                    minlon=$minlon;
+                    minlat=$minlat;
+                    maxlon=$maxlon;
+                    maxlat=$maxlat;
+                    mlon=$mlon;
+                    mlat=$mlat;
+                    zoom=$zoom;
 HERE;
             ?>
             var searchbar_template="<div id='searchbar'>\
@@ -228,6 +229,32 @@ HERE;
                         dataType:'json',
                         success:function(result){
                             $("#nominatium").html(result['nominatium']);
+                            $('.set_position').click(function(){
+                                var link=$(this);
+                                if(link.attr('data-zoom'))
+                                {
+                                    landscapeMode='zoom';
+                                    minlon=0;
+                                    minlat=0;
+                                    maxlon=0;
+                                    maxlat=0;
+                                    mlon=Number(link.attr('data-lon'));
+                                    mlat=Number(link.attr('data-lat'));
+                                    zoom=Number(link.attr('data-zoom'));
+                                }
+                                else
+                                {
+                                    landscapeMode='boundary';
+                                    minlon=Number(link.attr('data-min-lon'));
+                                    minlat=Number(link.attr('data-min-lat'));
+                                    maxlon=Number(link.attr('data-max-lon'));
+                                    maxlat=Number(link.attr('data-max-lat'));
+                                    mlon=0;
+                                    mlat=0;
+                                    zoom=0;
+                                }
+                                return false;
+                            });
                             $("#nominatium ul").next().remove();
                             $("#nominatium ul").next().remove();
                             $("#geonames").html(result['geonames']);
