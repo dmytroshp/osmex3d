@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
     $login_db = 'root';
     $password_db = '';

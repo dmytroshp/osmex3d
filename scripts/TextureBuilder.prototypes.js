@@ -13,6 +13,7 @@ function RectangleRegion(emptyPointArray,index)
    this.name="Unnamed "+(PolygonRegion.prototype.regions.length+1);
    this.points=emptyPointArray;
    this.regionItem=null;
+   this.completed=true;
    this.index=PolygonRegion.prototype.regions.length;
    PolygonRegion.prototype.regions.push(this);
 }
@@ -439,7 +440,7 @@ PolygonRegion.prototype.createHandle=function(x,y)
         });
     }
     handle.draggable({ 
-            containment: "parent", 
+            containment: ".jcrop-holder", 
             scroll: false ,
             start: function()
             {
@@ -489,6 +490,7 @@ PolygonRegion.prototype.createHandle=function(x,y)
             }
     });
     handle.css({'top':y+this.handlesContainer.position().top-3, 'left':x+this.handlesContainer.position().left-3});
+    //handle.css({'top':y-3, 'left':x-3});
 };
 PolygonRegion.prototype.addPoint=function(x,y)
 {
