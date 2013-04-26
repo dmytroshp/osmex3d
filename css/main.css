@@ -56,6 +56,7 @@ body
  }
  .accordion
  {
+     font-family: verdana;
      padding: 5px !important;
      overflow-y: auto;
      position: absolute;
@@ -112,13 +113,6 @@ body
     width: 96px;
     height: 96px;
  }
- #fullPic{
-     height:128px;
-     width: 128px;
-     display: none;
-     position: absolute;
-     z-index: 2;
- }
  #accSearch{
      position: absolute;
      top: 50px;
@@ -139,19 +133,18 @@ body
  .scrollHelper{
      display:none;
  }
- #editBtn{
+ #mode{
      position:absolute;
      right:10px;
      top: 10px;
-     font-size: 0.8em;
+     font-size: 0.7em;
+     width: 100px;
  }
  #backBtn{
      position:absolute;
      right:70px;
      top: 10px;
      font-size: 0.8em;
- }
-
  #osmSearch
  {
      margin-left:5px;
@@ -233,4 +226,8 @@ ul.results-list li {
 ul.results-list li p{
     font-size: 10px;
     margin-left:3px;
+}
+.fullPicture{
+    width: 256px;
+    height: 256px;
 }
