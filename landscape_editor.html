@@ -32,7 +32,6 @@
         <script src="scripts/AreaSelector.js"></script>
 
 		<script src="scripts/Detector.js"></script>
-		<script src="scripts/stats.min.js"></script>
 
 		<script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
         <script type="text/javascript" src="server_scripts/Functions.js"></script> 
@@ -98,7 +97,7 @@ function TileBlds () {
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-			var container, stats;
+			var container;
 
 			var arrCurRoot = new Array();
 			var arrCurBld = new Array();
@@ -202,7 +201,7 @@ this.loadTile = function () {
 		 {
 		    this.indx++;
 			this.ready=false;
-			land_func(id);
+			//land_func(id);
 			if(this.indxCube<this.arTileCubeForAdd.length)this.requestBld=false;
 		 }
 	  }
@@ -426,12 +425,6 @@ this.loaded = function () {
 
 				maxAnisotropy = renderer.getMaxAnisotropy();
 
-				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				stats.domElement.style.zIndex = 100;
-				container.appendChild( stats.domElement );
-
 				//
 
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -631,15 +624,13 @@ this.loaded = function () {
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
-				render();
-
 			}
 
 			function animate() {
 
 				requestAnimationFrame( animate );
+                                controls.update();
 				render();
-				controls.update();
 
 			}
 
@@ -1189,7 +1180,6 @@ this.loaded = function () {
 				//renderer.context.depthMask( true );
 				//controls.update();
                 renderer.render( scene, camera);
-				stats.update();
 			}
 
 
