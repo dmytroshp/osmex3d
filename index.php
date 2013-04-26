@@ -15,7 +15,10 @@ mysql_close($connection);
 
 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
 if(!isset($_GET['zoom']))
+{
     $landscapeMode='boundary';
+    $zoom=0;
+}
 else
 {
     $landscapeMode='zoom';
@@ -33,21 +36,32 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
     <head>
         <title>OSMEX3D</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" href="css/jqueryui.css" />
-        <link rel="stylesheet" href="css/main.css" />
+<!--        <link rel="stylesheet" href="css/jqueryui.css" />-->
         <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
-        <script type="text/javascript" src="jquery/jquery-ui.js"></script>
+        <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+        <script type="text/javascript" src="jquery/jquery.color.js"></script>
+        <script type="text/javascript" src="jquery/jquery.Jcrop.min.js"></script>
+        
+        <script type="text/javascript" src="scripts/TextureBuilder.prototypes.js"></script>
+        <script type="text/javascript" src="scripts/TextureBuilder.js"></script>
+        
+        <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/jcrop/jquery.Jcrop.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/TextureBuilder.css" rel="stylesheet" />
+        <link rel="stylesheet" href="css/main.css" />
+        
         <script type="text/javascript">
             <?php
                 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
                 echo<<<HERE
-                    var landscapeMode='$landscapeMode';
-                    var minlon=$minlon;
-                    var minlat=$minlat;
-                    var maxlon=$maxlon;
-                    var maxlat=$maxlat;
-                    var mlon=$mlon;
-                    var mlat=$mlat;
+                    landscapeMode='$landscapeMode';
+                    minlon=$minlon;
+                    minlat=$minlat;
+                    maxlon=$maxlon;
+                    maxlat=$maxlat;
+                    mlon=$mlon;
+                    mlat=$mlat;
+                    zoom=$zoom;
 HERE;
             ?>
             var searchbar_template="<div id='searchbar'>\
@@ -80,7 +94,7 @@ HERE;
                 });
 //         Making tabs from containers                                              
                 $(".accordionContainer").tabs();
-                $("#objectEditor").tabs();
+                //$("#objectEditor").tabs();
 //         Calculating height for containers                         
                 var heightObj = $(window).height()*0.95;
                 $("#sidebar").css("height", heightObj);
@@ -93,6 +107,43 @@ HERE;
                     $(this).next(".slidingPanel").slideToggle(500);
                 });
 //            2. Event handler for search input (sketches tab)
+                
+                // Work area tabs
+                var initializator={
+                    tabMap:{
+                        url:'ajax/landscapeEditor.html',
+                        activator:function(){}
+                    },
+                    tabGeo:{
+                        url:'ajax/objectEditor.html',
+                        activator:function(){}
+                    },
+                    tabTxt:{
+                        url:'ajax/textureBuilder.html',
+                        activator:function(){prepareTextureBuilder();}
+                    }
+                };
+                function forceRefreshPanel(index)
+                {
+                    var key=$('#objectEditor ul li:eq('+index+')').attr('id');
+                    var panel=$('#objectEditor').children('div:eq('+index+')');
+                    panel.load(initializator[key].url,'',function(){
+                                initializator[key].activator.call(this,index);
+                    });
+                    $("#objectEditor").tabs({active:index});
+                }
+                $("#objectEditor").tabs({
+                    beforeActivate:function(event, ui){
+                        if(ui.newPanel.is(':empty'))
+                        {
+                            var key=ui.newTab.attr('id');
+                            ui.newPanel.load(initializator[key].url,'',function(){
+                                initializator[key].activator.call(this,event,ui);
+                            });
+                        }
+                    }
+                });
+                
                 $("#accSearch").keyup(function (){
                     $.ajax({
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
@@ -106,21 +157,6 @@ HERE;
                             $(".flip").click(function(){
                                 $(this).next(".slidingPanel").slideToggle(500);
                             });          
-                            $(".prev").mouseenter(function (){
-                                var position = $(this).position();
-                                var src = $(this).attr("src");
-                                var res = src.substring(0, src.length-9);
-                                var ending = ".png";
-                                res+=ending;
-                                $("#sidebar").append('<div id="fullPic">\n\
-                                                      <img src='+res+' height=128 width=128></div>');
-                                $("#fullPic").css("top", position.top+"px")
-                                             .css("left", (position.left+60)+"px")
-                                             .fadeIn("slow");
-                            });
-                            $(".prev").mouseleave(function (){
-                                $("#fullPic").remove();
-                            });
                         }
                     }); //end of ajax
                 }); //end of search input handler
@@ -142,26 +178,31 @@ HERE;
                         }
                         else
                         {
+                            forceRefreshPanel(0);
                             $("#tabGeo").css("display","none");
                             $("#tabTxt").css("display","none");
+                            $(this).css("display","none");
+                            $("#editBtn").val("Edit");
                             $(".accordionContainer").css("display", "none");
                             width=$("#searchDivc").width();
                             $("#searchDivc").width(width-150);
                             $("#sidebar").width(width-150);
                             $("#content").css("width", "75%");
-                        }
+                            //flag=0;
+                    }
+
                 });
 //            5. Submit OSM Search Handler
                 $("#osmSearchForm").submit(function(){
                     if($('#searchbar').size()==0)
                     {
-                        $("#objectEditor div").css({'margin-left':'250px'});
+                        $("#objectEditor").children('div').css({'margin-left':'250px'});
                         var searchbar=$(searchbar_template);
                         searchbar.insertAfter('#objectEditor ul');
                         //$('#searchbar').next().css({'margin-left':'250px'});
                         $(".close_link").click(function(){
                             //$('#searchbar').next().css({'margin-left':'0px'});
-                            $("#objectEditor div").css({'margin-left':'0px'});
+                            $("#objectEditor").children('div').css({'margin-left':'0px'});
                             $('#searchbar').remove();
                         });
                     }
@@ -174,6 +215,32 @@ HERE;
                         dataType:'json',
                         success:function(result){
                             $("#nominatium").html(result['nominatium']);
+                            $('.set_position').click(function(){
+                                var link=$(this);
+                                if(link.attr('data-zoom'))
+                                {
+                                    landscapeMode='zoom';
+                                    minlon=0;
+                                    minlat=0;
+                                    maxlon=0;
+                                    maxlat=0;
+                                    mlon=Number(link.attr('data-lon'));
+                                    mlat=Number(link.attr('data-lat'));
+                                    zoom=Number(link.attr('data-zoom'));
+                                }
+                                else
+                                {
+                                    landscapeMode='boundary';
+                                    minlon=Number(link.attr('data-min-lon'));
+                                    minlat=Number(link.attr('data-min-lat'));
+                                    maxlon=Number(link.attr('data-max-lon'));
+                                    maxlat=Number(link.attr('data-max-lat'));
+                                    mlon=0;
+                                    mlat=0;
+                                    zoom=0;
+                                }
+                                return false;
+                            });
                             $("#nominatium ul").next().remove();
                             $("#nominatium ul").next().remove();
                             $("#geonames").html(result['geonames']);
@@ -196,6 +263,9 @@ HERE;
                 $("#content").css("width", "75%");
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
+                forceRefreshPanel(0);
+                //
+                //$("#objectEditor").tabs({active:0});
             });
         </script>
     </head>

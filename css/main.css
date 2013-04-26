@@ -83,6 +83,9 @@ body
      bottom: 5px;
      top: 45px;
      border: 1px #cccccc solid;
+     overflow-x: scroll;
+     overflow-y: auto;
+         
  }
  #geoBuilder
  {
@@ -145,6 +148,8 @@ body
      right:70px;
      top: 10px;
      font-size: 0.8em;
+ }
+ 
  #osmSearch
  {
      margin-left:5px;
