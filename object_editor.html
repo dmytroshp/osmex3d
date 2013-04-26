@@ -799,24 +799,46 @@
                     if (pickedObject != null && (pickedObject instanceof OSMEX.Block || pickedObject.name === "undef") ) {
 
                         if (!CLICKED[0] && !CLICKED[1]) {
-                            pickedObject.material.emissive.setHex(0x00aa00);
+                            
+                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
+                            pickedObject.material.color.setHex( 0x008000 ); 
+                            
                             CLICKED[0] = pickedObject;
                             selectedObj.push(pickedObject);
-                        } else if (CLICKED[0] == pickedObject) {
+                            
+                        }
+                        else if (CLICKED[0] == pickedObject) {
+                            
+                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
+
                             CLICKED[0] = null;
-                            pickedObject.material.emissive.setHex(0x000000);
                             selectedObj.shift();
-                        } else if (!CLICKED[1]) {
-                            pickedObject.material.emissive.setHex(0x0000aa);
+                            
+                        }
+                        else if (!CLICKED[1]) {
+                            
+                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
+                            pickedObject.material.color.setHex( 0x004080 ); 
+                            
                             CLICKED[1] = pickedObject;
                             selectedObj.push(pickedObject);
-                        } else if (CLICKED[1] == pickedObject) {
+                            
+                        }
+                        else if (CLICKED[1] == pickedObject) {
+                            
+                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
+                            
                             CLICKED[1] = null;
-                            pickedObject.material.emissive.setHex(0x000000);
                             selectedObj.pop();
-                        } else if (CLICKED[0] && CLICKED[1]) {
-                        } else {
-                            pickedObject.material.emissive.setHex(0x00aa00);
+                            
+                        }
+                        else if (CLICKED[0] && CLICKED[1]) {
+                        }
+                        else {
+                            
+                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
+                            pickedObject.material.color.setHex( 0x004080 ); 
+                            
                             CLICKED[0] = pickedObject;
                             selectedObj.unshift(pickedObject);
                         }
@@ -898,34 +920,39 @@
                     ROTATING.finishRotation(intersectPoint.clone().normalize());
                 }
                 else {
-
+                    
                     var pickedObject = getPickedObject();
                     
-                        if (PICKED != pickedObject) {
-                            if (PICKED) {
-                                if (CLICKED[0] != PICKED && CLICKED[1] != PICKED) {
-                                    if (PICKED.material.emissive) {
-                                        PICKED.material.emissive.setHex(PICKED.oldEmissive);
-                                    }
-                                }
-                            }
-
-                            PICKED = pickedObject;
-
-                            if (PICKED) {
-                                if (CLICKED[0] != PICKED || CLICKED[1] != PICKED) {
-                                    if (CLICKED[0] != PICKED && CLICKED[1] != PICKED) {
-                                        if (PICKED.material.emissive) {
-                                            PICKED.oldEmissive = PICKED.material.emissive.getHex();
-                                            PICKED.material.emissive.setHex(0xff0000);
-                                        }
-                                    } else {
-                                        PICKED.oldEmissive = 0x000000;
-                                    }
-
-                                }
-                            }
-                        }
+                    if ( PICKED != pickedObject ) {
+ 
+                         if ( PICKED ) {
+                            
+                            if ( PICKED.material.emissive ) {
+                                
+                                 PICKED.material.emissive.setHex( PICKED.oldEmissive );
+                             }
+                             else {
+                                 
+                                 PICKED.material.color.setHex( PICKED.oldColor );
+                             }
+                         }
+ 
+                         PICKED = pickedObject;
+ 
+                         if ( PICKED ) {
+                             
+                             if ( PICKED.material.emissive ) {
+                                 
+                                 PICKED.oldEmissive = PICKED.material.emissive.getHex();
+                                 PICKED.material.emissive.setHex( 0xff0000 );
+                             }
+                             else {
+                             
+                                 PICKED.oldColor = PICKED.material.color.getHex();
+                                 PICKED.material.color.setHex( 0xffff00 );
+                             }
+                         }
+                     }
                     
                 }
             }
