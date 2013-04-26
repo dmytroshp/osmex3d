@@ -5,6 +5,10 @@ OSMEX.Block = function ( geometry, material ) {
     THREE.Mesh.call( this, geometry, material );
 	
     this.pickable = true;
+    this.isCreated = true;
+    this.isModified = false;
+    this.isDeleted = false;
+    this.id = 0;
     
     this.bbox = new OSMEX.BoundingBox(this);
     this.add(this.bbox);

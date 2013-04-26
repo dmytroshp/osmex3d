@@ -244,7 +244,7 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var FIRST_PICKABLE_OBJ = 5;
+            var FIRST_PICKABLE_OBJ = 6;
             var GRID_SIZE = 60;
             var MIN_LON = 30.73699951171875;
             var MIN_LAT = 46.470970513345925;
@@ -552,43 +552,6 @@
                 });
             }
 
-            function addToAdded(obj) {
-                var OBJ = obj;
-                OBJ.id = 0;
-                OBJ.isDeleted = false;
-                ADDED.push(OBJ);
-            }
-
-            function addToModified(obj) {
-                var already_in = false;
-                for (var i = 0; i < MODIFIED.length; i++) {
-                    if (obj == MODIFIED[i]) {
-                        already_in = true
-                    }
-                }
-                if (!already_in) {
-                    obj.isDeleted = false;
-                    MODIFIED.push(obj);
-                }
-            }
-
-            function addToRemoved(obj) {
-                for (var i = 0; i < ADDED.length; i++) {
-                    if (ADDED[i].id == obj.id) {
-                        obj.isDeleted = true;
-                        REMOVED.push(ADDED[i]);
-                        ADDED.splice(i, 1);
-                    }
-                }
-                for (var i = 0; i < MODIFIED.length; i++) {
-                    if (MODIFIED[i].id == PICKED.id) {
-                        obj.isDeleted = true;
-                        REMOVED.push(MODIFIED[i]);
-                        MODIFIED.splice(i, 1);
-                    }
-                }
-            }
-
             function coordinates() {
                 this.lat = 0;
                 this.lon = 0;
@@ -611,17 +574,16 @@
             function addBoundingBox() {
                 if ($("#BBox").prop("checked")) {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] == undefined && objectScene.children[i].visible != false)
-                            objectScene.children[i].add(new OSMEX.BoundingBox(objectScene.children[i]));
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
+                            objectScene.children[i].bbox.setVisibility(true);
                         else {
-                            objectScene.children[i].remove(objectScene.children[i].children[0]);
+                            objectScene.children[i].bbox.setVisibility(false);
                         }
 
                 } else {
                     for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].children[0] != undefined)
-                            objectScene.children[i].remove(objectScene.children[i].children[0]);
-
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
+                            objectScene.children[i].bbox.setVisibility(false);
                 }
             }
 
@@ -695,6 +657,10 @@
                         resultObj.pickable = true;
                         resultObj.visible = true;
                         resultObj.name = "undef"; 
+                        resultObj.bbox = new OSMEX.BoundingBox(resultObj);
+                        resultObj.bbox.scale = new THREE.Vector3(10,10,10);
+                        resultObj.add(this.bbox);
+                        resultObj.bbox.setVisibility(true);
                         objectScene.add(resultObj);
 
                         CLICKED[0].visible = false;
@@ -982,7 +948,6 @@
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
 
                         if (arrowMode == "deleting") {
-                            addToRemoved(PICKED);
                             if (CLICKED[0] != null)
                             CLICKED[0].material.emissive.setHex(0x000000);
                             if (CLICKED[1] != null)
@@ -1097,10 +1062,6 @@
 
                 event.preventDefault();
                 if (event.button == 0) {
-
-                    if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
-                        addToModified(SELECTED);
-                    }
 
                     if (SIZING) {
 

@@ -61,6 +61,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     this.currentObject.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
     this.currentObject.pickable = false;
     this.currentObject.setVisibility(false);
+    this.currentObject.name = this.name;
     this.add(this.currentObject);
 };
 
@@ -79,10 +80,11 @@ OSMEX.SketchFactory.prototype.finishBuild = function() {
         
         this.currentObject.material = this.usualMaterial.clone();
         this.currentObject.pickable = true;
-        this.currentObject.bbox.setVisibility(false);
+        if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
         this.parent.add(this.currentObject);
         this.currentObject = null;
+        this.name = null;
     }
 };
 
@@ -90,43 +92,50 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
     
     var objGeometry;
     
-    console.log("objectTypeId=", objectTypeId);
+    //console.log("objectTypeId=", objectTypeId);
     
     // Cube
     if (objectTypeId == 1) {
         
         objGeometry = new THREE.CubeGeometry( 1, 1, 1 );
+        this.name = "cube";
     }
     // Sphere
     else if (objectTypeId == 2) {
         
         objGeometry = new THREE.SphereGeometry( 0.6, 15, 15 );
+        this.name = "sphere";
     }
     // Cylinder
     else if (objectTypeId == 3) {
         
         objGeometry = new THREE.CylinderGeometry( 0.5, 0.5, 1, 15, 15 );
+        this.name = "cylinder";
     }
     // Cone
     else if (objectTypeId == 4) {
         
         objGeometry = new THREE.CylinderGeometry( 0, 0.5, 1, 15, 15 );
+        this.name = "cone";
     }
     // Torus
     else if (objectTypeId == 5) {
         
         objGeometry = new THREE.TorusGeometry( 1, 0.2, 30, 30);
+        this.name = "torus";
     }
     // Tetrahedron
     else if (objectTypeId == 6) {
         
         objGeometry = new THREE.TetrahedronGeometry (1, 0.1);
+        this.name = "tetrahedron";
     }
     // checking geometries cache and request geometry from the server if necessary
     else {
 
         objGeometry = this.geometriesCache[objectTypeId];
-
+        this.name = "undef";
+        
         if (objGeometry === null) {
 
             // HERE objGeometryStr SHOULD BE OBTAINED FROM THE SERVER BY AJAX REQUEST
@@ -365,3 +374,21 @@ function getUnpackedGeometry( packedGeometry ) {
     
     return geometry;
 }
+
+OSMEX.SketchFactory.prototype.createObject = function( objectTypeId ) {
+
+    
+
+    var geometry = this.makeGeometry(objectTypeId);
+
+    
+
+    var obj = new OSMEX.Block( geometry, this.usualMaterial.clone() );
+
+    obj.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
+
+    
+
+    return obj;
+
+};
