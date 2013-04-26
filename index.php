@@ -75,16 +75,35 @@ HERE;
                 </div>\
              </div>";
             $(document).ready(function(){
-                var flag=1;
+                $(document).tooltip({
+                    items: ".prev",
+                    content: function(){
+                        var src = $(this).attr("src");
+                        var res = src.substring(0, src.length-9);
+                        var ending = ".png";
+                        res+=ending;
+                        return "<img class='fullPicture' src='"+res+"'>";
+                    },
+                    position: {
+                        my: "center+150 bottom",
+                        at: "center top"
+                    }
+                });
+//         Making tabs from containers                                              
                 $(".accordionContainer").tabs();
+                $("#objectEditor").tabs();
+//         Calculating height for containers                         
                 var heightObj = $(window).height()*0.95;
                 $("#sidebar").css("height", heightObj);
-                $(".accordionContainer").css("height", heightObj-100);
                 $("#content").css("height", heightObj);
-                $(".accordion").css("font-family", "verdana");
+                $(".accordionContainer").css("height", heightObj-100);
+                $("#objectEditor").height($("#content").height() - 8);
+//         EVENT HANDLERS
+//            1. Event handler for flip
                 $(".flip").click(function(){
                     $(this).next(".slidingPanel").slideToggle(500);
                 });
+//            2. Event handler for search input (sketches tab)
                 
                 // Work area tabs
                 var initializator={
@@ -141,42 +160,50 @@ HERE;
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
-                        success:function(result){
+                        success:function(result)
+                        {
                             $(".accordion").empty();
                             $(".accordion").html(result);
+                  //    !  Handlers don't work after clearing the accordion, we need to assign it again
                             $(".flip").click(function(){
                                 $(this).next(".slidingPanel").slideToggle(500);
-                            });
+                            });          
                             $(".prev").mouseenter(function (){
                                 var position = $(this).position();
                                 var src = $(this).attr("src");
                                 var res = src.substring(0, src.length-9);
                                 var ending = ".png";
                                 res+=ending;
-                                $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
-                                $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
+                                $("#sidebar").append('<div id="fullPic">\n\
+                                                      <img src='+res+' height=128 width=128></div>');
+                                $("#fullPic").css("top", position.top+"px")
+                                             .css("left", (position.left+60)+"px")
+                                             .fadeIn("slow");
                             });
                             $(".prev").mouseleave(function (){
                                 $("#fullPic").remove();
                             });
                         }
-                    });
-                });
-                $("#tabGeo").css("display","none");
-                $("#tabTxt").css("display","none");
-                $("#backBtn").css("display","none");
-                $("#editBtn").val("Edit");
-                $(".accordionContainer").css("display", "none");
-                width=$("#searchDivc").width();
-                $("#searchDivc").width(width-150);
-                $("#sidebar").width(width-150);
-                $("#content").css("width", "75%");
-                flag=0;
+                    }); //end of ajax
+                }); //end of search input handler
+//            3. Event handler for button "Collapse All"  
                 $("#collapseImg").click(function (){
                     $(".slidingPanel").slideUp("fast");
                 });
-                $("#backBtn").click(function (){
-                    if(flag){
+//            4. Event handler for mode selector            
+                $("#mode").change(function (){
+                    if($("#mode :selected").val()==="Edit mode")
+                        {
+                            $("#tabGeo").css("display","block");
+                            $("#tabTxt").css("display","block");
+                            $(".accordionContainer").css("display", "block");
+                            width=$("#searchDivc").width();
+                            $("#searchDivc").width(width+150);
+                            $("#sidebar").width(width+150);
+                            $("#content").css("width", "64%");
+                        }
+                        else
+                        {
                         forceRefreshPanel(0);
                         $("#tabGeo").css("display","none");
                         $("#tabTxt").css("display","none");
@@ -191,22 +218,7 @@ HERE;
                     }
 
                 });
-                $("#editBtn").click(function (){
-                    if(!flag){
-                        flag=1;
-                        $("#tabGeo").css("display","block");
-                        $("#tabTxt").css("display","block");
-                        $("#backBtn").css("display","block");
-                        $("#editBtn").val("Save");
-                        $(".accordionContainer").css("display", "block");
-                        width=$("#searchDivc").width();
-                        $("#searchDivc").width(width+150);
-                        $("#sidebar").width(width+150);
-                        $("#content").css("width", "62%");
-                    }
-                });
-                //var searchbar=$(searchbar_template);
-                //searchbar.insertAfter('#objectEditor ul');
+//            5. Submit OSM Search Handler
                 $("#osmSearchForm").submit(function(){
                     if($('#searchbar').size()==0)
                     {
@@ -265,6 +277,18 @@ HERE;
                      });
                      return false;
                 });
+//               END OF EVENT HANDLERS   
+//            Setting default mode to view mode 
+                $("#tabGeo").css("display","none");
+                $("#tabTxt").css("display","none");
+                $("#backBtn").css("display","none");
+                $(".accordionContainer").css("display", "none");
+                width=$("#searchDivc").width();
+                $("#searchDivc").width(width-150);
+                $("#sidebar").width(width-150);
+                $("#content").css("width", "75%");
+                //var searchbar=$(searchbar_template);
+                //searchbar.insertAfter('#objectEditor ul');
                 forceRefreshPanel(0);
                 //
                 //$("#objectEditor").tabs({active:0});
@@ -310,17 +334,28 @@ HERE;
                             }
                             ?>
                         </div>
+                        <div id="txt" class="ui-widget ui-widget-content ui-corner-all">
+                            <?php
+                            
+                            ?>
+                        </div>
                     </div>
                 </div>
                 <div id="content">
                     <div id="objectEditor">
                         <ul>
                             <li id="tabMap"><a href="#map">Map</a></li>
-                            <li id="tabGeo"><a href="#geoBuilder">Geometry Builder</a></li>
+                            <li id="tabGeo"><a href="#geoBuilder">Sketch Builder</a></li>
                             <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
-                        <input id="editBtn" type="button" value="Save">
-                         <input id="backBtn" type="button" value="Simple View">
+                        <select id="mode" size="1">
+                            <option selected value="View mode">
+                                View Mode
+                            </option>
+                            <option value="Edit mode">
+                                Edit Mode
+                            </option>
+                        </select>
                         <div id="map"></div>
                         <div id="geoBuilder"></div>
                         <div id="txtBuilder"></div>

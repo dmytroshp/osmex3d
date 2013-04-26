@@ -1,4 +1,5 @@
 <?php
+ ob_start();
  header('Content-Type: text/xml; utf-8');
  
 require_once("config.php");
@@ -43,6 +44,7 @@ echo json_encode($json_data);
 /*foreach ($verts as $key => $value) {
 echo "<b>$value</b><br>";
 }*/	
+ob_end_flush();
 ?>
 
 
