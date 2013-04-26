@@ -11,7 +11,6 @@
         <script src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
         <link rel="stylesheet" href="jquery/smoothness/jquery-ui-1.10.2.custom.min.css">
 
-        <script src="scripts/SketchBuilder.js"></script>
         <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
@@ -32,6 +31,7 @@
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
         <script src="scripts/BoxBuilder.js"></script>
+        <script src="scripts/SketchFactory.js"></script>
 
         <script src="scripts/AjaxRequests.js"></script>
         
@@ -204,15 +204,15 @@
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
-            <div id="cube" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cube.png'>
             </div>
             <br/>
-            <div id="cylinder" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cylinder.png'>
             </div>
             <br/>
-            <div id="sphere" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/sphere.png'>
             </div>
 
@@ -262,13 +262,15 @@
 
             var CLICKED = [null, null];
 
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
             var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
             var groundGrid, groundPlane;
 
             var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
+            
+            var boxBuilder, sketchFactory;
 
             var arrowMode, objectType;
 
@@ -341,7 +343,8 @@
                     $(".group2").click(function() {
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
-                        addObject(this);
+                        //addObject(this);
+                        sketchFactory.startBuild($(this).attr('id'));
                     });
 
                     $(".group3").click(function() {
@@ -503,6 +506,9 @@
 
                 boxBuilder = new OSMEX.BoxBuilder();
                 objectScene.add(boxBuilder);
+                
+                sketchFactory = new OSMEX.SketchFactory();
+                objectScene.add(sketchFactory);
 
                 actionPlane = new THREE.Plane();
 
@@ -630,15 +636,6 @@
                 else {
                     
                     boxBuilder.finishBuild();
-                }
-            }
-            function addObject(element) {
-                //alert($(element).attr('id'));
-                if ($(element).attr('id') != "noarrows") {
-                    BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
-                    BUILDING.Sketch.pickable = false;
-                    BUILDING.position.set(-1000, -1000, -1000);
-                    objectScene.add(BUILDING);
                 }
             }
 
@@ -836,19 +833,8 @@
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
                 boxBuilder.onMouseMove(mouse);
-
-                if (BUILDING) {
-
-                    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-                    projector.unprojectVector(vector, camera);
-                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                    var intersectPoint = ray.intersectPlane(groundPlane);
-
-                    if (intersectPoint !== undefined) {
-
-                        BUILDING.position.copy(intersectPoint);
-                    }
-                }
+                
+                sketchFactory.onMouseMove(mouse);
 
                 if (DRAGGING) {
 
@@ -955,27 +941,16 @@
                         boxBuilder.onLeftClick(mouse);
                         return;
                     }
-
-                    if (BUILDING) {
-
-                        var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-                        projector.unprojectVector(vector, camera);
-                        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                        var intersectPoint = ray.intersectPlane(groundPlane);
-
-                        var object = new OSMEX.SketchBuilder(BUILDING.name);
-                        object.Sketch.position.copy(intersectPoint);
-                        object.Sketch.material.color.setHex(0xffffff);
-                        if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked")) 
-                            object.Sketch.remove(object.Sketch.children[0]);
-                        addToAdded(object.Sketch);
-                        objectScene.add(object.Sketch);
-
-                        objectScene.remove(BUILDING);
-
+                    
+                    if (sketchFactory.isBuilding()) {
+                        
+                        sketchFactory.onLeftClick(mouse);
+                        return;
                     }
 
                     if (PICKED) {
+                        
+                        cameraController.noPan = true;
 
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
 
@@ -1108,12 +1083,13 @@
                     if (SCALING)
                         SCALING.restoreDefaultScale();
 
-                    BUILDING = null;
                     DRAGGING = null;
                     SIZING = null;
                     SCALING = null;
                     ROTATING = null;
                     MOVING = null;
+                    
+                    cameraController.noPan = false;
                 }
             }
 
