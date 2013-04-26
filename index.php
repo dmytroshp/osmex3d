@@ -176,21 +176,17 @@ HERE;
                             $("#sidebar").width(width+150);
                             $("#content").css("width", "64%");
                         }
-                        else
+                    if($("#mode :selected").val()==="View mode")
                         {
                             forceRefreshPanel(0);
                             $("#tabGeo").css("display","none");
                             $("#tabTxt").css("display","none");
-                            $(this).css("display","none");
-                            $("#editBtn").val("Edit");
                             $(".accordionContainer").css("display", "none");
                             width=$("#searchDivc").width();
                             $("#searchDivc").width(width-150);
                             $("#sidebar").width(width-150);
                             $("#content").css("width", "75%");
-                            //flag=0;
-                    }
-
+                        }
                 });
 //            5. Submit OSM Search Handler
                 $("#osmSearchForm").submit(function(){
@@ -253,14 +249,13 @@ HERE;
                 });
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
-                $("#tabGeo").css("display","none");
-                $("#tabTxt").css("display","none");
-                $("#backBtn").css("display","none");
-                $(".accordionContainer").css("display", "none");
-                width=$("#searchDivc").width();
-                $("#searchDivc").width(width-150);
-                $("#sidebar").width(width-150);
-                $("#content").css("width", "75%");
+                $("#tabGeo").css("display","block");
+                $("#tabTxt").css("display","block");
+                $(".accordionContainer").css("display", "block");
+                //width=$("#searchDivc").width();
+                //$("#searchDivc").width(width+150);
+                //$("#sidebar").width(width+150);
+                $("#content").css("width", "64%");
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
                 forceRefreshPanel(0);
@@ -323,10 +318,10 @@ HERE;
                             <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
                         <select id="mode" size="1">
-                            <option selected value="View mode">
+                            <option value="View mode">
                                 View Mode
                             </option>
-                            <option value="Edit mode">
+                            <option selected value="Edit mode">
                                 Edit Mode
                             </option>
                         </select>
