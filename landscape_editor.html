@@ -71,6 +71,8 @@ function TileBlds () {
     this.id;//id of tile
 	this.x;
 	this.z;
+	this.cenx;
+	this.cenz;
 	this.scale_x;
 	this.scale_z;
 	this.minlon;
@@ -84,6 +86,8 @@ function TileBlds () {
 		 delete this.minlat;
 		 delete this.x;
 		 delete this.z;
+		 delete this.cenx;
+		 delete this.cenz;
 		delete this.arrIndxsBlds
 		this.arrIndxsBlds=null;
     };
@@ -96,6 +100,8 @@ function TileBlds () {
 			var container, stats;
 
 			var arrCurRoot = new Array();
+			var arrCurBld = new Array();
+			var curBldId = -1;
 			var arrTile = new Array();
 			var arrTileBlds = new Array();
 
@@ -119,7 +125,7 @@ function TileBlds () {
 			var MeshOfBlds = new Array();
 			var arrTex = new Array();
 
-			var bverify=true;
+			var bverify=false;
 
             var div = document.getElementById('cont');
 			//div.style.display="none";
@@ -385,7 +391,7 @@ this.loaded = function () {
 				//controls.rotateSpeed = 0.01;
 
 				//controls.addEventListener( 'change', render/*checkTiles*/ );
-                timerid=setTimeout(verify, 35);
+                //timerid=setTimeout(verify, 25);
 
 				//scene
                 scene = new THREE.Scene();
@@ -563,15 +569,28 @@ this.loaded = function () {
 
 			function responseServerCubes(s) {
 
+			   /* s=''+s;*/
 				var jstr;
-				//console.debug(s)
-				jstr=JSON.parse(''+s);
-				if(jstr.tile_id>=0&&arrTileBlds[jstr.tile_id].id!=undefined){
+				/*var smod=s.substr(0,s.indexOf('{'));
+				alert(smod);
+				s=s.replace(smod,'');*/
+				//alert(s)
+				var start=s.indexOf('{');
+				var end=s.lastIndexOf('{');
+				s=s.substr(start,s.length-start-1);
+				//alert(s);
+				jstr=JSON.parse(s);
+				if(typeof(arrTileBlds[jstr.tile_id]) != "undefined" && arrTileBlds[jstr.tile_id] != null)
+				{
+				  if(jstr.tile_id>=0&&arrTileBlds[jstr.tile_id].id!=undefined)
+				  {
+				
 				   var id=jstr.tile_id;
+				   //alert(id)
 				   //alert("builtile "+id)
                    for(var j=0;j<jstr.builds.length;j++){
-				       var b=parseInt(jstr.builds[j].build_id);
-				       //console.debug(" Build id "+b)
+				       var b=parseInt(jstr.builds[j].id);
+				       //alert(" Build id "+b)
 					   MeshOfBlds[b] = new THREE.Mesh(
                             new THREE.CubeGeometry(0.25,0.2,0.25),
                            //new THREE.MeshBasicMaterial({color: 0x000000, opacity: 1})
@@ -590,9 +609,12 @@ this.loaded = function () {
                 MeshOfBlds[b].scale.set(parseFloat(jstr.builds[j].scaleX),8,parseFloat(jstr.builds[j].scaleZ));  
 			    MeshOfBlds[b].rotation.set(parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY), parseFloat(jstr.builds[j].rotationZ));
                 scene.add( MeshOfBlds[b]);
+				MeshOfBlds[b].visible=true;
 				arrTileBlds[id].arrIndxsBlds[j]=b;
 					   }
-				render();	   
+				//render();
+				//arrCurBld.push(id);	
+                }				
 				}
 				jstr=null;
 				TLoad.loaded()	
@@ -699,7 +721,7 @@ this.loaded = function () {
 				if(typeof(arrTile[id]) != "undefined" && arrTile[id] != null)
 				{
                   var dist=getDistance(camera,arrTile[id].lvl,arrTile[id].tex_x,arrTile[id].tex_z);
-                  //if(arrTileBlds[id]&&dist>=230)delbuildsoftile(id);
+                  if(arrTileBlds[id]&&dist>=170)delbuildsoftile(id);
                   arrTile[id].destroy();
                   delete arrTile[id];
                   arrTile[id]=null;
@@ -743,6 +765,7 @@ this.loaded = function () {
 
 
 			}
+			
 
 			function crtMesh(id,flagroot){
 
@@ -844,6 +867,81 @@ this.loaded = function () {
 				  });
 
 			}
+			
+			function dist2Blds(tid,cam){
+                var cenx=arrTileBlds[tid].cenx;
+                var cenz=arrTileBlds[tid].cenz;
+				var tilecenter=new THREE.Vector3( cenx, 0.0, cenz);
+                return tilecenter.sub(cam.position).length();
+            }				
+			
+			function loadBlds(tid,cam,tlvl,tosmX,tosmZ){
+
+				var var1=Math.pow(2,tlvl);//number of tiles in row (specific lvl) 
+				var scale=tlvl==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
+				var offset=tlvl==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
+
+				var vec1X=TLoad.startX+offset*tosmX;
+				var vec1Z=TLoad.startZ+offset*tosmZ;
+
+				var vec2X=TLoad.startX+offset*tosmX+(scale)*8;
+				var vec2Z=TLoad.startZ+offset*tosmZ;
+
+				var vec3X=TLoad.startX+offset*tosmX;
+				var vec3Z=TLoad.startZ+offset*tosmZ+(scale)*8;
+
+				var vec4X=TLoad.startX+offset*tosmX+(scale)*8;
+				var vec4Z=TLoad.startZ+offset*tosmZ+(scale)*8;
+
+                var cenx=(vec2X+vec1X)/2.0;
+                var cenz=(vec2Z+vec3Z)/2.0;
+
+				var tilecenter=new THREE.Vector3( cenx, 0.0, cenz);
+
+                var dist = tilecenter.sub(cam.position).length();
+
+                if(dist<=100)
+                {
+                  if(tlvl<18)
+				  {
+				    loadBlds(tid*4+1,cam,tlvl+1,2*tosmX,2*tosmZ);
+					loadBlds(tid*4+2,cam,tlvl+1,2*tosmX+1,2*tosmZ);
+					loadBlds(tid*4+3,cam,tlvl+1,2*tosmX,2*tosmZ+1);
+					loadBlds(tid*4+4,cam,tlvl+1,2*tosmX+1,2*tosmZ+1);
+				  }
+				  if(tlvl==18 && (typeof(arrTileBlds[tid]) == "undefined" || arrTileBlds[tid] == null))
+			      {
+				    arrTileBlds[tid]=new TileBlds();
+				    arrTileBlds[tid].id=tid;
+				    var minlon=tile2lon(tosmX,tlvl)
+				    var maxlon=tile2lon(tosmX+1,tlvl)
+				    var minlat=tile2lat(tosmZ+1,tlvl)
+				    var maxlat=tile2lat(tosmZ,tlvl)
+				    var range_lon=maxlon-minlon;
+				    var range_lat=maxlat-minlat;
+				    var c0=new THREE.Vector3( vec1X,0.0,vec1Z);
+				    var c1=new THREE.Vector3( vec2X,0.0,vec2Z);
+				    var c2=new THREE.Vector3( vec3X,0.0,vec3Z);
+				    var c3=new THREE.Vector3( vec4X,0.0,vec4Z);
+				    var range_x=Math.max(c1.x,c0.x)-Math.min(c1.x,c0.x);
+				    var range_z=Math.max(c0.z,c2.z)-Math.min(c0.z,c2.z);
+				    arrTileBlds[tid].scale_x=range_x/range_lon;
+				    arrTileBlds[tid].scale_z=range_z/range_lat;
+				    arrTileBlds[tid].minlon=minlon;
+				    arrTileBlds[tid].minlat=minlat;
+				    arrTileBlds[tid].z=c3.z;
+				    arrTileBlds[tid].x=c0.x;
+					arrTileBlds[tid].cenx=cenx;
+				    arrTileBlds[tid].cenz=cenz;
+					//alert(8)
+				    TLoad.pushTileCube(""+tid+" "+minlon+" "+minlat+" "+maxlon+" "+maxlat);
+					//build_func(tid,minlon,minlat,maxlon,maxlat)
+					/*if(TLoad&&!bverify){alert("bv");
+			            if(TLoad.needforload()){alert(tid);bverify=true;timerid=setTimeout(verify, 25);}
+				      }*/
+			      }
+                }				
+			}
 
 			function checkTiles() {
 				console.debug(" ")
@@ -851,6 +949,19 @@ this.loaded = function () {
 				/*console.debug("camera.phi "+controls.phi)
 				console.debug("camera.theta "+controls.theta)*/
 				//console.debug("fov "+camera.fov)
+			/*	
+			  console.debug("arrCurBld.length "+arrCurBld.length)
+			  curBldId++;
+			  if(curBldId>=arrCurBld.length)curBldId=0;
+			  var curbld=arrCurBld[curBldId];
+			  if(arrTileBlds[curbld])
+			  if(typeof(arrTileBlds[curbld]) != "undefined" && arrTileBlds[curbld] != null)
+			  {
+			  var dist2b=dist2Blds(curbld,camera);
+			  //console.debug("dist2b "+dist2b+" "+arrTileBlds[curbld].id)
+			  alert(arrTileBlds[curbld].id)
+			  if(dist2b>110){arrCurBld.splice(curBldId,1);delbuildsoftile(curbld);}
+			  }*/
 
 				console.debug("arrCurRoot.length "+arrCurRoot.length)	
 				//&&TLoad.idforloadroot!=arrCurRoot[j]&&TLoad.ReadyForRoot
@@ -866,15 +977,17 @@ this.loaded = function () {
 
 			  var dist=getDistance(camera,arrTile[cur_ID].lvl,arrTile[cur_ID].tex_x,arrTile[cur_ID].tex_z);	
 			  var pixelTileSize=tileSizeRoot/ Math.pow(2,arrTile[cur_ID].lvl)*UnitToPixelScale/dist;
-              //console.debug("pixelTileSize "+pixelTileSize+"id "+cur_ID)
-              //if(arrTile[cur_ID].lvl>=17)console.debug("dist "+dist+ "; id "+cur_ID+"; lvl "+arrTile[cur_ID].lvl+" pixelTileSize "+pixelTileSize)	
-             // console.debug("dist "+dist+ "; id "+cur_ID+"; lvl "+arrTile[cur_ID].lvl)		  
-              //console.debug("pixelTileSize "+pixelTileSize + " "+cur_ID)
 			  
-			  /*if(dist<=200&&lvlbldactive<0)lvlbldactive=arrTile[cur_ID].lvl;
-			  if(arrTile[cur_ID].lvl==lvlbldactive&&!arrTileBlds[cur_ID])
+			  /*if(dist<=100)
 			  {
-
+			    loadBlds(cur_ID,camera,arrTile[cur_ID].lvl,arrTile[cur_ID].tex_x,arrTile[cur_ID].tex_z)
+			  }*/
+			  
+              if(dist<=140&&lvlbldactive<0)lvlbldactive=arrTile[cur_ID].lvl;
+			  if(arrTile[cur_ID].lvl==lvlbldactive)
+			  {
+                if(typeof(arrTileBlds[cur_ID]) == "undefined" && arrTileBlds[cur_ID] == null)
+				{
 				 arrTileBlds[cur_ID]=new TileBlds();
 				 arrTileBlds[cur_ID].id=cur_ID;
 				 var minlon=tile2lon(arrTile[cur_ID].tex_x,arrTile[cur_ID].lvl)
@@ -895,10 +1008,11 @@ this.loaded = function () {
 				 arrTileBlds[cur_ID].minlat=minlat;
 				 arrTileBlds[cur_ID].z=c3.z;
 				 arrTileBlds[cur_ID].x=c0.x;
-
+                 //alert(""+arrTile[cur_ID].id+" "+minlon+" "+minlat+" "+maxlon+" "+maxlat)
                  TLoad.pushTileCube(""+arrTile[cur_ID].id+" "+minlon+" "+minlat+" "+maxlon+" "+maxlat);
+				}
 
-			  }*/
+			  }
 
 			    if(pixelTileSize>=384)
 				{
@@ -1051,13 +1165,17 @@ this.loaded = function () {
 				/*if(TLoad&&!bverify){
 			     if(TLoad.needforload()){bverify=true;timerid=setTimeout(verify, 35);}
 				}*/
+				
+				if(TLoad){
+			     if(TLoad.needforload())TLoad.loadTile();
+				}
 
 			}
 
 			function verify(){
 
 				/*if(TLoad){
-			     if(TLoad.needforload()){TLoad.loadTile();timerid=setTimeout(verify, 35);}
+			     if(TLoad.needforload()){TLoad.loadTile();timerid=setTimeout(verify, 25);}
 				 else{bverify=false;}
 				}*/
 			}
