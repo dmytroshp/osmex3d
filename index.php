@@ -36,7 +36,19 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
     <head>
         <title>OSMEX3D</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <!--        <link rel="stylesheet" href="css/jqueryui.css" />-->
+        
+<!--        <script src="threejs/three.js"></script>
+        <script src="scripts/Camera.js"></script>
+        <script src="scripts/CameraController.js"></script>
+        <script src="scripts/TileMesh.js"></script>
+        <script src="scripts/AreaSelector.js"></script>
+        <script src="scripts/Detector.js"></script>
+
+        <script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
+        <script type="text/javascript" src="server_scripts/Functions.js"></script>-->
+        
         <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
         <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
         <script type="text/javascript" src="jquery/jquery.color.js"></script>
@@ -112,7 +124,15 @@ HERE;
                 var initializator={
                     tabMap:{
                         url:'ajax/landscapeEditor.html',
-                        activator:function(){}
+                        activator:function(){
+                            var iframe=this.find('iframe');
+                            iframe.css('width',this.width());
+                            iframe.css('height',this.height());
+                            if(landscapeMode=='zoom') 
+                                iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&rnd='+Math.random());
+                            else
+                                iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&rnd='+Math.random());
+                        }//prepareMap();}
                     },
                     tabGeo:{
                         url:'ajax/objectEditor.html',
@@ -126,9 +146,9 @@ HERE;
                 function forceRefreshPanel(index)
                 {
                     var key=$('#objectEditor ul li:eq('+index+')').attr('id');
-                    var panel=$('#objectEditor').children('div:eq('+index+')');
+                    var panel=$('#objectEditor > div:not(#searchbar)').eq(index);
                     panel.load(initializator[key].url,'',function(){
-                                initializator[key].activator.call(this,index);
+                                initializator[key].activator.call(panel,index);
                     });
                     $("#objectEditor").tabs({active:index});
                 }
@@ -138,7 +158,7 @@ HERE;
                         {
                             var key=ui.newTab.attr('id');
                             ui.newPanel.load(initializator[key].url,'',function(){
-                                initializator[key].activator.call(this,event,ui);
+                                initializator[key].activator.call(ui.newPanel,event,ui);
                             });
                         }
                     }
@@ -211,6 +231,12 @@ HERE;
                         dataType:'json',
                         success:function(result){
                             $("#nominatium").html(result['nominatium']);
+                            
+                            $("#nominatium ul").next().remove();
+                            $("#nominatium ul").next().remove();
+                            $("#geonames").html(result['geonames']);
+                            $("#geonames ul").next().remove();
+                            $("#geonames ul").next().remove();
                             $('.set_position').click(function(){
                                 var link=$(this);
                                 if(link.attr('data-zoom'))
@@ -235,13 +261,12 @@ HERE;
                                     mlat=0;
                                     zoom=0;
                                 }
+                                if($("#mode :selected").val()!=="View mode")
+                                {
+                                      forceRefreshPanel(0);  
+                                }
                                 return false;
                             });
-                            $("#nominatium ul").next().remove();
-                            $("#nominatium ul").next().remove();
-                            $("#geonames").html(result['geonames']);
-                            $("#geonames ul").next().remove();
-                            $("#geonames ul").next().remove();
                             //$(result).appendTo('#nominatium');
                         }
                      });

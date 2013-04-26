@@ -20,6 +20,36 @@
 	</head>
 
 	<body>
+        <?php
+    if(!isset($_GET['zoom']))
+{
+    $landscapeMode='boundary';
+    $zoom=0;
+}
+else
+{
+    $landscapeMode='zoom';
+    $zoom=intval($_GET['zoom']);
+}
+$minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:'22.1370582580566';//-180;
+$minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:'44.1845970153809';//-90;
+$maxlon=(isset($_GET['maxlon'])&& is_numeric($_GET['maxlon']))?$_GET['maxlon']:'40.2271308898926';//180;
+$maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:'52.379150390625';//90;
+$mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
+$mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
+echo<<<HERE
+<div>
+                    landscapeMode='$landscapeMode';
+                    minlon=$minlon;
+                    minlat=$minlat;
+                    maxlon=$maxlon;
+                    maxlat=$maxlat;
+                    mlon=$mlon;
+                    mlat=$mlat;
+                    zoom=$zoom;
+</div>
+HERE;
+?>
         <div  jstcache="0"  id="cont" ></div>
         <div  jstcache="0"  id="build"></div>
 		<div  jstcache="0"  id="container"></div>
@@ -372,20 +402,20 @@ this.loaded = function () {
                 //controls.userZoomSpeed = 0.43;
 				controls.ZoomSpeed = 0.43;
 
-
+                                //setPointZoom(0,0,0,camera,controls);
 				if(typeof(landscapeMode) != "undefined" && landscapeMode != null)
 				{
-	               if(landscapeMode.toString=='boundary')
+	               if(landscapeMode=='boundary')
 	               {
-	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls)
+	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls);
 	               }
-	               else if(landscapeMode.toString=='zoom')
+	               else if(landscapeMode=='zoom')
 	               {
-	                 setPointZoom(mlon,mlat,zoom,camera,controls)
+	                 setPointZoom(mlon,mlat,zoom,camera,controls);
 	               }
 				}else
 				{
-				  setPointZoom(0,0,0,camera,controls)
+				  setPointZoom(0,0,0,camera,controls);
 				}
 
 				//controls.rotateSpeed = 0.01;
