@@ -13,7 +13,7 @@ function loadXMLDoc(url,params)
  
     if (req) {	 
         req.open("GET", url + '?r='+Math.random()+'&'+params, true);
-        req.setRequestHeader("Content-Type", "text/xml"); //application/x-www-form-urlencoded
+        req.setRequestHeader("Content-Type", "application/json"); //application/x-www-form-urlencoded
         req.setRequestHeader("Accept-Charset", "UTF-8"); 
         req.setRequestHeader("Accept-Language", "ru, en");
 		if(params.indexOf("id")>-1)div=document.getElementById('cont');

@@ -1,57 +1,42 @@
-﻿<?php
+﻿<?php 
+ob_start();
+header('Content-Type: application/json; utf-8');
 
-    //header('Content-Type: text/xml; utf-8');
-	
-    $login_db = 'root';
-    $password_db = '';
+    require_once("config.php");
 
-    try {
-        $db = new PDO('mysql:host=localhost;dbname=osmex3d', $login_db, $password_db);
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-
-	//$zoom = 18;
-	//$n = pow(2, $zoom);
-	//$x = $_GET['x'];
-	//$z = $_GET['z'];
-    $position_lon = $_GET['minlon'];//$x / $n * 360.0 - 180.0;
-    $position_lat = $_GET['minlat']; //rad2deg(atan(sinh(pi() * (1 - 2 * ($z+1) / $n))));
-    $position_lonend = $_GET['maxlon']; //($x+1) / $n * 360.0 - 180.0;
-    $position_latend = $_GET['maxlat']; //rad2deg(atan(sinh(pi() * (1 - 2 * $z / $n))));
+    $position_lon = $_GET['minlon'];
+    $position_lonend = $_GET['maxlon'];
+    $position_lat = $_GET['minlat'];
+    $position_latend = $_GET['maxlat'];
 	$tile_id = $_GET['tile_id']; 
-	//echo "<b>$position_lon</b><br>";
-	//echo "<b>$position_lat</b><br>";
-	//echo "<b>$position_lonend</b><br>";
-	//echo "<b>$position_latend</b><br>";
     $fullarr = array();
 
-    $res = $db->query("SELECT * FROM objectInstance WHERE positionLon >=  $position_lon AND positionLon <=  $position_lonend 
-        AND positionLat >= $position_lat AND positionLat <= $position_latend;");
+$query= <<<EOD
+SELECT * FROM objectInstance WHERE positionLon >=  '$position_lon' AND positionLon <=  '$position_lonend' 
+AND positionLat >= '$position_lat' AND positionLat <= '$position_latend';
+EOD;
 
-    $row = $res->fetchAll();
-	if(!isset($row[0])){$tile_id==0?$tile_id=-1:$tile_id*=-1;}
-	else{
-        foreach ($row as $rs){
-            $t1 = $rs["id"];
-            $t2 = $rs["scaleX"];
-            $t3 = $rs["scaleY"];
-            $t4 = $rs["scaleZ"];
-            $t5 = $rs["rotationX"];
-            $t7 = $rs["rotationY"];
-            $t8 = $rs["rotationZ"];
-            $t9 = $rs["positionLon"];
-            $t10 = $rs["positionLat"];
-            $t11 = $rs["positionHeight"]
-            //$t11 = $rs["TypeID"];
-            $var = array('build_id' => $t1, 'scaleX' => $t2, 'scaleY' => $t3, 'scaleZ' => $t4, 'rotationX' => $t5,
-                'rotationY' => $t7, 'rotationZ' => $t8, 'positionLon' => $t9, 'positionLat' => $t10, 
-                'positionHeight' => $t11/*, 'typeObject' => $t11*/);
-            array_push($fullarr,$var);	
-        }
-	}
+	$result = mysql_query($query);
+
+    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+	{
+        //printf ("ID: %s  Name: %s", $row["id"], $row["name"]);
+		$t1 = $row["id"];
+        $t2 = $row["scaleX"];
+        $t3 = $row["scaleY"];
+        $t4 = $row["scaleZ"];
+        $t5 = $row["rotationX"];
+        $t7 = $row["rotationY"];
+        $t8 = $row["rotationZ"];
+        $t9 = $row["positionLon"];
+        $t10 = $row["positionLat"];
+        //$t11 = $row["TypeID"];
+        $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
+         "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10/*, "typeObject" => $t11*/);
+    }
 
     $result_str = json_encode(array('tile_id' => $tile_id,'builds' => $fullarr));
-    echo $result_str;
-    $db = NULL;
+	printf ('"%s"',$result_str);
+    mysql_free_result($result);
+	ob_end_flush();
 ?>
