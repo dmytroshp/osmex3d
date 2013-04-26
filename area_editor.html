@@ -168,7 +168,7 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var FIRST_PICKABLE_OBJ = 6;
+            var FIRST_PICKABLE_OBJ = 5;
             var GRID_SIZE = 60;
             var MIN_LON = 30.73699951171875;
             var MIN_LAT = 46.470970513345925;
@@ -278,13 +278,13 @@
                 groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
                 objectScene.add(groundPlane);
                 
-                var gridGeom = new THREE.PlaneGeometry (120,120,1,1);
+                /*var gridGeom = new THREE.PlaneGeometry (120,120,1,1);
                 var gridMaterial = new THREE.MeshBasicMaterial( );
                 gridMaterial.side = THREE.DoubleSide;
                 gridPlane = new THREE.Mesh(gridGeom,gridMaterial);
                 gridPlane.rotation.x = 1.555;
                 gridPlane.visible = false;              
-                objectScene.add(gridPlane);
+                objectScene.add(gridPlane);*/
 
                 sizerGizmo = new OSMEX.SizerGizmo();
                 interfaceScene.add(sizerGizmo);
@@ -465,14 +465,14 @@
                     cameraController.noRotate = true;
                     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                     projector.unprojectVector(vector, camera);
-                    //var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                    //var intersectPoint = ray.intersectPlane(groundPlane);
-                    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-                    var intersects = raycaster.intersectObject( gridPlane );
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                    var intersectPoint = ray.intersectPlane(groundPlane);
+                    //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+                    //var intersects = raycaster.intersectObject( gridPlane );
                     
-                    if ( intersects.length > 0 ) {
-                        DRAGGING.position.copy(intersects[0].point.sub(offsetVector));
-                    }
+                    //if ( intersects.length > 0 ) {
+                        DRAGGING.position.copy(intersectPoint.sub(offsetVector));
+                    //}
                 }
                 else if (SIZING) {
                     
@@ -574,15 +574,15 @@
 
                         var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
                         projector.unprojectVector(vector, camera);
-                        //var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                        //var intersectPoint = ray.intersectPlane(groundPlane);
-                        var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-                        var intersects = raycaster.intersectObject( gridPlane );
+                        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                        var intersectPoint = ray.intersectPlane(groundPlane);
+                        //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+                        //var intersects = raycaster.intersectObject( gridPlane );
                         
-                        if ( intersects.length > 0 ) {
+                        //if ( intersects.length > 0 ) {
                             console.log ("here")
                             var object = new OSMEX.SketchBuilder(BUILDING.name);
-                            object.Sketch.position.copy(intersects[0].point);
+                            object.Sketch.position.copy(intersectPoint);
                             object.Sketch.material.color.setHex(0xffffff);
                             if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked")) 
                                 object.Sketch.remove(object.Sketch.children[0]);
@@ -591,7 +591,7 @@
                             object.Sketch.isModified = false;
                             object.Sketch.isDeleted = false;
                             objectScene.add(object.Sketch);
-                        }
+                        //}
                         objectScene.remove(BUILDING);
 
                     }
@@ -614,11 +614,11 @@
  
                             var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
                             projector.unprojectVector(vector, camera);
-                            //var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                            //var intersectPoint = ray.intersectPlane(groundPlane);
-                            var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-                             var intersects = raycaster.intersectObject( gridPlane );
-                            offsetVector.copy(intersects[0].point).sub(DRAGGING.position);
+                            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                            var intersectPoint = ray.intersectPlane(groundPlane);
+                            //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+                            //var intersects = raycaster.intersectObject( gridPlane );
+                            offsetVector.copy(intersectPoint).sub(DRAGGING.position);
                             
                         }
                         else if (pickRef instanceof OSMEX.SizerArrow) {
