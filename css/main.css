@@ -98,8 +98,6 @@ body
      bottom: 5px;
      top: 45px;
      border: 1px #cccccc solid;
-     overflow-x: scroll;
-     overflow-y: auto;
          
  }
  #geoBuilder

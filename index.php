@@ -220,6 +220,8 @@ HERE;
                             //$('#searchbar').next().css({'margin-left':'0px'});
                             $("#objectEditor").children('div').css({'margin-left':'0px'});
                             $('#searchbar').remove();
+                            //$('iframe').css('width',$('iframe').parent().width());
+                            //$('iframe').css('height',$('iframe').parent().height());
                         });
                     }
                     $("#nominatium").html('<br><center><img align="center" src="img/searching.gif"/></center>');
@@ -263,8 +265,26 @@ HERE;
                                 }
                                 if($("#mode :selected").val()!=="View mode")
                                 {
-                                      forceRefreshPanel(0);  
+                                    var mydialog=$(dialog_template).attr('title','Switch to search result');
+                                    mydialog.find('p').append('Are you shure you want to switch to the search result?');
+                                    mydialog.dialog({
+                                        resizable: false,
+                                          height:140,
+                                          modal: true,
+                                          buttons: {
+                                            "Yes": function() {
+                                              forceRefreshPanel(0);
+                                              $( this ).dialog( "close" );
+                                            },
+                                            "No": function() {
+                                              $( this ).dialog( "close" );
+                                            }
+                                        }
+                                    });
+                                    //forceRefreshPanel(0);  
                                 }
+                                else
+                                    forceRefreshPanel(0);
                                 return false;
                             });
                             //$(result).appendTo('#nominatium');

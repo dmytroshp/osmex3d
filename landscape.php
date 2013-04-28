@@ -4,6 +4,9 @@
 		<title>three.js webgl - trackball camera</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+                <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
+                <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+                <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
 		<style>
 			body {
 				color: #000;
@@ -16,6 +19,49 @@
 				margin: 0px;
 				overflow: hidden;
 			}
+                        .slider_place
+                        {
+                            position:absolute;
+                            top: 50px;
+                            right:20px;
+                            width:120px;
+                            height:50px;
+                            z-index:2;
+                        }
+                        #slider
+                        {
+                            position:relative;
+                            top:5px;
+                            left:15px;
+                            width:88px;
+                        }
+                        .opc
+                        {
+                            margin:0;
+                            padding: 0;
+                            font-size:10px;
+                            font-weight: normal;
+                        }
+                        .lbl1
+                        {
+                            margin:0;
+                            padding: 0;
+                            font-size:10px;
+                            font-weight: normal;
+                            position: absolute;
+                            left:5px;
+                            bottom:5px;
+                        }
+                        .lbl2
+                        {
+                            margin:0;
+                            padding: 0;
+                            font-size:10px;
+                            font-weight: normal;
+                            position: absolute;
+                            right:5px;
+                            bottom:5px;
+                        }
 		</style>
 	</head>
 
@@ -38,7 +84,7 @@ $maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:'
 $mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
 $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 echo<<<HERE
-<div>
+<div style="display:none">
                     landscapeMode='$landscapeMode';
                     minlon=$minlon;
                     minlat=$minlat;
@@ -50,6 +96,11 @@ echo<<<HERE
 </div>
 HERE;
 ?>
+            <div class="slider_place ui-widget ui-widget-content ui-corner-all">
+                <p class='opc'>Buildings opacity</p>
+                <div id="slider">&nbsp;</div>
+                <p class='lbl1'>0%</p><p class='lbl2'>100%</p>
+            </div>
         <div  jstcache="0"  id="cont" ></div>
         <div  jstcache="0"  id="build"></div>
 		<div  jstcache="0"  id="container"></div>
@@ -60,13 +111,12 @@ HERE;
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/TileMesh.js"></script>
         <script src="scripts/AreaSelector.js"></script>
+        <script src="scripts/Detector.js"></script>
 
-		<script src="scripts/Detector.js"></script>
-
-		<script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
+	<script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
         <script type="text/javascript" src="server_scripts/Functions.js"></script> 
 
-		<script>
+<script>
 //Class of tile		
 function Tile () {
     this.id;
@@ -157,7 +207,29 @@ function TileBlds () {
 
 			var bverify=false;
 
-            var div = document.getElementById('cont');
+                        buildingsOpacity=100;
+                        $(document).ready(function(){
+                            $('#slider').slider({
+                                max:100,
+                                min:0,
+                                value:100,
+                                step:1,
+                                slide:function(event,ui)
+                                {
+                                    buildingsOpacity=ui.value;
+                                }
+                            });
+                            $('.slider_place').mouseenter(function(){
+                                controls.enabled=false;
+                                //camera.noRotate=true;
+                            });
+                            $('.slider_place').mouseleave(function(){
+                                controls.enabled=true;
+                                //camera.noRotate=false;
+                            });
+                        });
+                        
+                        var div = document.getElementById('cont');
 			//div.style.display="none";
 			div.ongetdata =responseServer;		
 
