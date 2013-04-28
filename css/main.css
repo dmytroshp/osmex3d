@@ -177,7 +177,7 @@ body
     height: 15px;
     text-indent: -1000px;
     overflow: hidden;
-    background: url('/img/osm-search.png') 0 0 no-repeat;
+    background: url('img/osm-search.png') 0 0 no-repeat;
     /*position: absolute;
     top: 5px;
     right: 5px;*/

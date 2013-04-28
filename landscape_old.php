@@ -141,7 +141,7 @@ HERE;
 
 <script type="text/javascript">
 //Class of tile	
-var edit_button=['img/edit.png','img/edit_disabled.png','img/edit_hovered.png','img/edit_pressed.png'];
+var edit_button=['/img/edit.png','/img/edit_disabled.png','/img/edit_hovered.png','/img/edit_pressed.png'];
 $.each(edit_button,function(value,index){
     var img=$("<img src='"+value+"'>");
     img.css('display','none');
@@ -704,7 +704,7 @@ this.loaded = function () {
 				       var b=parseInt(jstr.builds[j].id);
 				       //alert(" Build id "+b)
 					   MeshOfBlds[b] = new THREE.Mesh(
-                            new THREE.CubeGeometry(0.25,0.2,0.25),
+                            new THREE.CubeGeometry(0.212,0.2,0.226),
                            //new THREE.MeshBasicMaterial({color: 0x000000, opacity: 1})
 				           new THREE.MeshBasicMaterial({
 				           color: 0xd78254//,
@@ -735,12 +735,10 @@ this.loaded = function () {
 
 			function onWindowResize() {
 
-				/*camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();*/
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
 
 				UnitToPixelScale = window.innerHeight /( 2.0 * getTanDeg(camera.fov / 2.0));
-				camera.setSize(window.innerWidth, window.innerHeight);
-                camera.updateProjectionMatrix();
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
