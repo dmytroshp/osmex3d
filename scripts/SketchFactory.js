@@ -30,6 +30,7 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
     if (this.currentObject !== null) {
         
         this.currentObject.setVisibility(true);
+        if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
         var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
         projector.unprojectVector(vector, camera);
@@ -92,8 +93,6 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
     
     var objGeometry;
     
-    //console.log("objectTypeId=", objectTypeId);
-    
     // Cube
     if (objectTypeId == 1) {
         
@@ -103,7 +102,7 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
     // Sphere
     else if (objectTypeId == 2) {
         
-        objGeometry = new THREE.SphereGeometry( 0.6, 15, 15 );
+        objGeometry = new THREE.SphereGeometry( 0.5, 15, 15 );
         this.name = "sphere";
     }
     // Cylinder
@@ -121,13 +120,13 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
     // Torus
     else if (objectTypeId == 5) {
         
-        objGeometry = new THREE.TorusGeometry( 1, 0.2, 30, 30);
+        objGeometry = new THREE.TorusGeometry( 0.5, 0.2, 30, 30);
         this.name = "torus";
     }
     // Tetrahedron
     else if (objectTypeId == 6) {
         
-        objGeometry = new THREE.TetrahedronGeometry (1, 0.1);
+        objGeometry = new THREE.TetrahedronGeometry (0.5, 0.1);
         this.name = "tetrahedron";
     }
     // checking geometries cache and request geometry from the server if necessary

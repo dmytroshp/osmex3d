@@ -128,7 +128,7 @@ window.ThreeBSP = (function() {
 	};
 	ThreeBSP.prototype.toGeometry = function() {
 		var i, j,
-			matrix = new THREE.Matrix4().getInverse( this.matrix ),
+			//matrix = new THREE.Matrix4().getInverse( this.matrix ),
 			geometry = new THREE.Geometry(),
 			polygons = this.tree.allPolygons(),
 			polygon_count = polygons.length,
@@ -148,7 +148,7 @@ window.ThreeBSP = (function() {
 				vertex = polygon.vertices[0];
 				verticeUvs.push( new THREE.Vector2( vertex.uv.x, vertex.uv.y ) );
 				vertex = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
-				vertex.applyMatrix4(matrix);
+				//vertex.applyMatrix4(matrix);
 				
 				if ( typeof vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ] !== 'undefined' ) {
 					vertex_idx_a = vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ];
@@ -160,7 +160,7 @@ window.ThreeBSP = (function() {
 				vertex = polygon.vertices[j-1];
 				verticeUvs.push( new THREE.Vector2( vertex.uv.x, vertex.uv.y ) );
 				vertex = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
-				vertex.applyMatrix4(matrix);
+				//vertex.applyMatrix4(matrix);
 				if ( typeof vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ] !== 'undefined' ) {
 					vertex_idx_b = vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ];
 				} else {
@@ -171,7 +171,7 @@ window.ThreeBSP = (function() {
 				vertex = polygon.vertices[j];
 				verticeUvs.push( new THREE.Vector2( vertex.uv.x, vertex.uv.y ) );
 				vertex = new THREE.Vector3( vertex.x, vertex.y, vertex.z );
-				vertex.applyMatrix4(matrix);
+				//vertex.applyMatrix4(matrix);
 				if ( typeof vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ] !== 'undefined' ) {
 					vertex_idx_c = vertice_dict[ vertex.x + ',' + vertex.y + ',' + vertex.z ];
 				} else {
