@@ -46,7 +46,7 @@
                     <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
                 </form>\
             </div>";
-            var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 1; width:230px; display:none;' id='message' class='ui-widget'>\
+            var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
                     <div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
                         <p>\
                         <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
@@ -333,6 +333,7 @@
             var OPERATED = false;
             var firstObject, secondObject, resultObj;
             
+            
             init();
             animate();
 
@@ -435,6 +436,25 @@
 
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
+                    myDialog.keyup(function () {
+                         var name = $("#name");
+                        $.ajax({
+                                    type: "POST",
+                                    
+                                    url: "server_scripts/checkUniqueName.php",
+                                    cache: false,
+                                    data: {name: name.val()}, 
+                                    success: function(data) {
+                                        if (data != "0") {
+                                            showErrorMessage("Error. Name '" + name.val() + "' exists.");
+                                        }
+                                       console.log(data);
+                                    }
+                                        //isReq = (data == "0") ? true : false;
+                                    //    console.log(data);
+                                    //}
+                        });
+                    });
                     myDialog.dialog({
                         autoOpen: false,
                         height: 600,
@@ -444,29 +464,41 @@
                         buttons: {
                             "Test": function() {
                                 // TEST ONLY
-                                saveScene();
+                                var name = $("#name");
+                                $.ajax({
+                                    type: "POST",
+                                    url: "server_scripts/checkUniqueName.php",
+                                    cache: false,
+                                    data: {name: name.val()}, 
+                                    success: function(data) {
+                                        console.log(data);
+                                    }
+                                });
                             },
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
-                                var geometryExporter = new THREE.GeometryExporter();
-                                var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
-
-                                imageData = iconRenderer.domElement.toDataURL("image/png");
-
-                                ajaxNewSketch(name, category, serializedGeometry, imageData);
                                 
-                                while (selectedObj.length > 0) {
-                                    selectedObj.pop();
-                                }
-                                CLICKED[0].material.emissive.setHex(0x000000);
-                                if (CLICKED[1] != null) {
-                                    CLICKED[1].material.emissive.setHex(0x000000);
-                                }
-                                CLICKED[0] = null;
-                                CLICKED[1] = null;
-                                
-                                $(this).dialog("close");
+                                                                
+                               
+                                    
+                                    var geometryExporter = new THREE.GeometryExporter();
+                                    var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
 
+                                    imageData = iconRenderer.domElement.toDataURL("image/png");
+
+                                    ajaxNewSketch(name, category, serializedGeometry, imageData);
+
+                                    while (selectedObj.length > 0) {
+                                        selectedObj.pop();
+                                    }
+                                    CLICKED[0].material.emissive.setHex(0x000000);
+                                    if (CLICKED[1] != null) {
+                                        CLICKED[1].material.emissive.setHex(0x000000);
+                                    }
+                                    CLICKED[0] = null;
+                                    CLICKED[1] = null;
+
+                                    $(this).dialog("close");
                             },
                             Cancel: function() {
                                 
@@ -498,6 +530,7 @@
                             iconCameraController.enabled = false;
                             cameraController.enabled = true;
                         }
+                        
                     });
 
                     $(".group4").click(function() {
@@ -624,7 +657,7 @@
                 alert.appendTo('body');
                 //$("#msgtext").html(text);
                 alert.fadeIn(600, function() {
-                    timeout_id = setTimeout(hideMessage, 4400);
+                    timeout_id = setTimeout(hideMessage, 440);
                 });
             }
 
