@@ -6,6 +6,14 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
                 <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
                 <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+                <script src="threejs/three.js"></script>
+                <script src="scripts/Camera.js"></script>
+                <script src="scripts/CameraController.js"></script>
+                <script src="scripts/TileMesh.js"></script>
+                <script src="scripts/AreaSelector.js"></script>
+                <script src="scripts/Detector.js"></script>
+                <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
+                
                 <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
 		<style>
 			body {
@@ -127,24 +135,13 @@ HERE;
             </div>
         <div  jstcache="0"  id="cont" ></div>
         <div  jstcache="0"  id="build"></div>
-		<div  jstcache="0"  id="container"></div>
+        <div  jstcache="0"  id="container"></div>
 
-		<script src="threejs/three.js"></script>
-
-        <script src="scripts/Camera.js"></script>
-        <script src="scripts/CameraController.js"></script>
-        <script src="scripts/TileMesh.js"></script>
-        <script src="scripts/AreaSelector.js"></script>
-        <script src="scripts/Detector.js"></script>
-
-	<script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
-        <script type="text/javascript" src="server_scripts/Functions.js"></script> 
-
-<script>
-//Class of tile
-var edit_btn=['/img/edit.png','/img/edit_disabled.png','/img/edit_hovered.png','/img/edit_pressed.png'];
-$.each(edit_btn,function(index,value){
-    var img=$('<img src="'+value+'">');
+<script type="text/javascript">
+//Class of tile	
+var edit_button=['/img/edit.png','/img/edit_disabled.png','/img/edit_hovered.png','/img/edit_pressed.png'];
+$.each(edit_button,function(value,index){
+    var img=$("<img src='"+value+"'>");
     img.css('display','none');
     img.appendTo('body');
 });
@@ -218,6 +215,8 @@ function TileBlds () {
 			var timerid=0;
 			var timer=1;
 			var initTiles = new Array();
+			var initTilesIndx=0;
+			var initReady=true;
 			var Exist1stTl=false;
 			var UnitToPixelScale;
 			var tileSizeRoot=3454245.2736;// in [m]
@@ -343,7 +342,7 @@ this.loadTile = function () {
 		    if(id.length>0){
 			   this.indxCube++;this.ready=false;
 			   var lanlot=id.split(' ');//console.debug(parseInt(xz[0])+" "+parseInt(xz[1]));
-			   build_func(parseFloat(lanlot[0]),parseFloat(lanlot[1]),parseFloat(lanlot[2]),parseFloat(lanlot[3]),parseFloat(lanlot[4]));
+			   build_func(lanlot[0],lanlot[1],lanlot[2],lanlot[3],lanlot[4]);
 			   //var xz=id.split(' ');//console.debug(parseInt(xz[0])+" "+parseInt(xz[1]));
 			   //build_func(parseInt(xz[0]),parseInt(xz[1]));
 			   this.requestBld=true;
@@ -504,20 +503,22 @@ this.loaded = function () {
                 //controls.userZoomSpeed = 0.43;
 				controls.ZoomSpeed = 0.43;
 
-                                //setPointZoom(0,0,0,camera,controls);
+
 				if(typeof(landscapeMode) != "undefined" && landscapeMode != null)
 				{
-	               if(landscapeMode=='boundary')
+	               if(landscapeMode.toString=='boundary')
 	               {
-	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls);
+	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls)
 	               }
-	               else if(landscapeMode=='zoom')
+	               else if(landscapeMode.toString=='zoom')
 	               {
-	                 setPointZoom(mlon,mlat,zoom,camera,controls);
+	                 setPointZoom(mlon,mlat,zoom,camera,controls)
 	               }
 				}else
 				{
-				  setPointZoom(0,0,0,camera,controls);
+				  setPointZoom(0,0,0,camera,controls)
+				  //setPointZoom(10.86388,48.359621,17,camera,controls)
+				  //setMinMax(25.64,44.4,39.95,54.18,camera,controls)
 				}
 
 				//controls.rotateSpeed = 0.01;
@@ -584,21 +585,11 @@ this.loaded = function () {
 
 			  verdrop(0,0,0,0);
 			  //for (var beg=initTiles.length -1;beg>=0;beg--)TLoad.pushTile(initTiles[beg]);//TLoad.pushTile(initTiles[beg]);
-              for (var beg in initTiles)
-			  {
-			  	var tex=''+arrTile[initTiles[beg]].lvl+'/'+arrTile[initTiles[beg]].tex_x+'/'+arrTile[initTiles[beg]].tex_z;
-				arrTex[initTiles[beg]]=THREE.ImageUtils.loadTexture('http://c.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
-				  {
-				     console.debug("o "+initTiles[beg]);
-				     arrTile[initTiles[beg]].texExist=true;
-					 crtMesh(initTiles[beg]);
-					 arrCurRoot.push(initTiles[beg]);
-				  });
-			   }
 			  //document.addEventListener('keydown',onDocumentKeyDown,false);
 			  
 			  //render();
-			  timer=setInterval( checkTiles , 15);
+			  
+			  timer=setInterval( checkTiles , 8);
 
 			}
 
@@ -684,7 +675,8 @@ this.loaded = function () {
 
                 if(jstr.id>=0){	
 
-                    }else{console.debug("! Reject request id is out of range!");}
+                    }else{//console.debug("! Reject request id is out of range!");
+                    }
 					 //r=(delete tile);
                     // console.debug("del  "+r);
                       jstr=null;					
@@ -695,17 +687,8 @@ this.loaded = function () {
 
 			function responseServerCubes(s) {
 
-			   /* s=''+s;*/
 				var jstr;
-				/*var smod=s.substr(0,s.indexOf('{'));
-				alert(smod);
-				s=s.replace(smod,'');*/
-				//alert(s)
-				var start=s.indexOf('{');
-				var end=s.lastIndexOf('{');
-				s=s.substr(start,s.length-start-1);
-				//alert(s);
-				jstr=JSON.parse(s);
+				jstr=jQuery.parseJSON(s);
 				if(typeof(arrTileBlds[jstr.tile_id]) != "undefined" && arrTileBlds[jstr.tile_id] != null)
 				{
 				  if(jstr.tile_id>=0&&arrTileBlds[jstr.tile_id].id!=undefined)
@@ -829,7 +812,7 @@ this.loaded = function () {
 				  }
 			      r=delete triangleMesh[id];
 			      triangleMesh[id]=null
-			      console.debug("del "+triangleMesh[id]+" id "+id+" "+r)
+			      //console.debug("del "+triangleMesh[id]+" id "+id+" "+r)
 				}
 				if(req){
 				  if(triangleMesh[(id*4+1)])deltilemesh((id*4+1));
@@ -849,7 +832,7 @@ this.loaded = function () {
                   arrTile[id].destroy();
                   delete arrTile[id];
                   arrTile[id]=null;
-                  console.debug("Delete "+arrTile[id]+" id "+id)
+                  //console.debug("Delete "+arrTile[id]+" id "+id)
 				}
 				if(req){
 				  if(arrTile[(id*4+1)])deltile((id*4+1));
@@ -956,7 +939,7 @@ this.loaded = function () {
 	            });*/
 //console.debug("id "+id);
 
-				console.debug("id "+id);
+				//console.debug("id "+id);
                 arrTex[id].magFilter = THREE.LinearFilter;
                 arrTex[id].minFilter = THREE.LinearFilter;
 				arrTex[id].anisotropy = maxAnisotropy;
@@ -974,7 +957,7 @@ this.loaded = function () {
 				triangleMesh[id].visible=true;
 				//if(arrTile[id].lvl>15)triangleMesh[id].visible=false;
 
-				console.debug("Crt "+triangleMesh[id]+" id "+id)
+				//console.debug("Crt "+triangleMesh[id]+" id "+id)
 				
 				//arrCurRoot.push(id);
 				
@@ -1068,8 +1051,29 @@ this.loaded = function () {
 			}
 
 			function checkTiles() {
-				console.debug(" ")
-				console.debug(" ")
+				//console.debug(" ")
+				//console.debug(" ")
+				
+				
+			if(initTilesIndx<initTiles.length)
+			  {
+			    var tex=''+arrTile[initTiles[initTilesIndx]].lvl+'/'+arrTile[initTiles[initTilesIndx]].tex_x+'/'+arrTile[initTiles[initTilesIndx]].tex_z;
+				if(initReady)
+				{
+			    initReady=false;
+				arrTex[initTiles[initTilesIndx]]=THREE.ImageUtils.loadTexture('http://c.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
+				  {
+				     //alert("o "+initTiles[initTilesIndx]);
+				     arrTile[initTiles[initTilesIndx]].texExist=true;
+					 crtMesh(initTiles[initTilesIndx]);
+					 arrCurRoot.push(initTiles[initTilesIndx]);
+					 initTilesIndx++;
+					 initReady=true;
+				  });
+                };
+                				
+			   }
+			else{
 				/*console.debug("camera.phi "+controls.phi)
 				console.debug("camera.theta "+controls.theta)*/
 				//console.debug("fov "+camera.fov)
@@ -1087,7 +1091,7 @@ this.loaded = function () {
 			  if(dist2b>110){arrCurBld.splice(curBldId,1);delbuildsoftile(curbld);}
 			  }*/
 
-				console.debug("arrCurRoot.length "+arrCurRoot.length)	
+				//console.debug("arrCurRoot.length "+arrCurRoot.length)	
 				//&&TLoad.idforloadroot!=arrCurRoot[j]&&TLoad.ReadyForRoot
 				var InitArray = new Array();
 				
@@ -1110,7 +1114,7 @@ this.loaded = function () {
               if(dist<=140&&lvlbldactive<0)lvlbldactive=arrTile[cur_ID].lvl;
 			  if(arrTile[cur_ID].lvl==lvlbldactive)
 			  {
-                if(typeof(arrTileBlds[cur_ID]) == "undefined" && arrTileBlds[cur_ID] == null)
+                if(typeof(arrTileBlds[cur_ID]) == "undefined" || arrTileBlds[cur_ID] == null)
 				{
 				 arrTileBlds[cur_ID]=new TileBlds();
 				 arrTileBlds[cur_ID].id=cur_ID;
@@ -1138,7 +1142,7 @@ this.loaded = function () {
 
 			  }
 
-			    if(pixelTileSize>=384)
+			    if(pixelTileSize>=384&&arrTile[cur_ID].lvl<18)
 				{
 				  //console.debug("drop "+pixelTileSize+"id "+cur_ID)
 				  var ch1=cur_ID*4+1;
@@ -1229,13 +1233,13 @@ this.loaded = function () {
 								}
 					        }
 					      arrCurRoot.sort();
-                          console.debug("count  "+count);						  
+                          //console.debug("count  "+count);						  
 					      for(i=0 ;i<count;i++)arrCurRoot.shift();
-						   console.debug("crt  "+prntId+" ");
+						   /*console.debug("crt  "+prntId+" ");
 						   console.debug("del  "+(prntId*4+1)+" ");
 						   console.debug("del  "+(prntId*4+2)+" ");
 						   console.debug("del  "+(prntId*4+3)+" ");
-						   console.debug("del  "+(prntId*4+4)+" ");
+						   console.debug("del  "+(prntId*4+4)+" ");*/
 						   deltilemesh((prntId*4+1));
 						   deltilemesh((prntId*4+2));
 						   deltilemesh((prntId*4+3));
@@ -1289,11 +1293,11 @@ this.loaded = function () {
 				/*if(TLoad&&!bverify){
 			     if(TLoad.needforload()){bverify=true;timerid=setTimeout(verify, 35);}
 				}*/
-				
+			  }
 				if(TLoad){
 			     if(TLoad.needforload())TLoad.loadTile();
 				}
-
+              
 			}
 
 			function verify(){
