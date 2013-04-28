@@ -215,13 +215,14 @@ HERE;
                         $("#objectEditor").children('div').css({'margin-left':'250px'});
                         var searchbar=$(searchbar_template);
                         searchbar.insertAfter('#objectEditor ul');
+                        $('iframe')[0].contentWindow.onWindowResize();
                         //$('#searchbar').next().css({'margin-left':'250px'});
                         $(".close_link").click(function(){
                             //$('#searchbar').next().css({'margin-left':'0px'});
                             $("#objectEditor").children('div').css({'margin-left':'0px'});
                             $('#searchbar').remove();
-                            //$('iframe').css('width',$('iframe').parent().width());
-                            //$('iframe').css('height',$('iframe').parent().height());
+                            $('iframe').css('width',$('iframe').parent().width());
+                            $('iframe').css('height',$('iframe').parent().height());
                         });
                     }
                     $("#nominatium").html('<br><center><img align="center" src="img/searching.gif"/></center>');

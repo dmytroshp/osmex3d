@@ -113,7 +113,8 @@ $maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:'
 $mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
 $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 echo<<<HERE
-<div style="display:none">
+<script type="text/javascript">
+    
                     landscapeMode='$landscapeMode';
                     minlon=$minlon;
                     minlat=$minlat;
@@ -122,7 +123,8 @@ echo<<<HERE
                     mlon=$mlon;
                     mlat=$mlat;
                     zoom=$zoom;
-</div>
+    
+</script>
 HERE;
 ?>
             <div id="map-controls">
@@ -498,19 +500,22 @@ this.loaded = function () {
 				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 0.01, 10000000 , 0.01, 10000000 );
 				//camera.position.set(0, 3454245.2736, 0.0);
 				UnitToPixelScale = window.innerHeight /( 2.0 * getTanDeg(camera.fov / 2.0));
-
-                controls = new OSMEX.CameraController( camera );
-                //controls.userZoomSpeed = 0.43;
+                                //camera.aspect=window.innerWidth/window.innerHeight;
+                                //camera.updateProjectionMatrix();
+                                
+                                controls = new OSMEX.CameraController( camera );
+                                
+                                //controls.userZoomSpeed = 0.43;
 				controls.ZoomSpeed = 0.43;
 
 
 				if(typeof(landscapeMode) != "undefined" && landscapeMode != null)
 				{
-	               if(landscapeMode.toString=='boundary')
+	               if(landscapeMode=='boundary')
 	               {
 	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls)
 	               }
-	               else if(landscapeMode.toString=='zoom')
+	               else if(landscapeMode=='zoom')
 	               {
 	                 setPointZoom(mlon,mlat,zoom,camera,controls)
 	               }
@@ -559,7 +564,7 @@ this.loaded = function () {
 				maxAnisotropy = renderer.getMaxAnisotropy();
 
 				//
-
+                                //On Window Resize
 				window.addEventListener( 'resize', onWindowResize, false );
                //wrt("clear")
 			  /* for(var i = 0; i < tiles[0].triangleGeometry.vertices.length; i++) {
@@ -731,7 +736,7 @@ this.loaded = function () {
 
 
 			function onWindowResize() {
-
+                                //alert('Resize');
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
