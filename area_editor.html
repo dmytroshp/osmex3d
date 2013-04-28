@@ -199,6 +199,7 @@
             var MAX_LON = 30.744118;
             var MAX_LAT = 46.441975;
             var JSON_BUILDINGS = "{\"tile_id\":\"775670321\",\"builds\":[{\"id\":\"974\",\"scaleX\":\"15.002246\",\"scaleY\":\"20\",\"scaleZ\":\"9.441226\",\"rotationX\":\"0\",\"rotationY\":\"3.043413\",\"rotationZ\":\"0\",\"positionLon\":\"30.745653\",\"positionLat\":\"46.47748\"},{\"id\":\"975\",\"scaleX\":\"16.249423\",\"scaleY\":\"20\",\"scaleZ\":\"17.913192\",\"rotationX\":\"0\",\"rotationY\":\"3.035753\",\"rotationZ\":\"0\",\"positionLon\":\"30.74608\",\"positionLat\":\"46.477411\"}]}";
+            
             var container;
 
             var renderer;
@@ -271,7 +272,11 @@
 
                     $(".save").click(function() {
                         saveScene();
-                });
+                    });
+                    
+                    $(".cancel").click(function() {
+                        sketchFactory.stopBuild();
+                    });
 
                 });
 
@@ -351,7 +356,7 @@
             }
 
             function fillEditor(json) {
-            // getBuildings (MIN_LON,MIN_LAT,MAX_LON,MAX_LAT);
+                getBuildings (MIN_LON,MIN_LAT,MAX_LON,MAX_LAT);
                 var ob = jQuery.parseJSON(json);
                 for (var i = 0; i < ob.builds.length; i++){
                     var obj = sketchFactory.createObject(1);
@@ -421,6 +426,7 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
+                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -776,7 +782,7 @@
 
                 event.preventDefault();
                 if (event.button == 0) {
-                    console.log (objectScene);
+                    
                     cameraController.noPan = false;
                     cameraController.noRotate = false;
 

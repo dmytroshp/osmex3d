@@ -584,6 +584,7 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
+                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {

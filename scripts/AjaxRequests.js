@@ -11,9 +11,19 @@ function getCustomGeometry(id){
         },
         data: {rID:id},
         dataType:'text',
-        success:function(r)
-        {
-            objGeometry = r;
+        success:function(response)
+        {    
+            if (response === null) {
+
+                var objGeometryStr = getCustomGeometry(response);
+
+                objGeometry = getUnpackedGeometry(objGeometryStr);
+
+                objGeometry.computeCentroids();
+                objGeometry.computeFaceNormals();          
+                var obj = new OSMEX.Block( objGeometry, this.usualMaterial.clone() );
+                sketchFactory.currentObject = obj;
+            }
         },
         error:function()
         {

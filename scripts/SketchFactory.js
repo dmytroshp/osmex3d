@@ -59,11 +59,13 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     var geometry = this.makeGeometry(objectTypeId);
     
     this.currentObject = new OSMEX.Block( geometry, this.buildMaterial );
-    this.currentObject.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
     this.currentObject.pickable = false;
     this.currentObject.setVisibility(false);
     this.currentObject.name = this.name;
+    if (this.name !== "cube" || this.name !== "sphere" ||this.name !== "cylinder" ||this.name !== "cone" ||this.name !== "torus" ||this.name !== "tetrahedron")
+        this.currentObject.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
     this.add(this.currentObject);
+    arrowMode = "building";
 };
 
 OSMEX.SketchFactory.prototype.stopBuild = function() {
@@ -137,7 +139,6 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
         
         if (objGeometry === null) {
 
-            // HERE objGeometryStr SHOULD BE OBTAINED FROM THE SERVER BY AJAX REQUEST
             var objGeometryStr = getCustomGeometry(objectTypeId);
 
             objGeometry = getUnpackedGeometry(objGeometryStr);
