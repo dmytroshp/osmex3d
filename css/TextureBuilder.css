@@ -8,6 +8,7 @@
 #textureBuilder{
     font: 62.5% "Trebuchet MS", sans-serif;
     padding: 5px;
+    overflow: hidden; width: 100%;
     /*margin: 50px;*/
 }
 .ui-dialog
@@ -76,7 +77,8 @@ label div p
 {
     margin-left:4px;
     padding:5px;
-    width:35%;
+    width:300px;
+    overflow: hidden;
 }
 #regions { list-style-type: none; margin: 0; padding: 0; }
 #regions li { margin: 3px; padding: 0.4em;}

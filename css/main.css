@@ -74,6 +74,21 @@ body
      top: 45px;
      border: 1px #aaaaaa solid;
      border-radius: 4px;
+     color: #000;
+     font-family:Monospace;
+     font-size:13px;
+     text-align:center;
+     font-weight: bold;
+    /*background-color: #fff;*/
+     margin: 0px;
+     overflow: hidden;
+     padding: 0px;
+ }
+ #map iframe
+ {
+     margin:0;
+     padding:0;
+     border-style: none;
  }
  #txtBuilder
  {
@@ -83,8 +98,6 @@ body
      bottom: 5px;
      top: 45px;
      border: 1px #cccccc solid;
-     overflow-x: scroll;
-     overflow-y: auto;
          
  }
  #geoBuilder
