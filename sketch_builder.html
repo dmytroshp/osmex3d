@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>OSMEX3D Sketch editor</title>
+        <title>OSMEX3D Sketch builder</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <script src="threejs/three.js"></script>
@@ -428,7 +428,6 @@
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
-                        addBoundingBox();
                     });
 
                     $(".group3").tooltip();
@@ -450,9 +449,7 @@
                                         }
                                        console.log(data);
                                     }
-                                        //isReq = (data == "0") ? true : false;
-                                    //    console.log(data);
-                                    //}
+                                        
                         });
                     });
                     myDialog.dialog({
@@ -462,7 +459,7 @@
                         resizable: false,
                         modal: true,
                         buttons: {
-                            "Test": function() {
+                            /*"Test": function() {
                                 // TEST ONLY
                                 var name = $("#name");
                                 $.ajax({
@@ -474,7 +471,7 @@
                                         console.log(data);
                                     }
                                 });
-                            },
+                            },*/
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
                                 
@@ -681,23 +678,20 @@
             }
 
             function addBoundingBox() {
-                if ($("#BBox").prop("checked")) {
-                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
-                            objectScene.children[i].bbox.setVisibility(true);
-                        else {
-                            objectScene.children[i].bbox.setVisibility(false);
-                        }
+                for (var i = 0, l = objectScene.children.length; i < l; i++) {
+                    
+                    var obj = objectScene.children[i];
 
-                } else {
-                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
-                            objectScene.children[i].bbox.setVisibility(false);
+                    if (obj.bbox && obj.visible) {
+
+                        obj.bbox.setVisibility($("#BBox").prop("checked"));
+                    }
                 }
             }
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
+                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -743,7 +737,7 @@
                         
                         
                         if (OPERATED) {
-                             resultObj.visible;
+                             resultObj.visible = false;
                             objectScene. remove(resultObj);
                             operationStack.shift();
                             //resultObj = null;
@@ -778,22 +772,58 @@
                             }
 
                             var material = new THREE.MeshPhongMaterial({color: 0x000000});
-                            resultObj = result_bsp.toMesh(material);
-                            //resultObj = result_bsp.toMesh();
-                            //resultObj.geometry.computeVertexNormals();
+                            
+                            
+                            
+                            var geometry = result_bsp.toGeometry();
+                        
+                            geometry.computeBoundingBox();
+                            var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x) / 2;
+                            var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y) / 2;
+                            var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z) / 2;
 
-                            resultObj.scale = scale;
-                            resultObj.pickable = true;
-                            resultObj.visible = true;
+                            var resultScale = new THREE.Vector3(scaleX, scaleY, scaleZ);
+                            var resultPosition = geometry.boundingBox.center();
+
+                            var rotationMatrix = new THREE.Matrix4().extractRotation(result_bsp.matrix);
+                            var resultRotation = new THREE.Vector3().setEulerFromRotationMatrix( rotationMatrix );
+
+                            var scaleMatrix = new THREE.Matrix4().makeScale( scaleX, scaleY, scaleZ );
+                            var resultMatrix = new THREE.Matrix4().multiplyMatrices( rotationMatrix, scaleMatrix );
+                            resultMatrix.elements[12] = resultPosition.x;
+                            resultMatrix.elements[13] = resultPosition.y;
+                            resultMatrix.elements[14] = resultPosition.z;
+                            var invResultMatrix = new THREE.Matrix4().getInverse( resultMatrix );
+
+                            for ( var i = 0, il = geometry.vertices.length; i < il; i++ ) {
+
+                                geometry.vertices[i].applyMatrix4(invResultMatrix);
+                            }
+
+                            geometry.computeCentroids();
+                            geometry.computeFaceNormals();
+                            //geometry.computeVertexNormals();
+
+                           resultObj = new OSMEX.Block( geometry, material );
+
+                            resultObj.position = resultPosition.clone();
+                            resultObj.scale = resultScale.clone();
+                            resultObj.rotation = resultRotation.clone();
+                            
+                            
+                            
+                            //resultObj.pickable = true;
+                            //resultObj.visible = true;
                             resultObj.name = "undef"; 
-                            resultObj.bbox = new OSMEX.BoundingBox(resultObj);
-                            resultObj.bbox.scale = new THREE.Vector3(10,10,10);
-                            resultObj.add(this.bbox);
-                            resultObj.bbox.setVisibility(true);
+                            
+                            if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
+                            
+                            
                             objectScene.add(resultObj);
 
-                            if (CLICKED[0]) CLICKED[0].visible = false;
-                            if (CLICKED[1]) CLICKED[1].visible = false;
+                            if (CLICKED[0]) {CLICKED[0].visible = false;CLICKED[0].setVisibility(false);}
+                            
+                            if (CLICKED[1]) {CLICKED[1].visible = false;CLICKED[1].setVisibility(false);}
 
                             var newSelected = [];
                             while (selectedObj.length > 0) {
