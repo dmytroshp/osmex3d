@@ -20,8 +20,8 @@ $object_isDeleted = $_POST['isDeleted'];
 if ($object_uid == 0) {
     $INSERT_OBJECT = "INSERT INTO objectInstance VALUE (NULL, " . $object_scaleX . ", "
             . $object_scaleY . ", " . $object_scaleZ . ", " . $object_rotationX . ", " . $object_rotationY . ", "
-            . $object_rotationZ . ", " . $object_positionLat . ", " . $object_positionLon . ", " . $object_positionHeight
-            . ", " . $object_referID . ");";
+            . $object_rotationZ . ", " . $object_positionLat . ", " . $object_positionLon . ", " . $object_positionHeight . ", "
+            . $object_referID . ");";
     mysql_query($INSERT_OBJECT);
     //$db->exec($INSERT_OBJECT);
 } else if ($object_isDeleted == True) {

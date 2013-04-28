@@ -1,11 +1,11 @@
-﻿<?php 
-ob_start();
-header('Content-Type: application/json; utf-8');
+<?php 
+ ob_start();
+ header('Content-Type: application/json; utf-8');
 
     require_once("config.php");
 
-    $position_lon = $_GET['minlon'];
-    $position_lonend = $_GET['maxlon'];
+    $position_lon =$_GET['minlon'];
+    $position_lonend =$_GET['maxlon'];
     $position_lat = $_GET['minlat'];
     $position_latend = $_GET['maxlat'];
 	$tile_id = $_GET['tile_id']; 
@@ -17,7 +17,8 @@ AND positionLat >= '$position_lat' AND positionLat <= '$position_latend';
 EOD;
 
 	$result = mysql_query($query);
-
+    if(!$result)exit("Ошибка - ".mysql_error());
+	
     while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
 	{
         //printf ("ID: %s  Name: %s", $row["id"], $row["name"]);
@@ -34,9 +35,8 @@ EOD;
         $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
          "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10/*, "typeObject" => $t11*/);
     }
-
-    $result_str = json_encode(array('tile_id' => $tile_id,'builds' => $fullarr));
-	printf ('"%s"',$result_str);
     mysql_free_result($result);
 	ob_end_flush();
+	$json_data = array('tile_id' => $tile_id,'builds' => $fullarr);
+	echo json_encode($json_data);
 ?>
