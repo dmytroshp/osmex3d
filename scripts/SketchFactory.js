@@ -138,6 +138,7 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
         if (objGeometry === null) {
 
             // HERE objGeometryStr SHOULD BE OBTAINED FROM THE SERVER BY AJAX REQUEST
+            var objGeometryStr = getCustomGeometry(objectTypeId);
 
             objGeometry = getUnpackedGeometry(objGeometryStr);
 

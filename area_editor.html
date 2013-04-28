@@ -118,6 +118,20 @@
                 background-image: url('img/48x48/build_box_pressed.jpg');               
             }
                                   
+            #save {
+                background-image: url('img/save.png');               
+            }
+            #save:hover {
+                background-image: url('img/save_hovered.png');               
+            }
+            
+            #cancel {
+                background-image: url('img/cancel.png');               
+            }
+            #cancel:hover {
+                background-image: url('img/cancel_hovered.png');               
+            } 
+                                  
         </style>
     </head>
     <body>
@@ -143,7 +157,18 @@
             </div>
         </div>
 
-        <div id="righttopbar" style="visibility:hidden;display:block;text-align:left;">
+            <div id="righttopbar" style="width:250px;visibility:hidden;display:block;text-align:left;">
+            <div id="save" class="save" style="width:100px;height:40px;float:left;">
+                &nbsp; 
+            </div>
+            <div id="cancel" class="cancel" style="width:100px;height:40px;float:left;">
+                &nbsp; 
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
             <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Display bounding boxes</label>
         </div>
 
@@ -155,7 +180,6 @@
             <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cylinder.png'>
             </div>
-            <br/>
             <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/sphere.png'>
             </div>
@@ -170,11 +194,11 @@
             var SCREEN_FOV = 45;
             var FIRST_PICKABLE_OBJ = 6;
             var GRID_SIZE = 60;
-            var MIN_LON = 30.73699951171875;
-            var MIN_LAT = 46.470970513345925;
-            var MAX_LON = 30.738372802734375;
-            var MAX_LAT = 46.471916320870406;
-
+            var MIN_LON = 30.738636;
+            var MIN_LAT = 46.438659;
+            var MAX_LON = 30.744118;
+            var MAX_LAT = 46.441975;
+            var JSON_BUILDINGS = "{\"tile_id\":\"775670321\",\"builds\":[{\"id\":\"974\",\"scaleX\":\"15.002246\",\"scaleY\":\"20\",\"scaleZ\":\"9.441226\",\"rotationX\":\"0\",\"rotationY\":\"3.043413\",\"rotationZ\":\"0\",\"positionLon\":\"30.745653\",\"positionLat\":\"46.47748\"},{\"id\":\"975\",\"scaleX\":\"16.249423\",\"scaleY\":\"20\",\"scaleZ\":\"17.913192\",\"rotationX\":\"0\",\"rotationY\":\"3.035753\",\"rotationZ\":\"0\",\"positionLon\":\"30.74608\",\"positionLat\":\"46.477411\"}]}";
             var container;
 
             var renderer;
@@ -213,7 +237,7 @@
                         });
                     }
                     
-                    $(['img/48x48/6.jpg','img/48x48/6_over.jpg','img/48x48/6_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg','img/publish.png','img/publish_hovered.png']).preload();
+                    $(['img/48x48/6.jpg','img/48x48/6_over.jpg','img/48x48/6_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg','img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png']).preload();
                     
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
@@ -227,8 +251,8 @@
                     });
 
                     $("#righttopbar").css({
-                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
-                        "top": ($("#topbar").height() / 2) + "px",
+                        "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
+                        "top": 20 + "px",
                         "visibility": "visible"
                     });
 
@@ -245,8 +269,11 @@
                         sketchFactory.startBuild($(this).attr('id'));
                     });
 
+                    $(".save").click(function() {
+                        saveScene();
                 });
 
+                });
 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -319,6 +346,23 @@
                 document.addEventListener('mousedown', onDocumentMouseDown, false);
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                 window.addEventListener('resize', onWindowResize, false);
+                
+                fillEditor(JSON_BUILDINGS);
+            }
+
+            function fillEditor(json) {
+            // getBuildings (MIN_LON,MIN_LAT,MAX_LON,MAX_LAT);
+                var ob = jQuery.parseJSON(json);
+                for (var i = 0; i < ob.builds.length; i++){
+                    var obj = sketchFactory.createObject(1);
+                    obj.id = ob.builds[i].id;
+                    obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
+                    obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
+                    var position = LanLot2local(ob.builds[i].positionLat, ob.builds[i].positionLon);
+                    obj.position = position;
+                    objectScene.add(obj);
+                    //console.log (obj);
+                }                   
             }
 
             function saveScene() {
@@ -340,6 +384,19 @@
                 var lat = MAX_LAT - ((vector.z + GRID_SIZE) * latStep);
                 var coords = new coordinates(lat, lon);
                 return coords;
+            }
+            
+            function LanLot2local(lat, lon) {
+
+                var lonDiff = MAX_LON - MIN_LON;
+                var latDiff = MAX_LAT - MIN_LAT;
+                var lonStep = lonDiff / (GRID_SIZE * 2);
+                var latStep = latDiff / (GRID_SIZE * 2);
+                
+                var x = ((lon - MIN_LON) / lonStep) - GRID_SIZE; 
+                var z = ((MAX_LAT - lat) / latStep) - GRID_SIZE; 
+                var vector = new THREE.Vector3(x,0,z);
+                return vector;
             }
             
             function calculateDistance (firstNode, secondNode){

@@ -1,4 +1,54 @@
+function getCustomGeometry(id){
+    var objGeometry;
+    $.ajax({
+        async:false,
+        type:'GET',
+        url:'server_scripts/getCustomGeometry.php',
+        cache: false,
+		processData: true,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {rID:id},
+        dataType:'text',
+        success:function(r)
+        {
+            objGeometry = r;
+        },
+        error:function()
+        {
+            console.debug("Can't load geometry");
+        }
+        
+    });
+    return objGeometry;
+    
+}
 
+function getBuildings(_tile_id,_minlon,_minlat,_maxlon,_maxlat){
+    $.ajax({
+        async:true,
+        type:'GET',
+        url:'server_scripts/getBuildings.php',
+        cache: false,
+		processData: true,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {tile_id: _tile_id, minlon: _minlon, minlat: _minlat,maxlon: _maxlon,maxlat: _maxlat},
+        dataType:'text',
+        success:function(r)
+        {
+            JSON_BUILDINGS = r;
+        },
+        error:function()
+        {
+            console.debug("Can't load buildings");
+        }
+        
+    });
+	
+}
 
 function postScene(scene) {
     var objArray = new Array();
