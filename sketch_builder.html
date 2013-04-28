@@ -199,11 +199,14 @@
             #intersection.selected {
                 background-image: url('img/48x48/11_pressed.png');  
             }
+            #rollback {
+                background-image: url('img/48x48/12.png');  
+            }
+            #rollback:hover {
+                background-image: url('img/48x48/12_over.png');  
+            }           
             
-            #listOfOperations {
-                background: white;
-                opacity: 0.7;
-            }   
+            
         </style>
     </head>
     <body>
@@ -214,7 +217,7 @@
             </div>
 
             <div id="rollback" class="group3" style="width:48px;height:48px;float:left;">
-                <img src='img/rollback.png'>
+                &nbsp;
             </div>
 
         </div>
@@ -355,7 +358,8 @@
                         'img/48x48/8.png', 'img/48x48/8_over.png', 'img/48x48/8_pressed.png',
                         'img/48x48/9.png', 'img/48x48/9_over.png', 'img/48x48/9_pressed.png',
                         'img/48x48/10.png', 'img/48x48/10_over.png', 'img/48x48/10_pressed.png',
-                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png',                       
+                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
+                        'img/48x48/12.png', 'img/48x48/12_over.png',
                         'img/publish.png','img/publish_hovered.png'
                    ]).preload();
                     
@@ -370,11 +374,14 @@
                     $("#build").css({
                        "margin-left": 5 + "px" 
                     });
+                    
+                    $("#listOfOperations").css({
+                       "opacity":  0.7
+                    });
 
                     $("#leftbar").css({
                         "left": 10 + "px",
                         "top": window.innerHeight - $("#leftbar").height() - 10 + "px",
-                        "opacity": 0.3,
                         "visibility": "visible"
                     });
 
@@ -737,7 +744,7 @@
                                 scale = firstObject.scale;
                             }
 
-                            var material = new THREE.MeshPhongMaterial({color: 0xffffff});
+                            var material = new THREE.MeshPhongMaterial({color: 0x000000});
                             resultObj = result_bsp.toMesh(material);
                             //resultObj = result_bsp.toMesh();
                             //resultObj.geometry.computeVertexNormals();
