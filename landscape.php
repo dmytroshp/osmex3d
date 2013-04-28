@@ -22,7 +22,7 @@
                         .slider_place
                         {
                             position:absolute;
-                            top: 50px;
+                            top: 60px;
                             right:20px;
                             width:120px;
                             height:50px;
@@ -62,6 +62,27 @@
                             right:5px;
                             bottom:5px;
                         }
+                        .edit_button
+                        {
+                            position: absolute;
+                            top:10px;
+                            right:30px;
+                            width:100px;
+                            height:40px;
+                            background-image: url('/img/edit.png');
+                        }
+                        .edit_button.diabled
+                        {
+                            background-image: url('/img/edit_disabled.png');
+                        }
+                        .edit_button:hover
+                        {
+                            background-image: url('/img/edit_hovered.png');
+                        }
+                        .edit_button:active
+                        {
+                            background-image: url('/img/edit_pressed.png');
+                        }
 		</style>
 	</head>
 
@@ -96,10 +117,13 @@ echo<<<HERE
 </div>
 HERE;
 ?>
-            <div class="slider_place ui-widget ui-widget-content ui-corner-all">
-                <p class='opc'>Buildings opacity</p>
-                <div id="slider">&nbsp;</div>
-                <p class='lbl1'>0%</p><p class='lbl2'>100%</p>
+            <div id="map-controls">
+                <div class="edit_button"></div>
+                <div class="slider_place ui-widget ui-widget-content ui-corner-all">
+                    <p class='opc'>Buildings opacity</p>
+                    <div id="slider">&nbsp;</div>
+                    <p class='lbl1'>0%</p><p class='lbl2'>100%</p>
+                </div>
             </div>
         <div  jstcache="0"  id="cont" ></div>
         <div  jstcache="0"  id="build"></div>
@@ -117,7 +141,13 @@ HERE;
         <script type="text/javascript" src="server_scripts/Functions.js"></script> 
 
 <script>
-//Class of tile		
+//Class of tile
+var edit_btn=['/img/edit.png','/img/edit_disabled.png','/img/edit_hovered.png','/img/edit_pressed.png'];
+$.each(edit_btn,function(index,value){
+    var img=$('<img src="'+value+'">');
+    img.css('display','none');
+    img.appendTo('body');
+});
 function Tile () {
     this.id;
 	this.refcount=-1;
@@ -219,11 +249,11 @@ function TileBlds () {
                                     buildingsOpacity=ui.value;
                                 }
                             });
-                            $('.slider_place').mouseenter(function(){
+                            $('#map-controls').mouseenter(function(){
                                 controls.enabled=false;
                                 //camera.noRotate=true;
                             });
-                            $('.slider_place').mouseleave(function(){
+                            $('#map-controls').mouseleave(function(){
                                 controls.enabled=true;
                                 //camera.noRotate=false;
                             });
