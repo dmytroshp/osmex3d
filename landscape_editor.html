@@ -113,8 +113,9 @@ function TileBlds () {
 			var Exist1stTl=false;
 			var UnitToPixelScale;
 			var tileSizeRoot=3454245.2736;// in [m]
-			var lvlbldactive=-1;
+			var lvlbldactive=17;//-1;
 			var maxidinque=-1;
+			var distfor17=-1;
 
 			var camera, controls, scene, renderer;
 			var maxAnisotropy;
@@ -248,7 +249,7 @@ this.loaded = function () {
 				{
 				  var dist=getDistance(camera,lvl,x,z);	
 				  var pixelTileSize=tileSizeRoot/ Math.pow(2,lvl)*UnitToPixelScale/dist;
-				  if(dist<=200&&lvlbldactive<0)lvlbldactive=lvl;
+				  //if(dist<=200&&lvlbldactive<0)lvlbldactive=lvl;
 
 				  /*if(lvl==8)
 			      {
@@ -262,6 +263,7 @@ this.loaded = function () {
 
 			      if(lvl==lvlbldactive&&!arrTileBlds[id])
 			      {
+				   if(distfor17<0)distfor17=dist;
 				   arrTileBlds[id]=new TileBlds();
 				   arrTileBlds[id].id=id;
 				   var minlon=tile2lon(x,lvl)
@@ -460,7 +462,7 @@ this.loaded = function () {
 			  
 			  //render();
 			  
-			  timer=setInterval( checkTiles , 8);
+			  timer=setInterval( checkTiles , 15);
 
 			}
 
@@ -571,7 +573,7 @@ this.loaded = function () {
 				       var b=parseInt(jstr.builds[j].id);
 				       //alert(" Build id "+b)
 					   MeshOfBlds[b] = new THREE.Mesh(
-                            new THREE.CubeGeometry(0.25,0.2,0.25),
+                            new THREE.CubeGeometry(0.212,0.2,0.226),
                            //new THREE.MeshBasicMaterial({color: 0x000000, opacity: 1})
 				           new THREE.MeshBasicMaterial({
 				           color: 0xd78254//,
@@ -698,7 +700,7 @@ this.loaded = function () {
 				if(typeof(arrTile[id]) != "undefined" && arrTile[id] != null)
 				{
                   var dist=getDistance(camera,arrTile[id].lvl,arrTile[id].tex_x,arrTile[id].tex_z);
-                  if(arrTileBlds[id]&&dist>=170)delbuildsoftile(id);
+                  if(arrTileBlds[id]&&dist>=/*210*/distfor17+10)delbuildsoftile(id);
                   arrTile[id].destroy();
                   delete arrTile[id];
                   arrTile[id]=null;
@@ -981,9 +983,10 @@ this.loaded = function () {
 			    loadBlds(cur_ID,camera,arrTile[cur_ID].lvl,arrTile[cur_ID].tex_x,arrTile[cur_ID].tex_z)
 			  }*/
 			  
-              if(dist<=140&&lvlbldactive<0)lvlbldactive=arrTile[cur_ID].lvl;
+              //if(dist<=200&&lvlbldactive<0)lvlbldactive=arrTile[cur_ID].lvl;
 			  if(arrTile[cur_ID].lvl==lvlbldactive)
 			  {
+			    if(distfor17<0)distfor17=dist;
                 if(typeof(arrTileBlds[cur_ID]) == "undefined" || arrTileBlds[cur_ID] == null)
 				{
 				 arrTileBlds[cur_ID]=new TileBlds();
