@@ -77,19 +77,19 @@
                             right:30px;
                             width:100px;
                             height:40px;
-                            background-image: url('/img/edit.png');
+                            background-image: url('img/edit.png');
                         }
                         .edit_button.diabled
                         {
-                            background-image: url('/img/edit_disabled.png');
+                            background-image: url('img/edit_disabled.png');
                         }
                         .edit_button:hover
                         {
-                            background-image: url('/img/edit_hovered.png');
+                            background-image: url('img/edit_hovered.png');
                         }
                         .edit_button:active
                         {
-                            background-image: url('/img/edit_pressed.png');
+                            background-image: url('img/edit_pressed.png');
                         }
 		</style>
 	</head>
