@@ -375,18 +375,18 @@
 
                     $("#bottombar").css({
                         "left": (window.innerWidth / 2) - ($("#bottombar").width() / 2) + "px",
-                        "top": window.innerHeight - ($("#bottombar").height() + 10) + "px",
+                        "bottom": '10px',//window.innerHeight - ($("#bottombar").height() + 10) + "px",
                         "visibility": "visible"
                     });
 
                     $("#rightbar").css({
-                        "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
+                        "right": '50px',//window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
                         "visibility": "visible"
                     });
 
                     $("#righttopbar").css({
-                        "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
+                        "right": '50px',//window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
                         "top": 20 + "px",
                         "visibility": "visible"
                     });
