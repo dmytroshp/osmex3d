@@ -34,14 +34,42 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
         this.currentObject.setVisibility(true);
         if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
+        var intersectPoint = null;
+        
         var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
         projector.unprojectVector(vector, camera);
-        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-        var intersectPoint = ray.intersectPlane(groundPlane);
+        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+        
+        var intersects = raycaster.intersectObjects(objectScene.children);
 
-        if (intersectPoint !== undefined) {
+        if (intersects.length > 0) {
 
+            for (i = 0; i < intersects.length; i++) {
+
+                var intersector = intersects[i];
+
+                if (intersector.object instanceof OSMEX.Block && intersector.object.visible) {
+                    
+                    console.log("intersector.object.name=", intersector.object.name);
+
+                    intersectPoint = intersector.point;
+                    break;
+                }
+            }
+        }
+        
+        if (intersectPoint === null) {
+            
+            vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+            projector.unprojectVector(vector, camera);
+            var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+            intersectPoint = ray.intersectPlane(groundPlane);
+        }
+        
+        if (intersectPoint) {
+            
             this.currentObject.position.copy(intersectPoint);
+            this.currentObject.position.y += this.currentObject.scale.y / 2; // to place the object above the ground
         }
     }
 }
@@ -400,8 +428,8 @@ function getUnpackedGeometry( packedGeometry ) {
 }
 
 OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCreated ) {
-
-    var geometry = this.makeGeometry(objectTypeId);
+    
+    var _this = this;
     
     var _this = this;
     

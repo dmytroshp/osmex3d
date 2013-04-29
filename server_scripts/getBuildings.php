@@ -31,7 +31,7 @@ EOD;
         $t8 = $row["rotationZ"];
         $t9 = $row["positionLon"];
         $t10 = $row["positionLat"];
-        $t11 = $tow["positionHeight"];
+        $t11 = $row["positionHeight"];
         $t12 = $row["TypeID"];
         $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
          "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10, "positionHeight" => $t11, 

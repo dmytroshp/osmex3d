@@ -3,6 +3,9 @@ var OSMEX = OSMEX || { REVISION: '1' };
 OSMEX.Block = function ( geometry, material ) {
     
     THREE.Mesh.call( this, geometry, material );
+    
+    this.castShadow = true;
+    this.receiveShadow = true;
 	
     this.pickable = true;
     this.isCreated = true;
@@ -19,13 +22,12 @@ OSMEX.Block.prototype = Object.create( THREE.Mesh.prototype );
 
 OSMEX.Block.prototype.clone = function ( object ) {
 
-	if ( object === undefined ) object = new OSMEX.Block( this.geometry, this.material );
-	object.pickable = this.pickable;
+    if ( object === undefined ) object = new OSMEX.Block( this.geometry, this.material );
+    object.pickable = this.pickable;
 
-	THREE.Mesh.prototype.clone.call( this, object );
+    THREE.Mesh.prototype.clone.call( this, object );
 
-	return object;
-
+    return object;
 };
 
 OSMEX.Block.prototype.setVisibility = function ( visibility ) {
