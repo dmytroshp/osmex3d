@@ -65,7 +65,6 @@
                 margin: 0px;
                 overflow: hidden;
             }
-            label, input { display:block; }
             input.text { margin-bottom:12px; width:95%; padding: .4em; }
             fieldset { padding:0; border:0; margin-top:25px; }
             div#users-contain { width: 350px; margin: 20px 0; }
@@ -436,7 +435,7 @@
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
                     // мышка
-                    /*myDialog.keyup(function () {
+                    myDialog.keyup(function () {
                          var name = $("#name");
                         $.ajax({
                                     type: "POST",
@@ -452,7 +451,7 @@
                                     }
                                         
                         });
-                    });*/
+                    });
   
                     myDialog.dialog({
                         autoOpen: false,
@@ -490,9 +489,11 @@
                                     while (selectedObj.length > 0) {
                                         selectedObj.pop();
                                     }
-                                    CLICKED[0].material.emissive.setHex(0x000000);
+                                    CLICKED[0].material.emissive.setHex(0x111111);
+                                    CLICKED[0].material.color.setHex(0x111111);
                                     if (CLICKED[1] != null) {
                                         CLICKED[1].material.emissive.setHex(0x000000);
+                                        CLICKED[0].material.color.setHex(0x000000);
                                     }
                                     CLICKED[0] = null;
                                     CLICKED[1] = null;
@@ -693,7 +694,7 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
+                //if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -1233,6 +1234,8 @@
                 event.preventDefault();
                 if (event.button == 0) {
 
+                    if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();
+                    
                     if (SIZING) {
 
                         SIZING.restoreDefaultLength();
