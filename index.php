@@ -182,7 +182,7 @@ HERE;
                 }); //end of search input handler
 //            3. Event handler for button "Collapse All"  
                 $("#collapseImg").click(function (){
-                    $(".slidingPanel").slideUp("fast");
+                    $(".slidingPanel").slideToggle("fast");
                 });
 //            4. Event handler for mode selector            
                 $("#mode").change(function (){
@@ -293,6 +293,14 @@ HERE;
                      });
                      return false;
                 });
+//           6. Image Container handlers                
+                $(".imgContainer").mouseenter(function(){
+                    $(this).css("cursor", "pointer");
+                    $(this).css("")
+                });
+                $(".imgContainer").mouseleave(function(){
+                    $(this).css("cursor", "default");
+                });
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
                 $("#tabGeo").css("display","block");
@@ -328,7 +336,7 @@ HERE;
                         <li><a href="#txt">Textures</a></li>
                         </ul>
                         <img id="collapseImg" src="img/collapse.png">
-                        <input id="accSearch" type="search">
+                        <input id="accSearch" type="search" placeholder="Start typing a name here...">
                         <div id="acc" class="accordion ui-widget ui-widget-content ui-corner-all">
                             <?php
                             global $array;
