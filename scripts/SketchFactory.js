@@ -29,8 +29,6 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
     
     if (this.currentObject !== null) {
         
-        console.log("LOADED");
-        
         this.currentObject.setVisibility(true);
         if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
@@ -42,6 +40,7 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
         if (intersectPoint !== undefined) {
 
             this.currentObject.position.copy(intersectPoint);
+            this.currentObject.position.y = this.currentObject.scale.y / 2; // to place the object above the ground
         }
     }
 }
