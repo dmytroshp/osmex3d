@@ -103,7 +103,7 @@
             }
 
             #moving {
-                background-image: url('img/48x48/moving.jpg');               
+                background-image: url('img/48x48/2.jpg');               
             }
             #moving:hover {
                 background-image: url('img/48x48/moving_over.jpg');               
@@ -114,7 +114,7 @@
             }
 
             #scaling {
-                background-image: url('img/48x48/scaling.jpg');               
+                background-image: url('img/48x48/3.jpg');               
             }
             #scaling:hover {
                 background-image: url('img/48x48/scaling_over.jpg');               
@@ -200,7 +200,7 @@
         </div>
 
         <div id="righttopbar" style="visibility:hidden;display:block;text-align:left;">
-            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Show bounding boxes</label>
+            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Display bounding boxes</label>
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
@@ -244,6 +244,7 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
+            var FIRST_PICKABLE_OBJ = 6;
             var GRID_SIZE = 60;
             var MIN_LON = 30.73699951171875;
             var MIN_LAT = 46.470970513345925;
@@ -350,6 +351,7 @@
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
+                        addBoundingBox();
                     });
 
                     $(".group3").tooltip();
@@ -430,7 +432,7 @@
                             
                         } else {
                             
-                            showErrorMessage("Error! Please select an object to publish.");
+                            showErrorMessage("Error. Please select an object to publish.");
                         }
                     });
                     
@@ -570,21 +572,23 @@
             }
 
             function addBoundingBox() {
-                
-                for (var i = 0, l = objectScene.children.length; i < l; i++) {
-                    
-                    var obj = objectScene.children[i];
+                if ($("#BBox").prop("checked")) {
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
+                            objectScene.children[i].bbox.setVisibility(true);
+                        else {
+                            objectScene.children[i].bbox.setVisibility(false);
+                        }
 
-                    if (obj.bbox && obj.visible) {
-
-                        obj.bbox.setVisibility($("#BBox").prop("checked"));
-                    }
+                } else {
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
+                            objectScene.children[i].bbox.setVisibility(false);
                 }
             }
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -618,76 +622,49 @@
                     }
                 } else {
                     if (!CLICKED[0] || !CLICKED[1]) {
-                        showErrorMessage("Error! Please select two objects.");
+                        showErrorMessage("Error. Select two objects.");
                     } else {
 
                         var first_bsp = new ThreeBSP(CLICKED[0]);
                         var second_bsp = new ThreeBSP(CLICKED[1]);
 
                         var nameOfOperation, result_bsp;
+                        var scale;
                         
                         if ($(element).attr('id') == "union") {
                             nameOfOperation = "Union";
                             result_bsp = first_bsp.union(second_bsp);
+                            scale = CLICKED[0].scale;
                         } else if ($(element).attr('id') == "intersection") {
                             nameOfOperation = "Intersection";
                             result_bsp = first_bsp.intersect(second_bsp);
+                            scale = CLICKED[0].scale;
                         } else if ($(element).attr('id') == "complement_2-1") {
                             nameOfOperation = "Complement(2-1)";
                             result_bsp = second_bsp.subtract(first_bsp);
+                            scale = CLICKED[1].scale;
                         } else if ($(element).attr('id') == "complement_1-2") {
                             nameOfOperation = "Complement(1-2)";
                             result_bsp = first_bsp.subtract(second_bsp);
+                            scale = CLICKED[0].scale;
                         }
 
                         var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
-                        
-                        var geometry = result_bsp.toGeometry();
-                        
-                        geometry.computeBoundingBox();
-                        var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x) / 2;
-                        var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y) / 2;
-                        var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z) / 2;
-                        
-                        var resultScale = new THREE.Vector3(scaleX, scaleY, scaleZ);
-                        var resultPosition = geometry.boundingBox.center();
-                        
-                        var rotationMatrix = new THREE.Matrix4().extractRotation(result_bsp.matrix);
-                        var resultRotation = new THREE.Vector3().setEulerFromRotationMatrix( rotationMatrix );
-                        
-                        var scaleMatrix = new THREE.Matrix4().makeScale( scaleX, scaleY, scaleZ );
-                        var resultMatrix = new THREE.Matrix4().multiplyMatrices( rotationMatrix, scaleMatrix );
-                        resultMatrix.elements[12] = resultPosition.x;
-			resultMatrix.elements[13] = resultPosition.y;
-			resultMatrix.elements[14] = resultPosition.z;
-                        var invResultMatrix = new THREE.Matrix4().getInverse( resultMatrix );
-                        
-                        for ( var i = 0, il = geometry.vertices.length; i < il; i++ ) {
+                        var resultObj = result_bsp.toMesh(material);
+                        //resultObj.geometry.computeVertexNormals();
 
-                            geometry.vertices[i].applyMatrix4(invResultMatrix);
-                        }
-                        
-                        geometry.computeCentroids();
-                        geometry.computeFaceNormals();
-                        //geometry.computeVertexNormals();
-                        
-                        var resultObj = new OSMEX.Block( geometry, material );
-                        
-                        resultObj.position = resultPosition.clone();
-                        resultObj.scale = resultScale.clone();
-                        resultObj.rotation = resultRotation.clone();
-
+                        resultObj.scale = scale;
+                        resultObj.pickable = true;
+                        resultObj.visible = true;
                         resultObj.name = "undef"; 
-                        
-                        if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
-                        
+                        resultObj.bbox = new OSMEX.BoundingBox(resultObj);
+                        resultObj.bbox.scale = new THREE.Vector3(10,10,10);
+                        resultObj.add(this.bbox);
+                        resultObj.bbox.setVisibility(true);
                         objectScene.add(resultObj);
 
                         CLICKED[0].visible = false;
-                        CLICKED[0].setVisibility(false);
-                        
                         CLICKED[1].visible = false;
-                        CLICKED[1].setVisibility(false);
 
                         var newSelected = [];
                         while (selectedObj.length > 0) {

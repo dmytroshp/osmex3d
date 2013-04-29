@@ -51,7 +51,7 @@ function ajaxPostScene(array, osmArea) {
             cache: false,
             data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: lonLatHeight.latitude, positionLon: lonLatHeight.longitude, positionHeight: lonLatHeight.height, objectType: array[i].typeId, isDeleted: array[i].isDeleted},
             success: function(data) {
-                alert(data);
+                //alert(data);
             },
             error:function() {
                 console.debug("Can't save scene");
@@ -67,7 +67,7 @@ function ajaxNewSketch(name, category, serializedGeometry) {
         cache: false,
         data: {name: name.val(), category: category.val(), geometry: serializedGeometry}, 
         success: function(data) {
-            alert(data);
+            //alert(data);
         }
     });
 }

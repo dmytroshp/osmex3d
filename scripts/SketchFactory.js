@@ -29,6 +29,8 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
     
     if (this.currentObject !== null) {
         
+        console.log("LOADED");
+        
         this.currentObject.setVisibility(true);
         if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
@@ -426,6 +428,8 @@ function getUnpackedGeometry( packedGeometry ) {
 }
 
 OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCreated ) {
+    
+    var _this = this;
     
     var _this = this;
     

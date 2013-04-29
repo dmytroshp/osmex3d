@@ -15,7 +15,7 @@ var dialog_template="<div id='dialog-confirm'>\
   <p><span class='ui-icon ui-icon-alert' style='float: left; margin: 0 7px 20px 0;'></span></p>\
 </div>";
 
-var red_alert_template="<div style='position:absolute;top:5px; left:5px; z-index: 1; width:300px; display:none;' id='message' class='ui-widget'>\
+var red_alert_template="<div style='position:absolute;top:5px; left:5px; z-index: 999; width:300px; display:none;' id='message' class='ui-widget'>\
 	<div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
 		<p>\
                     <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
@@ -24,7 +24,7 @@ var red_alert_template="<div style='position:absolute;top:5px; left:5px; z-index
 	</div>\
 </div>";
 
-var info_alert_template="<div style='position:absolute;top:5px; left:5px; z-index: 1; width:300px; display:none;' class='ui-widget' id='tip'>\
+var info_alert_template="<div style='position:absolute;top:5px; left:5px; z-index: 999; width:300px; display:none;' class='ui-widget' id='tip'>\
             <div class='ui-state-highlight ui-corner-all' style='margin-top: 20px; padding: 0 .7em;'>\
                 <p><span class='ui-icon ui-icon-info' style='float: left; margin-right: .3em;'></span>\
                         <p id='msgtext'></p>\
