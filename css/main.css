@@ -98,7 +98,6 @@ body
      bottom: 5px;
      top: 45px;
      border: 1px #cccccc solid;
-         
  }
  #geoBuilder
  {
@@ -111,7 +110,7 @@ body
  }
  #searchDivc{
      position: absolute;
-     top: 55px;
+     top: 75px;
      left: 5px;
      right: 5px;
  }
@@ -140,11 +139,8 @@ body
      
  }
  .accordionContainer{
-     top: 30px;
+     top: 5px;
      position: relative;
- }
- #txt{
-     
  }
  .scrollHelper{
      display:none;
@@ -189,7 +185,6 @@ body
     padding: 3px;
     font-size: 14px;
     line-height: 15px;
-    height: 25px;
     padding: 2px 0px 2px 5px;
     box-shadow: inset #DDD 0px 1px 3px;
     box-sizing: border-box;
@@ -251,4 +246,8 @@ ul.results-list li p{
 }
 .imgContainer :hover{
     opacity: 0.7;
+}
+#txt{
+    font-size: 0.5em;
+    padding-left: 20px; 
 }
