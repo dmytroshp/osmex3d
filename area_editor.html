@@ -202,11 +202,11 @@
             var SCREEN_FOV = 45;
             var FIRST_PICKABLE_OBJ = 6;
             var GRID_SIZE = 60;
-            var MIN_LON = 30.738636;
-            var MIN_LAT = 46.438659;
-            var MAX_LON = 30.744118;
-            var MAX_LAT = 46.441975;
-            var JSON_BUILDINGS = "{\"tile_id\":\"775670321\",\"builds\":[{\"id\":\"974\",\"scaleX\":\"15.002246\",\"scaleY\":\"20\",\"scaleZ\":\"9.441226\",\"rotationX\":\"0\",\"rotationY\":\"3.043413\",\"rotationZ\":\"0\",\"positionLon\":\"30.745653\",\"positionLat\":\"46.47748\"},{\"id\":\"975\",\"scaleX\":\"16.249423\",\"scaleY\":\"20\",\"scaleZ\":\"17.913192\",\"rotationX\":\"0\",\"rotationY\":\"3.035753\",\"rotationZ\":\"0\",\"positionLon\":\"30.74608\",\"positionLat\":\"46.477411\"}]}";
+            var MIN_LON = null;//30.738636;
+            var MIN_LAT = null;//46.438659;
+            var MAX_LON = null;//30.744118;
+            var MAX_LAT = null;//46.441975;
+            var JSON_BUILDINGS = null;//"{\"tile_id\":\"775670321\",\"builds\":[{\"id\":\"974\",\"scaleX\":\"15.002246\",\"scaleY\":\"20\",\"scaleZ\":\"9.441226\",\"rotationX\":\"0\",\"rotationY\":\"3.043413\",\"rotationZ\":\"0\",\"positionLon\":\"30.745653\",\"positionLat\":\"46.47748\"},{\"id\":\"975\",\"scaleX\":\"16.249423\",\"scaleY\":\"20\",\"scaleZ\":\"17.913192\",\"rotationX\":\"0\",\"rotationY\":\"3.035753\",\"rotationZ\":\"0\",\"positionLon\":\"30.74608\",\"positionLat\":\"46.477411\"}]}";
             
             var container;
 
@@ -379,23 +379,25 @@
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                 window.addEventListener('resize', onWindowResize, false);
                 
-                fillEditor(JSON_BUILDINGS);
+                fillEditor();
             }
 
-            function fillEditor(json) {
-                getBuildings (MIN_LON,MIN_LAT,MAX_LON,MAX_LAT);
-                var ob = jQuery.parseJSON(json);
-                for (var i = 0; i < ob.builds.length; i++){
-                    var obj = sketchFactory.createObject(1);
-                    obj.id = ob.builds[i].id;
-                    obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
-                    obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
-                    var position = LanLot2local(ob.builds[i].positionLat, ob.builds[i].positionLon);
-                    obj.position = position;
-                    objectScene.add(obj);
-                    //console.log (obj);
+            function fillEditor() {
+                getBuildings ("123",MIN_LON,MIN_LAT,MAX_LON,MAX_LAT);
+                if (JSON_BUILDINGS != null){
+                    var ob = jQuery.parseJSON(JSON_BUILDINGS);
+                    for (var i = 0; i < ob.builds.length; i++){
+                        var obj = sketchFactory.createObject(ob.builds[i].typeId);
+                        obj.id = ob.builds[i].id;
+                        obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
+                        obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
+                        var position = LanLot2local(ob.builds[i].positionLat, ob.builds[i].positionLon);
+                        obj.position = position;
+                        objectScene.add(obj);
+                        //console.log (obj);
+                    }
+                }
                 }                   
-            }
 
             function saveScene() {
                 postScene(objectScene);

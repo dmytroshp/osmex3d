@@ -61,6 +61,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     this.currentObject = new OSMEX.Block( geometry, this.buildMaterial );
     this.currentObject.pickable = false;
     this.currentObject.setVisibility(false);
+    this.currentObject.typeId = this.typeId;
     this.currentObject.name = this.name;
     if (this.name !== "cube" || this.name !== "sphere" ||this.name !== "cylinder" ||this.name !== "cone" ||this.name !== "torus" ||this.name !== "tetrahedron")
         this.currentObject.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
@@ -88,12 +89,15 @@ OSMEX.SketchFactory.prototype.finishBuild = function() {
         arrowMode = null;
         this.currentObject = null;
         this.name = null;
+        this.typeId = null;
     }
 };
 
 OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId ) {
     
     var objGeometry;
+    
+    this.typeId = objectTypeId;
     
     // Cube
     if (objectTypeId == 1) {
