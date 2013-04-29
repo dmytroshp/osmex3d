@@ -83,9 +83,9 @@ OSMEX.SketchFactory.prototype.finishBuild = function() {
         
         this.currentObject.material = this.usualMaterial.clone();
         this.currentObject.pickable = true;
-        if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
         this.parent.add(this.currentObject);
+        arrowMode = null;
         this.currentObject = null;
         this.name = null;
     }
