@@ -198,7 +198,14 @@ HERE;
                                     str+="<img class='prev' src='"+result[i].thumbnail+"'>";
                                     str+="<div class='desc'>"+result[i].name+"</div></div>";
                                 }
-                                $("#txt").html(str);
+                                if(str==="")
+                                {
+                                    $("#txt").html("<p style='font-size: 1.1em;'>no textures found</p>");
+                                }
+                                else
+                                {
+                                    $("#txt").html(str);
+                                }
                                 $(".imgContainer").mouseenter(function(){
                                     $(this).css("cursor", "pointer");
                                 });
