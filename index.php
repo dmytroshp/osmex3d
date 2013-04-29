@@ -124,7 +124,7 @@ HERE;
                 // Work area tabs
                 var initializator={
                     tabMap:{
-                        url:'ajax/landscapeEditor.html',
+                        url:'ajax/mapView.html',
                         activator:function(){
                             var iframe=this.find('iframe');
                             iframe.css('width',this.width());
@@ -136,7 +136,7 @@ HERE;
                         }//prepareMap();}
                     },
                     tabSketch:{
-                        url:'ajax/objectEditor.html',
+                        url:'ajax/sketchBuilder.html',
                         activator:function(){}
                     },
                     tabTxt:{
