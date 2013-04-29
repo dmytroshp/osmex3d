@@ -328,7 +328,7 @@ HERE;
 //           6. Image Container handlers                
                 $(".imgContainer").mouseenter(function(){
                     $(this).css("cursor", "pointer");
-                    $(this).css("")
+                    $(this).css("");
                 });
                 $(".imgContainer").mouseleave(function(){
                     $(this).css("cursor", "default");
