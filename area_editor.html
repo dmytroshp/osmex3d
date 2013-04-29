@@ -174,9 +174,9 @@
             <br>
             <br>
             <br>
+            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Show bounding boxes</label>
             <br>
-            <br>
-            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Display bounding boxes</label>
+            <label><input type="checkbox" checked id="showShadows" onchange="showShadows();" /> Show shadows</label>
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
@@ -224,6 +224,8 @@
             var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
 
             var boxBuilder, sketchFactory;
+            
+            var objectLight, interfaceLight, shadowLight;
 
             var arrowMode, objectType;
             
@@ -316,12 +318,27 @@
                 objectScene.add(new THREE.AmbientLight(0x3f3f3f));
                 interfaceScene.add(new THREE.AmbientLight(0x3f3f3f));
 
-                var objectLight = new THREE.DirectionalLight(0xffffff);
+                objectLight = new THREE.DirectionalLight(0xffffff);
                 objectLight.position = camera.position;
+                objectLight.target.position = cameraController.target;
                 objectScene.add(objectLight);
+                
+                shadowLight = new THREE.DirectionalLight();
+                shadowLight.position.set(0, 1000, 0);
+                shadowLight.onlyShadow = true;
+                shadowLight.castShadow = true;
+                shadowLight.shadowCameraNear = camera.near;
+                shadowLight.shadowCameraFar = camera.far;
+                shadowLight.shadowCameraFov = SCREEN_FOV;
+                shadowLight.shadowBias = 0;
+                shadowLight.shadowDarkness = 0.5;
+                shadowLight.shadowMapWidth = 2048;
+                shadowLight.shadowMapHeight = 2048;
+                objectScene.add(shadowLight);
 
-                var interfaceLight = new THREE.DirectionalLight(0xffffff);
+                interfaceLight = new THREE.DirectionalLight(0xffffff);
                 interfaceLight.position = camera.position;
+                interfaceLight.target.position = cameraController.target;
                 interfaceScene.add(interfaceLight);
 
                 // GROUND
@@ -354,6 +371,9 @@
                 renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
                 renderer.setClearColor(objectScene.fog.color, 1);
                 renderer.autoClear = false;
+                
+                renderer.shadowMapEnabled = true;
+                renderer.shadowMapType = THREE.PCFSoftShadowMap;
 
                 container.appendChild(renderer.domElement);
 
@@ -419,6 +439,13 @@
                         obj.bbox.setVisibility($("#BBox").prop("checked"));
                     }
                 }
+            }
+            
+            function showShadows() {
+                
+                renderer.shadowMapEnabled = $("#showShadows").prop("checked");
+                
+                if (!renderer.shadowMapEnabled) renderer.clearTarget( shadowLight.shadowMap );
             }
 
             function setArrowsType(element) {

@@ -102,6 +102,7 @@ OSMEX.OsmArea.prototype.buildTiles = function () {
             var posX = x + width/2 - halfAreaWidth;
             var posZ = y + height/2 - halfAreaHeight;
             tileMesh.position = new THREE.Vector3( posX, 0, posZ );
+            tileMesh.receiveShadow = true;
             
             this.add(tileMesh);
             
