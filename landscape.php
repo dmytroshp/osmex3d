@@ -344,9 +344,9 @@ this.loadTile = function () {
 		    var id=this.arTileCubeForAdd[this.indxCube];
 		    if(id.length>0){
 			   this.indxCube++;this.ready=false;
-			   var lanlot=id.split(' ');//console.debug(parseInt(xz[0])+" "+parseInt(xz[1]));
+			   var lanlot=id.split(' ');
 			   build_func(lanlot[0],lanlot[1],lanlot[2],lanlot[3],lanlot[4]);
-			   //var xz=id.split(' ');//console.debug(parseInt(xz[0])+" "+parseInt(xz[1]));
+			   //var xz=id.split(' ');
 			   //build_func(parseInt(xz[0]),parseInt(xz[1]));
 			   this.requestBld=true;
 			   }
@@ -388,8 +388,7 @@ this.loaded = function () {
 				   var maxlon=tile2lon(x+1,lvl)
 				   var minlat=tile2lat(z+1,lvl)
 				   var maxlat=tile2lat(z,lvl)
-				   //alert("id "+id+" minlon "+minlon+" minlat "+minlat+" maxlon "+maxlon+" maxlat "+maxlat); 
-				   console.debug("id "+id+" lvl "+lvl+" minlon "+minlon+" minlat "+minlat+" maxlon "+maxlon+" maxlat "+maxlat)
+
 				   }*/
 
 			      if(lvl==lvlbldactive&&!arrTileBlds[id])
@@ -570,11 +569,7 @@ this.loaded = function () {
                          wrt(""+i+" "+tiles[0].triangleGeometry.vertices[i].x+" "+tiles[0].triangleGeometry.vertices[i].y+" "+tiles[0].triangleGeometry.vertices[i].z)
 	                  }
 					  wrt("center "+tiles[0].center.x+" "+tiles[0].center.y+" "+tiles[0].center.z)*/
-			   /*console.debug("tiles[0].center.x "+tiles[0].center.x)
-			   console.debug("tiles[1].center.x "+tiles[1].center.x)
-			   console.debug("tiles[2].center.x "+tiles[2].center.x)
-			   console.debug("tiles[3].center.x "+tiles[3].center.x)
-			   console.debug("tiles[4].center.x "+tiles[4].center.x)*/
+
 
 
 
@@ -634,8 +629,8 @@ this.loaded = function () {
 					//Faces
                 	for(ix=0;ix<8;ix++){//collumn
                 	   for(iy=0;iy<8;iy++){//row of quads
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy,9*ix+iy+1,9*ix+iy+9));
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+1,9*ix+iy+10,9*ix+iy+9));
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+1,9*ix+iy));
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+10,9*ix+iy+1));
 	                	                }
                 					}
 
@@ -644,14 +639,14 @@ this.loaded = function () {
                 	for(v=1.0;v>0;v-=step){
                 	  for(u=0.0;u<1;u+=step){
                 	tile.triangleGeometry.faceVertexUvs[0].push( [
-                            new THREE.Vector2(u, v) ,
+                            new THREE.Vector2(u, v-step) ,
                             new THREE.Vector2(u+step, v) ,
-                			new THREE.Vector2(u, v-step)
+                			new THREE.Vector2(u, v)
                         ] );
                 	tile.triangleGeometry.faceVertexUvs[0].push( [
-                            new THREE.Vector2(u+step, v ) ,
+                            new THREE.Vector2(u, v-step) ,
                             new THREE.Vector2(u+step, v-step) ,
-                            new THREE.Vector2(u, v-step) 
+                            new THREE.Vector2(u+step, v )
                         ] );
                 		                      }
 	                	                   }			
@@ -679,11 +674,9 @@ this.loaded = function () {
 
                 if(jstr.id>=0){	
 
-                    }else{
-                        ////console.debug("! Reject request id is out of range!");
-                        }
+                    }else{}
 					 //r=(delete tile);
-                    // console.debug("del  "+r);
+
                       jstr=null;					
 					  TLoad.loaded()
 
@@ -757,14 +750,14 @@ this.loaded = function () {
 			}
 
 			/*function verify(){
-				//console.debug("TLoad.arTileForAdd.length "+TLoad.arTileForAdd.length)	
+
                 TLoad.loadTile();
 				
 			    //timerid=setInterval(verify, 20);
 			}*/
 
 			function getDistance(cam,tlvl,tosmX,tosmZ){
-			    //console.debug("dist for xyz "+tlvl+" "+tosmX+" "+tosmZ)
+
 
 				var var1=Math.pow(2,tlvl);//number of tiles in row (specific lvl) 
 				var scale=tlvl==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
@@ -792,12 +785,12 @@ this.loaded = function () {
 				var az=Math.max(cam.position.z,cenz)-Math.min(cam.position.z,cenz);
 				var cD=Math.sqrt(ax*ax+ay*ay+az*az);*/
 				//cD=1 * cD.toFixed(1)
-				//console.debug("cR "+cD+"lvl "+tlvl)
+
                 return tilecenter.sub(cam.position).length();				
 			}
 
 			function deltilemesh(id,req){
-			    //console.debug("del "+"id "+" "+id)
+
 				if(req==false)req=false;
 				else{req=true;}
 				if(typeof(triangleMesh[id]) != "undefined" && triangleMesh[id] != null)
@@ -819,7 +812,7 @@ this.loaded = function () {
 				  }
 			      r=delete triangleMesh[id];
 			      triangleMesh[id]=null
-			      //console.debug("del "+triangleMesh[id]+" id "+id+" "+r)
+
 				}
 				if(req){
 				  if(triangleMesh[(id*4+1)])deltilemesh((id*4+1));
@@ -839,7 +832,7 @@ this.loaded = function () {
                   arrTile[id].destroy();
                   delete arrTile[id];
                   arrTile[id]=null;
-                  //console.debug("Delete "+arrTile[id]+" id "+id)
+
 				}
 				if(req){
 				  if(arrTile[(id*4+1)])deltile((id*4+1));
@@ -885,14 +878,12 @@ this.loaded = function () {
 
 				var var1=Math.pow(2,arrTile[id].lvl);//number of tiles in row (specific lvl) 
 				scale=id==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
-				//console.debug("scale "+scale+" tile.id "+arrTile[tileId].id+" tile.lvl "+arrTile[tileId].lvl)
+
 				var offset=id==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
 				//count 1st coordinates for concrete tile
 				var startX=TLoad.startX+offset*arrTile[id].tex_x;
 				var startZ=TLoad.startZ+offset*arrTile[id].tex_z;
-				//console.debug("tileId "+tileId)
-				//console.debug("startX "+startX)
-				//console.debug("startZ "+startZ)
+
 				var x_=-1;
 				var z_=-1;
 				var index_=0;
@@ -904,8 +895,7 @@ this.loaded = function () {
 					   for(;j_<9;j_++){
 					      x_=startX+(scale)*j_;
 		                  arrTile[id].triangleGeometry.vertices.push(new THREE.Vector3( x_,0.0,z_));
-						  //console.debug("flg_empty "+flg_empty);
-				          //console.debug("index "+index_+" x "+x_+" jstr.verts[index] "+jstr.verts[index_]+" z "+z_);
+
 						  index_++;
 						             }
 									 j_=0;
@@ -919,12 +909,7 @@ this.loaded = function () {
 				     arrTile[id].texExist=true;
 					 if(typeof(flagroot) != "undefined" && flagroot != null){
                          
-					//console.debug("tex x  "+arrTile[tileId].tex_x+" y "+arrTile[tileId].tex_y);
-					console.debug("crt  "+id+" ");
-					console.debug("del  "+(id*4+1)+" ");
-					console.debug("del  "+(id*4+2)+" ");
-					console.debug("del  "+(id*4+3)+" ");
-					console.debug("del  "+(id*4+4)+" ");
+
 
                     deltilemesh((id*4+1));
 					deltilemesh((id*4+2));
@@ -937,16 +922,14 @@ this.loaded = function () {
 					}
 					else{
                      var delprntid=id==0?-1:((id-1)-((id-1)%4))/4;
-					 console.debug("id "+id+" "+delprntid);
+
 					 deltilemesh(delprntid);
 					 deltile(delprntid);
 					 }
 					 
                      //render();
 	            });*/
-//console.debug("id "+id);
 
-				//console.debug("id "+id);
                 arrTex[id].magFilter = THREE.LinearFilter;
                 arrTex[id].minFilter = THREE.LinearFilter;
 				arrTex[id].anisotropy = maxAnisotropy;
@@ -954,7 +937,7 @@ this.loaded = function () {
 				//'map':texture,
 				'map': arrTex[id],
 				//wireframe: true,
-				side:THREE.DoubleSide//,
+				//side:THREE.DoubleSide//,
                 //'overdraw': false
 				                });				
 
@@ -964,7 +947,7 @@ this.loaded = function () {
 				triangleMesh[id].visible=true;
 				//if(arrTile[id].lvl>15)triangleMesh[id].visible=false;
 
-				//console.debug("Crt "+triangleMesh[id]+" id "+id)
+
 				
 				//arrCurRoot.push(id);
 				
@@ -1058,8 +1041,7 @@ this.loaded = function () {
 			}
 
 			function checkTiles() {
-				//console.debug(" ")
-				//console.debug(" ")
+
 				
 				
 			if(initTilesIndx<initTiles.length)
@@ -1081,11 +1063,9 @@ this.loaded = function () {
                 				
 			   }
 			else{
-				/*console.debug("camera.phi "+controls.phi)
-				console.debug("camera.theta "+controls.theta)*/
-				//console.debug("fov "+camera.fov)
+
 			/*	
-			  console.debug("arrCurBld.length "+arrCurBld.length)
+
 			  curBldId++;
 			  if(curBldId>=arrCurBld.length)curBldId=0;
 			  var curbld=arrCurBld[curBldId];
@@ -1093,12 +1073,12 @@ this.loaded = function () {
 			  if(typeof(arrTileBlds[curbld]) != "undefined" && arrTileBlds[curbld] != null)
 			  {
 			  var dist2b=dist2Blds(curbld,camera);
-			  //console.debug("dist2b "+dist2b+" "+arrTileBlds[curbld].id)
+
 			  alert(arrTileBlds[curbld].id)
 			  if(dist2b>110){arrCurBld.splice(curBldId,1);delbuildsoftile(curbld);}
 			  }*/
 
-				//console.debug("arrCurRoot.length "+arrCurRoot.length)	
+
 				//&&TLoad.idforloadroot!=arrCurRoot[j]&&TLoad.ReadyForRoot
 				var InitArray = new Array();
 				
@@ -1106,7 +1086,7 @@ this.loaded = function () {
 				  cur_ID=arrCurRoot[j];
 				  if(typeof(arrTile[cur_ID]) != "undefined" && arrTile[cur_ID] != null)
 				  {
-				  //console.debug("cur_ID "+cur_ID)
+
 				    flagDrop=false;
 			        chldsExist=true;
 
@@ -1152,7 +1132,7 @@ this.loaded = function () {
 
 			    if(pixelTileSize>=384&&arrTile[cur_ID].lvl<18)
 				{
-				  //console.debug("drop "+pixelTileSize+"id "+cur_ID)
+
 				  var ch1=cur_ID*4+1;
 				  var ch2=cur_ID*4+2;
 				  var ch3=cur_ID*4+3;
@@ -1227,7 +1207,7 @@ this.loaded = function () {
 
 				 	if(pixelTileSize1<=128&&pixelTileSize2<=128&&pixelTileSize3<=128&&pixelTileSize4<=128)
 					{
-					  //console.debug("rise "+cur_ID+" "+pixelTileSize1+"prnt "+prntId)
+
 					  if(typeof(arrTile[prntId]) != "undefined" && arrTile[prntId] != null)
 					  {
 					    if(arrTile[prntId].texExist)
@@ -1237,19 +1217,12 @@ this.loaded = function () {
 							{
 							    if(typeof(arrTile[arrCurRoot[i]]) != "undefined" && arrTile[arrCurRoot[i]] != null)
 								{
-					              if(arrTile[arrCurRoot[i]].prnt==prntId){
-                                                          //console.debug("del  "+i);arrCurRoot[i]=0;count++;
-                                                      }
+					              if(arrTile[arrCurRoot[i]].prnt==prntId){arrCurRoot[i]=0;count++;}
 								}
 					        }
 					      arrCurRoot.sort();
-                          //console.debug("count  "+count);						  
+					  
 					      for(i=0 ;i<count;i++)arrCurRoot.shift();
-						   /*console.debug("crt  "+prntId+" ");
-						   console.debug("del  "+(prntId*4+1)+" ");
-						   console.debug("del  "+(prntId*4+2)+" ");
-						   console.debug("del  "+(prntId*4+3)+" ");
-						   console.debug("del  "+(prntId*4+4)+" ");*/
 						   deltilemesh((prntId*4+1));
 						   deltilemesh((prntId*4+2));
 						   deltilemesh((prntId*4+3));

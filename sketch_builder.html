@@ -37,23 +37,23 @@
         
         <script type="text/javascript">
             var dialog_template = "<div id='dialog-form' title='New Sketch'>\
-                <form>\
-                    <p>Icon (use mouse with right button pressed to rotate):</p>\
-                    <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:235px;height:235px;'></div></div>\
-                    <label for='name'>Name:</label>\
-                    <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
-                    <label for='category'>Category:</label>\
-                    <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
-                </form>\
-            </div>";
+<form>\
+<p>Icon (use mouse with right button pressed to rotate):</p>\
+<div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:235px;height:235px;'></div></div>\
+<label for='name'>Name:</label>\
+<input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
+<label for='category'>Category:</label>\
+<input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
+</form>\
+</div>";
             var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
-                    <div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
-                        <p>\
-                        <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
-                        <p id='msgtext'></p>\
-                        </p>\
-                    </div>\
-                </div>";
+<div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
+<p>\
+<span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
+<p id='msgtext'></p>\
+</p>\
+</div>\
+</div>";
             var alert = {};
             var timeout_id = 0;
         </script>
@@ -65,13 +65,12 @@
                 margin: 0px;
                 overflow: hidden;
             }
-            label, input { display:block; }
             input.text { margin-bottom:12px; width:95%; padding: .4em; }
             fieldset { padding:0; border:0; margin-top:25px; }
             div#users-contain { width: 350px; margin: 20px 0; }
             #topbar {
-                position:absolute; 
-                top:10px;               
+                position:absolute;
+                top:10px;
             }
             #bottombar {
                 position:absolute;
@@ -86,128 +85,125 @@
                 position:absolute;
             }
             #righttopbar {
-                font-size:10px;
-                right:50px;
-                position:absolute; 
-            }   
+                position:absolute;
+            }
             #content {
                 position:absolute;
             }
             #dragging {
-                background-image: url('img/48x48/6.png');               
+                background-image: url('img/48x48/dragging.png');               
             }
             #dragging:hover {
-                background-image: url('img/48x48/6_over.png');               
-            }                         
+                background-image: url('img/48x48/dragging_over.png');               
+            }
             #dragging.selected
             {
-                background-image: url('img/48x48/6_pressed.png');               
+                background-image: url('img/48x48/dragging_pressed.png');               
             }
 
             #moving {
-                background-image: url('img/48x48/2.png');               
+                background-image: url('img/48x48/moving.png');               
             }
             #moving:hover {
-                background-image: url('img/48x48/2_over.png');               
-            }                        
+                background-image: url('img/48x48/moving_over.png');               
+            }
             #moving.selected
             {
-                background-image: url('img/48x48/2_pressed.png');               
+                background-image: url('img/48x48/moving_pressed.png');               
             }
 
             #scaling {
-                background-image: url('img/48x48/3.png');               
+                background-image: url('img/48x48/scaling.png');               
             }
             #scaling:hover {
-                background-image: url('img/48x48/3_over.png');               
-            }                        
+                background-image: url('img/48x48/scaling_over.png');               
+            }
             #scaling.selected
             {
-                background-image: url('img/48x48/3_pressed.png');               
+                background-image: url('img/48x48/scaling_pressed.png');               
             }
 
             #rotating {
-                background-image: url('img/48x48/5.png');               
+                background-image: url('img/48x48/rotating.png');               
             }
             #rotating:hover {
-                background-image: url('img/48x48/5_over.png');               
-            }                        
+                background-image: url('img/48x48/rotating_over.png');
+            }
             #rotating.selected
             {
-                background-image: url('img/48x48/5_pressed.png');               
+                background-image: url('img/48x48/rotating_pressed.png');               
             }
 
             #deleting {
-                background-image: url('img/48x48/1.png');               
+                background-image: url('img/48x48/deleting.png');               
             }
             #deleting:hover {
-                background-image: url('img/48x48/1_over.png');               
-            }                        
+                background-image: url('img/48x48/deleting_over.png');               
+            }
             #deleting.selected
             {
-                background-image: url('img/48x48/1_pressed.png');               
+                background-image: url('img/48x48/deleting_pressed.png');               
             }
 
             #build_box {
-                background-image: url('img/48x48/7.png');               
+                background-image: url('img/48x48/build_box.png');               
             }
             #build_box:hover {
-                background-image: url('img/48x48/7_over.png');               
-            }                        
+                background-image: url('img/48x48/build_box_over.png');               
+            }
             #build_box.selected
             {
-                background-image: url('img/48x48/7_pressed.png');               
+                background-image: url('img/48x48/build_box_pressed.png');               
             }
             
             #publish {
-                background-image: url('img/publish.png');               
+                background-image: url('img/publish.png');
             }
             #publish:hover {
-                background-image: url('img/publish_hovered.png');               
+                background-image: url('img/publish_hovered.png');
             }
             #union {
-                background-image: url('img/48x48/8.png');  
+                background-image: url('img/48x48/8.png');
             }
             #union:hover {
-                background-image: url('img/48x48/8_over.png');  
+                background-image: url('img/48x48/8_over.png');
             }
             #union.selected {
-                background-image: url('img/48x48/8_pressed.png');  
+                background-image: url('img/48x48/8_pressed.png');
             }
             #complement_1-2 {
-                background-image: url('img/48x48/10.png');  
+                background-image: url('img/48x48/10.png');
             }
             #complement_1-2:hover {
-                background-image: url('img/48x48/10_over.png');  
+                background-image: url('img/48x48/10_over.png');
             }
             #complement_1-2.selected {
-                background-image: url('img/48x48/10_pressed.png');  
+                background-image: url('img/48x48/10_pressed.png');
             }
             #complement_2-1 {
-                background-image: url('img/48x48/9.png');  
+                background-image: url('img/48x48/9.png');
             }
             #complement_2-1:hover {
-                background-image: url('img/48x48/9_over.png');  
+                background-image: url('img/48x48/9_over.png');
             }
             #complement_2-1.selected {
-                background-image: url('img/48x48/9_pressed.png');  
+                background-image: url('img/48x48/9_pressed.png');
             }
             #intersection {
-                background-image: url('img/48x48/11.png');  
+                background-image: url('img/48x48/11.png');
             }
             #intersection:hover {
-                background-image: url('img/48x48/11_over.png');  
+                background-image: url('img/48x48/11_over.png');
             }
             #intersection.selected {
-                background-image: url('img/48x48/11_pressed.png');  
+                background-image: url('img/48x48/11_pressed.png');
             }
             #rollback {
-                background-image: url('img/48x48/12.png');  
+                background-image: url('img/48x48/12.png');
             }
             #rollback:hover {
-                background-image: url('img/48x48/12_over.png');  
-            }           
-            
+                background-image: url('img/48x48/12_over.png');
+            }
             
         </style>
     </head>
@@ -215,7 +211,7 @@
         <div id="leftbar" style="visibility:hidden;display:inline;float:left;">
             <div class="list1" style="width:180px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <select id="listOfOperations" size="5" style="width:180px;" >
-                </select>  
+                </select>
             </div>
 
             <div id="rollback" class="group3" style="width:48px;height:48px;float:left;">
@@ -233,7 +229,7 @@
             
             <div id="tochange" style="float:left;">
                 <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp; 
+                    &nbsp;
                 </div>
                 <div id="scaling" class="group1" style="width:48px;height:48px;float:left;">
                     &nbsp;
@@ -264,14 +260,13 @@
             <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cylinder.png'>
             </div>
-            <br/>
             <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/sphere.png'>
             </div>
 
         </div>
 
-        <div id="bottombar" style="visibility:hidden;display:inline;float:right;">            
+        <div id="bottombar" style="visibility:hidden;display:inline;float:right;">
             <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
@@ -280,7 +275,7 @@
             </div>
             <div id="complement_2-1" class="group3" title="Difference. Subtraction of one object from another (second object is subtracted by first one)." style="width:48px;height:48px;float:left;">
                 &nbsp;
-            </div>            
+            </div>
             <div id="intersection" class="group3" title="Intersection. Portion common to both objects." style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
@@ -288,7 +283,7 @@
         </div>
         <div id="right-bottombar" style="visibility:hidden;display:inline;float:right;">
             <div id="publish" class="group4" style="width:200px;height:50px;float:left;">
-                &nbsp; 
+                &nbsp;
             </div>
         </div>
         
@@ -315,7 +310,7 @@
 
             var CLICKED = [null, null];
 
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
             var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
@@ -351,19 +346,7 @@
                         });
                     }
                     
-                    $(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
-                        'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
-                        'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
-                        'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
-                        'img/48x48/5.png', 'img/48x48/5_over.png', 'img/48x48/5_pressed.png',
-                        'img/48x48/6.png', 'img/48x48/6_over.png', 'img/48x48/6_pressed.png',
-                        'img/48x48/7.png', 'img/48x48/7_over.png', 'img/48x48/7_pressed.png',
-                        'img/48x48/8.png', 'img/48x48/8_over.png', 'img/48x48/8_pressed.png',
-                        'img/48x48/9.png', 'img/48x48/9_over.png', 'img/48x48/9_pressed.png',
-                        'img/48x48/10.png', 'img/48x48/10_over.png', 'img/48x48/10_pressed.png',
-                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
-                        'img/48x48/12.png', 'img/48x48/12_over.png',
-                        'img/publish.png','img/publish_hovered.png'
+                    $(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png','img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png','img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png','img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png','img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png','img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png','img/publish.png','img/publish_hovered.png','img/48x48/8.png','img/48x48/8_over.png','img/48x48/8_pressed.png','img/48x48/10.png','img/48x48/10_over.png','img/48x48/10_pressed.png','img/48x48/9.png','img/48x48/9_over.png','img/48x48/9_pressed.png','img/48x48/11.png','img/48x48/11_over.png','img/48x48/11_pressed.png','img/48x48/12.png','img/48x48/12_over.png'
                    ]).preload();
                     
                     $("#topbar").css({
@@ -372,14 +355,14 @@
                     });
                     
                     $("#tochange").css({
-                       "margin-left": 5 + "px" 
+                       "margin-left": 5 + "px"
                     });
                     $("#build").css({
-                       "margin-left": 5 + "px" 
+                       "margin-left": 5 + "px"
                     });
                     
                     $("#listOfOperations").css({
-                       "opacity":  0.7
+                       "opacity": 0.7
                     });
 
                     $("#leftbar").css({
@@ -392,19 +375,19 @@
 
                     $("#bottombar").css({
                         "left": (window.innerWidth / 2) - ($("#bottombar").width() / 2) + "px",
-                        "bottom": '10px',//window.innerHeight - ($("#bottombar").height() + 10) + "px",
+                        "top": window.innerHeight - ($("#bottombar").height() + 10) + "px",
                         "visibility": "visible"
                     });
 
                     $("#rightbar").css({
-                        "right": '50px',//window.innerWidth - ($("#topbar").width() / 2) + "px",
+                        "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
                         "visibility": "visible"
                     });
 
                     $("#righttopbar").css({
-                        "right":'50px', //(window.innerWidth) - ($("#topbar").width()) + "px",
-                        "top": ($("#topbar").height() / 2) + "px",
+                        "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
+                        "top": 20 + "px",
                         "visibility": "visible"
                     });
 
@@ -444,7 +427,7 @@
                                     
                                     url: "server_scripts/checkUniqueName.php",
                                     cache: false,
-                                    data: {name: name.val()}, 
+                                    data: {name: name.val()},
                                     success: function(data) {
                                         if (data != "0") {
                                             showErrorMessage("Error. Name '" + name.val() + "' exists.");
@@ -462,18 +445,18 @@
                         modal: true,
                         buttons: {
                             /*"Test": function() {
-                                // TEST ONLY
-                                var name = $("#name");
-                                $.ajax({
-                                    type: "POST",
-                                    url: "server_scripts/checkUniqueName.php",
-                                    cache: false,
-                                    data: {name: name.val()}, 
-                                    success: function(data) {
-                                        console.log(data);
-                                    }
-                                });
-                            },*/
+// TEST ONLY
+var name = $("#name");
+$.ajax({
+type: "POST",
+url: "server_scripts/checkUniqueName.php",
+cache: false,
+data: {name: name.val()},
+success: function(data) {
+console.log(data);
+}
+});
+},*/
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
                                 
@@ -545,7 +528,7 @@
                     });
                     
                     iconRenderer = new THREE.WebGLRenderer({
-                                                            preserveDrawingBuffer: true,   // required to support .toDataURL()
+                                                            preserveDrawingBuffer: true, // required to support .toDataURL()
                                                             antialias: true
                                                            });
                     iconRenderer.setSize(235, 235);
@@ -693,7 +676,6 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -726,9 +708,9 @@
                         removeFromListOfOperations();
                     }
                 } else {
-                    if (!OPERATED  && (!CLICKED[0] || !CLICKED[1])) {
+                    if (!OPERATED && (!CLICKED[0] || !CLICKED[1])) {
                         showErrorMessage("Error. Select two objects.");
-                    } else {                      
+                    } else {
                         
                         
                         var first_bsp;
@@ -746,15 +728,15 @@
                             first_bsp = new ThreeBSP(firstObject);
                             second_bsp = new ThreeBSP(secondObject);
                                  
-                                 removeFromListOfOperations(); 
-                        } else {                      
+                                 removeFromListOfOperations();
+                        } else {
                         
                             firstObject = CLICKED[0].clone();
                             secondObject = CLICKED[1].clone();
                             first_bsp = new ThreeBSP(CLICKED[0]);
                             second_bsp = new ThreeBSP(CLICKED[1]);
-                            OPERATED = true;                            
-                        } 
+                            OPERATED = true;
+                        }
                             if ($(element).attr('id') == "union") {
                                 nameOfOperation = "Union";
                                 result_bsp = first_bsp.union(second_bsp);
@@ -816,9 +798,9 @@
                             
                             //resultObj.pickable = true;
                             //resultObj.visible = true;
-                            resultObj.name = "undef"; 
+                            resultObj.name = "undef";
                             
-                            if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
+                            if ($("#BBox").prop("checked")) resultObj.bbox.setVisibility(true);
                             
                             
                             objectScene.add(resultObj);
@@ -837,7 +819,7 @@
                              
                             saveAtListOfOperations(newOperation.id + 1 + ". " + newOperation.type);
 
-                            //resultObj.oldColor = pickedObject.material.color.getHex(); 
+                            //resultObj.oldColor = pickedObject.material.color.getHex();
                             resultObj.material.color.setHex( 0x008000 );
                             
                             CLICKED[0] = resultObj;
@@ -934,8 +916,8 @@
 
                         if (!CLICKED[0] && !CLICKED[1]) {
                             
-                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x008000 ); 
+                            pickedObject.oldColor = pickedObject.material.color.getHex();
+                            pickedObject.material.color.setHex( 0x008000 );
                             
                             CLICKED[0] = pickedObject;
                             selectedObj.push((pickedObject.clone()));
@@ -943,7 +925,7 @@
                         }
                         else if (CLICKED[0] == pickedObject) {
                             
-                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
+                            pickedObject.material.color.setHex( pickedObject.oldColor );
 
                             CLICKED[0] = null;
                             selectedObj.shift();
@@ -951,8 +933,8 @@
                         }
                         else if (!CLICKED[1]) {
                             
-                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x004080 ); 
+                            pickedObject.oldColor = pickedObject.material.color.getHex();
+                            pickedObject.material.color.setHex( 0x004080 );
                             
                             CLICKED[1] = pickedObject;
                             selectedObj.push((pickedObject.clone()));
@@ -960,7 +942,7 @@
                         }
                         else if (CLICKED[1] == pickedObject) {
                             
-                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
+                            pickedObject.material.color.setHex( pickedObject.oldColor );
                             
                             CLICKED[1] = null;
                             selectedObj.pop();
@@ -970,8 +952,8 @@
                         }
                         else {
                             
-                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x008000 ); 
+                            pickedObject.oldColor = pickedObject.material.color.getHex();
+                            pickedObject.material.color.setHex( 0x008000 );
                             
                             CLICKED[0] = pickedObject;
                             selectedObj.unshift((pickedObject.clone()));
@@ -1122,7 +1104,7 @@
                             CLICKED[0].material.emissive.setHex(0x000000);
                             if (CLICKED[1] != null)
                             CLICKED[1].material.emissive.setHex(0x000000);
-                            CLICKED.length = 0;                             
+                            CLICKED.length = 0;
                             selectedObj.length = 0;
                             objectScene.remove(PICKED);
                             document.getElementById("dragging").click();
@@ -1170,7 +1152,7 @@
                             }
                             else {
 
-                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld); 
+                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld);
                                 actionPlane.setFromNormalAndCoplanarPoint(MOVING.dir, sizingPos);
                             }
 
@@ -1178,7 +1160,7 @@
                             projector.unprojectVector(vector, camera);
                             var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                             var intersectPoint = ray.intersectPlane(actionPlane);
-                            offsetVector.copy(intersectPoint).sub(new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld)); 
+                            offsetVector.copy(intersectPoint).sub(new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld));
                         }
                         else if (pickRef instanceof OSMEX.ScaleCube) {
 
@@ -1233,6 +1215,8 @@
                 event.preventDefault();
                 if (event.button == 0) {
 
+                    if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();
+                    
                     if (SIZING) {
 
                         SIZING.restoreDefaultLength();
@@ -1241,6 +1225,7 @@
                     if (SCALING)
                         SCALING.restoreDefaultScale();
 
+                    BUILDING = null;
                     DRAGGING = null;
                     SIZING = null;
                     SCALING = null;

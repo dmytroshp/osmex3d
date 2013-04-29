@@ -89,6 +89,7 @@ HERE;
                     </div>\
                 </div>\
              </div>";
+            var tabSelected = 1;
             $(document).ready(function(){
                 $(document).tooltip({
                     items: ".prev",
@@ -108,15 +109,17 @@ HERE;
                 $(".accordionContainer").tabs();
                 //$("#objectEditor").tabs();
 //         Calculating height for containers                         
-                var heightObj = $(window).height()*0.95;
+                var heightObj = $(window).height()*0.97;
                 $("#sidebar").css("height", heightObj);
                 $("#content").css("height", heightObj);
-                $(".accordionContainer").css("height", heightObj-100);
+                $(".accordionContainer").css("height", heightObj-202);
                 $("#objectEditor").height($("#content").height() - 8);
 //         EVENT HANDLERS
 //            1. Event handler for flip
                 $(".flip").click(function(){
-                    $(this).next(".slidingPanel").slideToggle(500);
+                    $(this).next(".slidingPanel").slideToggle(500, function(){
+                        $(this).next().toggleClass("closed");
+                    });
                 });
 //            2. Event handler for search input (sketches tab)
                 
@@ -169,7 +172,8 @@ HERE;
                 });
                 
                 $("#accSearch").keyup(function (){
-                    $.ajax({
+                    if(tabSelected===1){
+                        $.ajax({
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
@@ -183,10 +187,51 @@ HERE;
                             });          
                         }
                     }); //end of ajax
+                    }
+                    if(tabSelected===2){
+                        $.ajax({
+                            url:"server_scripts/getTexture.php?mode=search&from=0&to=15&qw="+$("#accSearch").val(),
+                            async: true,
+                            cache: false,
+                            dataType:'json',
+                            success:function(result)
+                            {
+                                var str="";
+                                for (i in result){
+                                    str+="<div class='imgContainer'>";
+                                    str+="<img class='prev' src='"+result[i].thumbnail+"'>";
+                                    str+="<div class='desc'>"+result[i].name+"</div></div>";
+                                }
+                                if(str==="")
+                                {
+                                    $("#txt").html("<p style='font-size: 1.1em;'>no textures found</p>");
+                                }
+                                else
+                                {
+                                    $("#txt").html(str);
+                                }
+                                $(".imgContainer").mouseenter(function(){
+                                    $(this).css("cursor", "pointer");
+                                });
+                                $(".imgContainer").mouseleave(function(){
+                                    $(this).css("cursor", "default");
+                                });
+                            }
+                        });
+                    }
+                    
                 }); //end of search input handler
 //            3. Event handler for button "Collapse All"  
                 $("#collapseImg").click(function (){
-                    $(".slidingPanel").slideToggle("fast");
+                    var i=0;
+                    $(".slidingPanel").each(function(index){
+                        if($(this).css("display")==="block")
+                            i++;
+                    });
+                    if(i)
+                        $(".slidingPanel").slideUp("fast");
+                    else
+                        $(".slidingPanel").slideDown("fast");
                 });
 //            4. Event handler for mode selector            
                 $("#mode").change(function (){
@@ -304,11 +349,41 @@ HERE;
 //           6. Image Container handlers                
                 $(".imgContainer").mouseenter(function(){
                     $(this).css("cursor", "pointer");
-                    $(this).css("")
                 });
                 $(".imgContainer").mouseleave(function(){
                     $(this).css("cursor", "default");
                 });
+//           7. Search handler
+                $("#sketchTab").click(function (){
+                    tabSelected = 1;
+                     $("#collapseImg").css("display","block");
+                });
+                $("#txtTab").click(function(){
+                    tabSelected = 2;
+                    $("#collapseImg").css("display","none");
+                    $.ajax({
+                            url:"server_scripts/getTexture.php?mode=thumbnails&from=0&to=15&qw=f",
+                            async: true,
+                            cache: false,
+                            dataType:'json',
+                            success:function(result)
+                            {
+                                var str="";
+                                for (i in result){
+                                    str+="<div class='imgContainer'>";
+                                    str+="<img class='prev' src='"+result[i].thumbnail+"'>";
+                                    str+="<div class='desc'>"+result[i].name+"</div></div>";
+                                }
+                                $("#txt").html(str);
+                                $(".imgContainer").mouseenter(function(){
+                                    $(this).css("cursor", "pointer");
+                                });
+                                $(".imgContainer").mouseleave(function(){
+                                    $(this).css("cursor", "default");
+                                });
+                            }
+                        }); 
+                });    
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
                 $("#tabSketch").css("display","block");
@@ -329,7 +404,7 @@ HERE;
         <body>
             <div id="mainContainer">
                 <div id="sidebar">
-		    <div id="logo"><img src="img/logo.jpg" height="50" width="100"></div>
+		    <div id="logo"><img src="img/logo.png" height="70" width="60"></div>
                     <div id="searchDivc">
                     <div id="osmSearch">
                         <form id="osmSearchForm">
@@ -338,10 +413,13 @@ HERE;
                         </form>
                     </div>
                     </div>
+                    <div>
+                        <p id="description">Here is some description...You can add here what you want (height of this text - 80px maximum)</p>
+                    </div>
                     <div class="accordionContainer">
                         <ul>
-                        <li><a href="#acc">Sketches</a></li>
-                        <li><a href="#txt">Textures</a></li>
+                        <li><a id="sketchTab" href="#acc">Sketches</a></li>
+                        <li><a id="txtTab" href="#txt">Textures</a></li>
                         </ul>
                         <img id="collapseImg" src="img/collapse.png">
                         <input id="accSearch" type="search" placeholder="Start typing a name here...">
@@ -365,7 +443,7 @@ HERE;
                             }
                             ?>
                         </div>
-                        <div id="txt" class="ui-widget ui-widget-content ui-corner-all">
+                        <div id="txt" class="accordion ui-widget ui-widget-content ui-corner-all">
                             <?php
                             
                             ?>

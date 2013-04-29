@@ -38,7 +38,7 @@ foreach ($pack as $region) {
     }
     $uid=  mysql_insert_id();
     //mysql_close($connection);
-    $prefix=$_SERVER['DOCUMENT_ROOT'].'/'.TEXTURE_PATH."/".$uid."_".$region['name'];
+    $prefix='../'.TEXTURE_PATH."/".$uid."_".$region['name'];
     $pattern="/data:image\/(png|jpeg|jpg|gif|tiff|tif);base64,(.*)/i";
     if(preg_match($pattern, $region['dataurl'],$match))
     {

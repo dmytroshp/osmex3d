@@ -503,8 +503,8 @@ this.loaded = function () {
 					//Faces
                 	for(ix=0;ix<8;ix++){//collumn
                 	   for(iy=0;iy<8;iy++){//row of quads
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy,9*ix+iy+1,9*ix+iy+9));
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+1,9*ix+iy+10,9*ix+iy+9));
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+1,9*ix+iy));
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+10,9*ix+iy+1));
 	                	                }
                 					}
 
@@ -513,14 +513,14 @@ this.loaded = function () {
                 	for(v=1.0;v>0;v-=step){
                 	  for(u=0.0;u<1;u+=step){
                 	tile.triangleGeometry.faceVertexUvs[0].push( [
-                            new THREE.Vector2(u, v) ,
+                            new THREE.Vector2(u, v-step) ,
                             new THREE.Vector2(u+step, v) ,
-                			new THREE.Vector2(u, v-step)
+                			new THREE.Vector2(u, v)
                         ] );
                 	tile.triangleGeometry.faceVertexUvs[0].push( [
-                            new THREE.Vector2(u+step, v ) ,
+                            new THREE.Vector2(u, v-step) ,
                             new THREE.Vector2(u+step, v-step) ,
-                            new THREE.Vector2(u, v-step) 
+                            new THREE.Vector2(u+step, v )
                         ] );
                 		                      }
 	                	                   }			
@@ -822,7 +822,7 @@ this.loaded = function () {
 				//'map':texture,
 				'map': arrTex[id],
 				//wireframe: true,
-				side:THREE.DoubleSide//,
+				//side:THREE.DoubleSide//,
                 //'overdraw': false
 				                });				
 
