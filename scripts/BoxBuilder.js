@@ -16,9 +16,9 @@ OSMEX.BoxBuilder = function ( ) {
     this.MIN_WIDTH = 1.0;
     this.MIN_HEIGHT = 1.0;
     
-    this.MAX_LENGTH = 100.0;
-    this.MAX_WIDTH = 100.0;
-    this.MAX_HEIGHT = 100.0;
+    this.MAX_LENGTH = 300.0;
+    this.MAX_WIDTH = 300.0;
+    this.MAX_HEIGHT = 300.0;
     
     this.MAX_DELTA_HEIGHT = (this.MAX_HEIGHT - this.MIN_HEIGHT) / 2;
     
