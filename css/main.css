@@ -108,6 +108,11 @@ body
      bottom: 5px;
      top: 45px;
      border: 1px #cccccc solid;
+     font-family: Monospace;
+     background-color: #f0f0f0;
+     margin: 0px;
+     overflow: hidden;
+     padding: 0px;
  }
  #searchDivc{
      position: absolute;

@@ -1,1 +1,79 @@
-<b>Object editor place</b>
+<div id="leftbar" style="visibility:hidden;display:inline;float:left;">
+        <div class="list1" style="width:180px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <select id="listOfOperations" size="5" style="width:180px;" >
+            </select>
+        </div>
+
+        <div id="rollback" class="group3" style="width:48px;height:48px;float:left;">
+            &nbsp;
+        </div>
+
+    </div>
+
+    <div id="topbar" style="visibility:hidden;display:inline;float:right;">
+        <div id ="default" style="float:left;">
+            <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+        </div>
+
+        <div id="tochange" style="float:left;">
+            <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="scaling" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="rotating" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="deleting" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+        </div>
+        <div id="build" style="float:left;">
+            <div id="build_box" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
+    <div id="righttopbar" style="visibility:hidden;display:block;text-align:left;">
+        <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Display bounding boxes</label>
+    </div>
+
+    <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
+        <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <img src='img/cube.png'>
+        </div>
+        <br/>
+        <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <img src='img/cylinder.png'>
+        </div>
+        <br/>
+        <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+            <img src='img/sphere.png'>
+        </div>
+
+    </div>
+
+    <div id="bottombar" style="visibility:hidden;display:inline;float:right;">
+        <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:48px;height:48px;float:left;">
+            &nbsp;
+        </div>
+        <div id="complement_1-2" class="group3" title="Difference. Subtraction of one object from another (first object is subtracted by second one)." style="width:48px;height:48px;float:left;">
+            &nbsp;
+        </div>
+        <div id="complement_2-1" class="group3" title="Difference. Subtraction of one object from another (second object is subtracted by first one)." style="width:48px;height:48px;float:left;">
+            &nbsp;
+        </div>
+        <div id="intersection" class="group3" title="Intersection. Portion common to both objects." style="width:48px;height:48px;float:left;">
+            &nbsp;
+        </div>
+
+    </div>
+    <div id="right-bottombar" style="visibility:hidden;display:inline;float:right;">
+        <div id="publish" class="group4" style="width:200px;height:50px;float:left;">
+            &nbsp;
+        </div>
+    </div>
