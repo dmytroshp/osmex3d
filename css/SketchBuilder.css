@@ -11,8 +11,8 @@
 #sketchBuilder fieldset { padding:0; border:0; margin-top:25px; }
 #sketchBuilder div#users-contain { width: 350px; margin: 20px 0; }
 #sketchBuilder #topbar {
-    position:absolute;
-    top:10px;
+    position:absolute; 
+    top:10px;               
 }
 #sketchBuilder #bottombar {
     position:absolute;
@@ -28,7 +28,122 @@
 }
 #sketchBuilder #righttopbar {
     position:absolute;
-}
+    font-size: 10px;
+}   
 #sketchBuilder #content {
     position:absolute;
+}
+#sketchBuilder #dragging {
+    background-image: url('../img/48x48/6.png');               
+}
+#sketchBuilder #dragging:hover {
+    background-image: url('../img/48x48/6_over.png');               
+}                         
+#sketchBuilder #dragging.selected
+{
+    background-image: url('../img/48x48/6_pressed.png');               
+}
+
+#sketchBuilder #moving {
+    background-image: url('../img/48x48/2.png');               
+}
+#sketchBuilder #moving:hover {
+    background-image: url('../img/48x48/2_over.png');               
+}                        
+#sketchBuilder #moving.selected
+{
+    background-image: url('../img/48x48/2_pressed.png');               
+}
+
+#sketchBuilder #scaling {
+    background-image: url('../img/48x48/3.png');               
+}
+#sketchBuilder #scaling:hover {
+    background-image: url('../img/48x48/3_over.png');               
+}                        
+#sketchBuilder #scaling.selected
+{
+    background-image: url('../img/48x48/3_pressed.png');               
+}
+
+#sketchBuilder #rotating {
+    background-image: url('../img/48x48/5.png');               
+}
+#sketchBuilder #rotating:hover {
+    background-image: url('../img/48x48/5_over.png');               
+}                        
+#sketchBuilder #rotating.selected
+{
+    background-image: url('../img/48x48/5_pressed.png');               
+}
+
+#sketchBuilder #deleting {
+    background-image: url('../img/48x48/1.png');               
+}
+#sketchBuilder #deleting:hover {
+    background-image: url('../img/48x48/1_over.png');               
+}                        
+#sketchBuilder #deleting.selected
+{
+    background-image: url('../img/48x48/1_pressed.png');               
+}
+
+#sketchBuilder #build_box {
+    background-image: url('../img/48x48/7.png');               
+}
+#sketchBuilder #build_box:hover {
+    background-image: url('../img/48x48/7_over.png');               
+}                        
+#sketchBuilder #build_box.selected
+{
+    background-image: url('../img/48x48/7_pressed.png');               
+}
+
+#sketchBuilder #publish {
+    background-image: url('../img/publish.png');               
+}
+#sketchBuilder #publish:hover {
+    background-image: url('../img/publish_hovered.png');               
+}
+#sketchBuilder #union {
+    background-image: url('../img/48x48/8.png');  
+}
+#sketchBuilder #union:hover {
+    background-image: url('../img/48x48/8_over.png');  
+}
+#sketchBuilder #union.selected {
+    background-image: url('../img/48x48/8_pressed.png');  
+}
+#sketchBuilder #complement_1-2 {
+    background-image: url('../img/48x48/10.png');  
+}
+#sketchBuilder #complement_1-2:hover {
+    background-image: url('../img/48x48/10_over.png');  
+}
+#sketchBuilder #complement_1-2.selected {
+    background-image: url('../img/48x48/10_pressed.png');  
+}
+#sketchBuilder #complement_2-1 {
+    background-image: url('../img/48x48/9.png');  
+}
+#sketchBuilder #complement_2-1:hover {
+    background-image: url('../img/48x48/9_over.png');  
+}
+#sketchBuilder #complement_2-1.selected {
+    background-image: url('../img/48x48/9_pressed.png');  
+}
+#sketchBuilder #intersection {
+    background-image: url('../img/48x48/11.png');  
+}
+#sketchBuilder #intersection:hover {
+    background-image: url('../img/48x48/11_over.png');  
+}
+#sketchBuilder #intersection.selected {
+    background-image: url('../img/48x48/11_pressed.png');  
+}
+#sketchBuilder #rollback {
+    background-image: url('../img/48x48/12.png');  
+}
+#sketchBuilder #rollback:hover {
+    background-image: url('../img/48x48/12_over.png');  
 }

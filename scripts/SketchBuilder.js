@@ -53,7 +53,14 @@ function prepareSketchBuilder()
 
                 container = document.createElement('div');
                 $('#sketchBuilder').append(container);
-
+                
+                $('#sketchBuilder').mouseenter(function(){
+                    cameraController.enabled=true;
+                });
+                $('#sketchBuilder').mouseleave(function(){
+                    cameraController.enabled=false;
+                });
+                
                 $(document).ready(function() {
                     $.fn.preload = function() {
                         this.each(function(){
@@ -61,19 +68,19 @@ function prepareSketchBuilder()
                         });
                     }
                     
-                    $(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
-                        'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
-                        'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
-                        'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
-                        'img/48x48/5.png', 'img/48x48/5_over.png', 'img/48x48/5_pressed.png',
-                        'img/48x48/6.png', 'img/48x48/6_over.png', 'img/48x48/6_pressed.png',
-                        'img/48x48/7.png', 'img/48x48/7_over.png', 'img/48x48/7_pressed.png',
-                        'img/48x48/8.png', 'img/48x48/8_over.png', 'img/48x48/8_pressed.png',
-                        'img/48x48/9.png', 'img/48x48/9_over.png', 'img/48x48/9_pressed.png',
-                        'img/48x48/10.png', 'img/48x48/10_over.png', 'img/48x48/10_pressed.png',
-                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png',
-                        'img/48x48/12.png', 'img/48x48/12_over.png',
-                        'img/publish.png','img/publish_hovered.png'
+                    $(['../img/48x48/1.png', '../img/48x48/1_over.png', '../img/48x48/1_pressed.png',
+                        '../img/48x48/2.png', '../img/48x48/2_over.png', '../img/48x48/2_pressed.png',
+                        '../img/48x48/3.png', '../img/48x48/3_over.png', '../img/48x48/3_pressed.png',
+                        '../img/48x48/4.png', '../img/48x48/4_over.png', '../img/48x48/4_pressed.png',
+                        '../img/48x48/5.png', '../img/48x48/5_over.png', '../img/48x48/5_pressed.png',
+                        '../img/48x48/6.png', '../img/48x48/6_over.png', '../img/48x48/6_pressed.png',
+                        '../img/48x48/7.png', '../img/48x48/7_over.png', '../img/48x48/7_pressed.png',
+                        '../img/48x48/8.png', '../img/48x48/8_over.png', '../img/48x48/8_pressed.png',
+                        '../img/48x48/9.png', '../img/48x48/9_over.png', '../img/48x48/9_pressed.png',
+                        '../img/48x48/10.png', '../img/48x48/10_over.png', '../img/48x48/10_pressed.png',
+                        '../img/48x48/11.png', '../img/48x48/11_over.png', '../img/48x48/11_pressed.png', 
+                        '../img/48x48/12.png', '../img/48x48/12_over.png',
+                        '../img/publish.png','../img/publish_hovered.png'
                    ]).preload();
                     
                     $("#topbar").css({
@@ -82,14 +89,14 @@ function prepareSketchBuilder()
                     });
                     
                     $("#tochange").css({
-                       "margin-left": 5 + "px"
+                       "margin-left": 5 + "px" 
                     });
                     $("#build").css({
-                       "margin-left": 5 + "px"
+                       "margin-left": 5 + "px" 
                     });
                     
                     $("#listOfOperations").css({
-                       "opacity": 0.7
+                       "opacity":  0.7
                     });
 
                     $("#leftbar").css({
@@ -102,18 +109,18 @@ function prepareSketchBuilder()
 
                     $("#bottombar").css({
                         "left": ($('#sketchBuilder').width() / 2) - ($("#bottombar").width() / 2) + "px",
-                        "top": $('#sketchBuilder').height() - ($("#bottombar").height() + 10) + "px",
+                        "bottom": '10px',//$('#sketchBuilder').height() - ($("#bottombar").height() + 10) + "px",
                         "visibility": "visible"
                     });
 
                     $("#rightbar").css({
-                        "left": $('#sketchBuilder').width() - ($("#topbar").width() / 2) + "px",
+                        "right": '50px',//$('#sketchBuilder').width() - ($("#topbar").width() / 2) + "px",
                         "top": ($('#sketchBuilder').height() / 2) - ($("#topbar").height() / 2 * 5) + "px",
                         "visibility": "visible"
                     });
 
                     $("#righttopbar").css({
-                        "left": ($('#sketchBuilder').width()) - ($("#topbar").width()) + "px",
+                        "right": '50px',//($('#sketchBuilder').width()) - ($("#topbar").width()) + "px",
                         "top": ($("#topbar").height() / 2) + "px",
                         "visibility": "visible"
                     });
@@ -154,7 +161,7 @@ function prepareSketchBuilder()
                                     
                                     url: "server_scripts/checkUniqueName.php",
                                     cache: false,
-                                    data: {name: name.val()},
+                                    data: {name: name.val()}, 
                                     success: function(data) {
                                         if (data != "0") {
                                             showErrorMessage("Error. Name '" + name.val() + "' exists.");
@@ -172,18 +179,18 @@ function prepareSketchBuilder()
                         modal: true,
                         buttons: {
                             /*"Test": function() {
-// TEST ONLY
-var name = $("#name");
-$.ajax({
-type: "POST",
-url: "server_scripts/checkUniqueName.php",
-cache: false,
-data: {name: name.val()},
-success: function(data) {
-console.log(data);
-}
-});
-},*/
+                                // TEST ONLY
+                                var name = $("#name");
+                                $.ajax({
+                                    type: "POST",
+                                    url: "server_scripts/checkUniqueName.php",
+                                    cache: false,
+                                    data: {name: name.val()}, 
+                                    success: function(data) {
+                                        console.log(data);
+                                    }
+                                });
+                            },*/
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
                                 
@@ -255,7 +262,7 @@ console.log(data);
                     });
                     
                     iconRenderer = new THREE.WebGLRenderer({
-                                                            preserveDrawingBuffer: true, // required to support .toDataURL()
+                                                            preserveDrawingBuffer: true,   // required to support .toDataURL()
                                                             antialias: true
                                                            });
                     iconRenderer.setSize(235, 235);
@@ -339,11 +346,11 @@ console.log(data);
 
                 container.appendChild(renderer.domElement);
 
-                document.addEventListener('mousemove', onDocumentMouseMove, false);
-                document.addEventListener('mousedown', onDocumentMouseDown, false);
-                document.addEventListener('mouseup', onDocumentMouseUp, false);
-                document.addEventListener('dblclick', onDocumentDoubleClick, false);
-                window.addEventListener('resize', onWindowResize, false);
+                $('#sketchBuilder')[0].addEventListener('mousemove', onDocumentMouseMove, false);
+                $('#sketchBuilder')[0].addEventListener('mousedown', onDocumentMouseDown, false);
+                $('#sketchBuilder')[0].addEventListener('mouseup', onDocumentMouseUp, false);
+                $('#sketchBuilder')[0].addEventListener('dblclick', onDocumentDoubleClick, false);
+                $('#sketchBuilder')[0].addEventListener('resize', onWindowResize, false);
             }
 
             function saveScene() {
@@ -436,9 +443,9 @@ console.log(data);
                         removeFromListOfOperations();
                     }
                 } else {
-                    if (!OPERATED && (!CLICKED[0] || !CLICKED[1])) {
+                    if (!OPERATED  && (!CLICKED[0] || !CLICKED[1])) {
                         showErrorMessage("Error. Select two objects.");
-                    } else {
+                    } else {                      
                         
                         
                         var first_bsp;
@@ -456,15 +463,15 @@ console.log(data);
                             first_bsp = new ThreeBSP(firstObject);
                             second_bsp = new ThreeBSP(secondObject);
                                  
-                                 removeFromListOfOperations();
-                        } else {
+                                 removeFromListOfOperations(); 
+                        } else {                      
                         
                             firstObject = CLICKED[0].clone();
                             secondObject = CLICKED[1].clone();
                             first_bsp = new ThreeBSP(CLICKED[0]);
                             second_bsp = new ThreeBSP(CLICKED[1]);
-                            OPERATED = true;
-                        }
+                            OPERATED = true;                            
+                        } 
                             if ($(element).attr('id') == "union") {
                                 nameOfOperation = "Union";
                                 result_bsp = first_bsp.union(second_bsp);
@@ -526,9 +533,9 @@ console.log(data);
                             
                             //resultObj.pickable = true;
                             //resultObj.visible = true;
-                            resultObj.name = "undef";
+                            resultObj.name = "undef"; 
                             
-                            if ($("#BBox").prop("checked")) resultObj.bbox.setVisibility(true);
+                            if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
                             
                             
                             objectScene.add(resultObj);
@@ -547,7 +554,7 @@ console.log(data);
                              
                             saveAtListOfOperations(newOperation.id + 1 + ". " + newOperation.type);
 
-                            //resultObj.oldColor = pickedObject.material.color.getHex();
+                            //resultObj.oldColor = pickedObject.material.color.getHex(); 
                             resultObj.material.color.setHex( 0x008000 );
                             
                             CLICKED[0] = resultObj;
@@ -644,8 +651,8 @@ console.log(data);
 
                         if (!CLICKED[0] && !CLICKED[1]) {
                             
-                            pickedObject.oldColor = pickedObject.material.color.getHex();
-                            pickedObject.material.color.setHex( 0x008000 );
+                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
+                            pickedObject.material.color.setHex( 0x008000 ); 
                             
                             CLICKED[0] = pickedObject;
                             selectedObj.push((pickedObject.clone()));
@@ -653,7 +660,7 @@ console.log(data);
                         }
                         else if (CLICKED[0] == pickedObject) {
                             
-                            pickedObject.material.color.setHex( pickedObject.oldColor );
+                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
 
                             CLICKED[0] = null;
                             selectedObj.shift();
@@ -661,8 +668,8 @@ console.log(data);
                         }
                         else if (!CLICKED[1]) {
                             
-                            pickedObject.oldColor = pickedObject.material.color.getHex();
-                            pickedObject.material.color.setHex( 0x004080 );
+                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
+                            pickedObject.material.color.setHex( 0x004080 ); 
                             
                             CLICKED[1] = pickedObject;
                             selectedObj.push((pickedObject.clone()));
@@ -670,7 +677,7 @@ console.log(data);
                         }
                         else if (CLICKED[1] == pickedObject) {
                             
-                            pickedObject.material.color.setHex( pickedObject.oldColor );
+                            pickedObject.material.color.setHex( pickedObject.oldColor ); 
                             
                             CLICKED[1] = null;
                             selectedObj.pop();
@@ -680,8 +687,8 @@ console.log(data);
                         }
                         else {
                             
-                            pickedObject.oldColor = pickedObject.material.color.getHex();
-                            pickedObject.material.color.setHex( 0x008000 );
+                            pickedObject.oldColor = pickedObject.material.color.getHex(); 
+                            pickedObject.material.color.setHex( 0x008000 ); 
                             
                             CLICKED[0] = pickedObject;
                             selectedObj.unshift((pickedObject.clone()));
@@ -832,7 +839,7 @@ console.log(data);
                             CLICKED[0].material.emissive.setHex(0x000000);
                             if (CLICKED[1] != null)
                             CLICKED[1].material.emissive.setHex(0x000000);
-                            CLICKED.length = 0;
+                            CLICKED.length = 0;                             
                             selectedObj.length = 0;
                             objectScene.remove(PICKED);
                             document.getElementById("dragging").click();
@@ -880,7 +887,7 @@ console.log(data);
                             }
                             else {
 
-                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld);
+                                var sizingPos = new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld); 
                                 actionPlane.setFromNormalAndCoplanarPoint(MOVING.dir, sizingPos);
                             }
 
@@ -888,7 +895,7 @@ console.log(data);
                             projector.unprojectVector(vector, camera);
                             var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                             var intersectPoint = ray.intersectPlane(actionPlane);
-                            offsetVector.copy(intersectPoint).sub(new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld));
+                            offsetVector.copy(intersectPoint).sub(new THREE.Vector3().getPositionFromMatrix(MOVING.matrixWorld)); 
                         }
                         else if (pickRef instanceof OSMEX.ScaleCube) {
 
