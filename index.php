@@ -54,42 +54,12 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
         <script type="text/javascript" src="jquery/jquery.color.js"></script>
         <script type="text/javascript" src="jquery/jquery.Jcrop.min.js"></script>
         
-        <script src="threejs/three.js"></script>
-        <script src="threejs/GeometryExporter.js"></script>
-        <script src="threejs/ThreeCSG.js"></script>
-        
-        <script src="scripts/BoundingBox.js"></script>
-        <script src="scripts/ObjectScene.js"></script>
-        <script src="scripts/InterfaceScene.js"></script>
-        <script src="scripts/Grid.js"></script>
-        <script src="scripts/Camera.js"></script>
-        <script src="scripts/CameraController.js"></script>
-        <script src="scripts/Block.js"></script>
-        <script src="scripts/Cube.js"></script>
-        <script src="scripts/ScaleCube.js"></script>
-        <script src="scripts/Arrow.js"></script>
-        <script src="scripts/SizerArrow.js"></script>
-        <script src="scripts/SizerGizmo.js"></script>
-        <script src="scripts/MovingGizmo.js"></script>
-        <script src="scripts/MovingGizmoPlane.js"></script>
-        <script src="scripts/MovingArrow.js"></script>
-        <script src="scripts/Torus.js"></script>
-        <script src="scripts/RotationTorus.js"></script>
-        <script src="scripts/RotationGizmoOverlay.js"></script>
-        <script src="scripts/RotationGizmo.js"></script>
-        <script src="scripts/BoxBuilder.js"></script>
-        <script src="scripts/SketchFactory.js"></script>
-
-        <script src="scripts/AjaxRequests.js"></script>
-        
         <script type="text/javascript" src="scripts/TextureBuilder.prototypes.js"></script>
         <script type="text/javascript" src="scripts/TextureBuilder.js"></script>
-        <script type="text/javascript" src="scripts/SketchBuilder.js"></script>
         
         <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
         <link type="text/css" href="css/jcrop/jquery.Jcrop.min.css" rel="stylesheet" />
         <link type="text/css" href="css/TextureBuilder.css" rel="stylesheet" />
-        <link type="text/css" href="css/SketchBuilder.css" rel="stylesheet" />
         <link rel="stylesheet" href="css/main.css" />
         
         <script type="text/javascript">
@@ -156,7 +126,7 @@ HERE;
                         url:'ajax/mapView.html',
                         activator:function(){
                             var iframe=this.find('iframe');
-                            iframe.css('width',this.width());
+                            iframe.css('width',this.width()-5);
                             iframe.css('height',this.height());
                             if(landscapeMode=='zoom') 
                                 iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&rnd='+Math.random());
@@ -166,7 +136,11 @@ HERE;
                     },
                     tabSketch:{
                         url:'ajax/sketchBuilder.html',
-                        activator:function(){prepareSketchBuilder();}
+                        activator:function(){
+                            var iframe=this.find('iframe');
+                            iframe.css('width',this.width()-5);
+                            iframe.css('height',this.height());
+                        }
                     },
                     tabTxt:{
                         url:'ajax/textureBuilder.html',
@@ -225,6 +199,8 @@ HERE;
                             $("#searchDivc").width(width+150);
                             $("#sidebar").width(width+150);
                             $("#content").css("width", "64%");
+                            $('iframe').css('width',$('iframe').parent().width()-5);
+                            $('iframe').css('height',$('iframe').parent().height());
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
@@ -236,6 +212,8 @@ HERE;
                             $("#searchDivc").width(width-150);
                             $("#sidebar").width(width-150);
                             $("#content").css("width", "75%");
+                            $('iframe').css('width',$('iframe').parent().width()-5);
+                            $('iframe').css('height',$('iframe').parent().height());
                         }
                 });
 //            5. Submit OSM Search Handler
