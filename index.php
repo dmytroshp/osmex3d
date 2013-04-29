@@ -199,6 +199,12 @@ HERE;
                                     str+="<div class='desc'>"+result[i].name+"</div></div>";
                                 }
                                 $("#txt").html(str);
+                                $(".imgContainer").mouseenter(function(){
+                                    $(this).css("cursor", "pointer");
+                                });
+                                $(".imgContainer").mouseleave(function(){
+                                    $(this).css("cursor", "default");
+                                });
                             }
                         });
                     }
@@ -328,7 +334,6 @@ HERE;
 //           6. Image Container handlers                
                 $(".imgContainer").mouseenter(function(){
                     $(this).css("cursor", "pointer");
-                    $(this).css("");
                 });
                 $(".imgContainer").mouseleave(function(){
                     $(this).css("cursor", "default");
@@ -355,6 +360,12 @@ HERE;
                                     str+="<div class='desc'>"+result[i].name+"</div></div>";
                                 }
                                 $("#txt").html(str);
+                                $(".imgContainer").mouseenter(function(){
+                                    $(this).css("cursor", "pointer");
+                                });
+                                $(".imgContainer").mouseleave(function(){
+                                    $(this).css("cursor", "default");
+                                });
                             }
                         }); 
                 });    
