@@ -29,6 +29,8 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
     
     if (this.currentObject !== null) {
         
+        console.log("LOADED");
+        
         this.currentObject.setVisibility(true);
         if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
@@ -54,19 +56,21 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     if (this.currentObject !== null) {
         
         this.remove(this.currentObject);
+        this.currentObject = null;
     }
     
     arrowMode = "building";
     
+    var _this = this;
+    
     this.makeGeometry(objectTypeId, function(geometry)
     {
-        this.currentObject = new OSMEX.Block( geometry, this.buildMaterial );
-        this.currentObject.pickable = false;
-        this.currentObject.setVisibility(false);
-        this.currentObject.name = this.name;
-        //if (this.name !== "cube" || this.name !== "sphere" ||this.name !== "cylinder" ||this.name !== "cone" ||this.name !== "torus" ||this.name !== "tetrahedron")
-        //    this.currentObject.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
-        this.add(this.currentObject);
+        _this.currentObject = new OSMEX.Block( geometry, _this.buildMaterial );
+        _this.currentObject.pickable = false;
+        _this.currentObject.setVisibility(false);
+        _this.currentObject.name = _this.name;
+        _this.currentObject.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
+        _this.add(_this.currentObject);
     });
 };
 
@@ -98,9 +102,11 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId, onGeometryM
     
     // checking geometries cache and request geometry from the server if necessary
     
-    var objGeometry = getCachedGeometry(objectTypeId);
+    var objGeometry = this.getCachedGeometry(objectTypeId);
     
     if (!objGeometry) {
+        
+        var _this = this;
 
         getCustomGeometry(objectTypeId, function(json)
         {  
@@ -109,7 +115,7 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId, onGeometryM
             objGeometry.computeCentroids();
             objGeometry.computeFaceNormals();
 
-            this.geometriesCache[objectTypeId] = objGeometry;
+            _this.geometriesCache[objectTypeId] = objGeometry;
 
             onGeometryMade(objGeometry);
         });
@@ -397,11 +403,13 @@ OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCre
 
     var geometry = this.makeGeometry(objectTypeId);
     
+    var _this = this;
+    
     this.makeGeometry(objectTypeId, function(geometry)
     {
-        var obj = new OSMEX.Block( geometry, this.usualMaterial.clone() );
+        var obj = new OSMEX.Block( geometry, _this.usualMaterial.clone() );
 
-        obj.scale = new THREE.Vector3(this.DEFAULT_SCALE, this.DEFAULT_SCALE, this.DEFAULT_SCALE);
+        obj.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
         
         onObjectCreated(obj);
     });
