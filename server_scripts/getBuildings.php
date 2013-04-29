@@ -8,7 +8,7 @@
     $position_lonend =$_GET['maxlon'];
     $position_lat = $_GET['minlat'];
     $position_latend = $_GET['maxlat'];
-	$tile_id = $_GET['tile_id']; 
+    $tile_id = $_GET['tile_id']; 
     $fullarr = array();
 
 $query= <<<EOD
@@ -22,7 +22,7 @@ EOD;
     while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
 	{
         //printf ("ID: %s  Name: %s", $row["id"], $row["name"]);
-		$t1 = $row["id"];
+        $t1 = $row["id"];
         $t2 = $row["scaleX"];
         $t3 = $row["scaleY"];
         $t4 = $row["scaleZ"];
@@ -31,9 +31,11 @@ EOD;
         $t8 = $row["rotationZ"];
         $t9 = $row["positionLon"];
         $t10 = $row["positionLat"];
-        //$t11 = $row["TypeID"];
+        $t11 = $tow["positionHeight"];
+        $t12 = $row["TypeID"];
         $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
-         "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10/*, "typeObject" => $t11*/);
+         "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10, "positionHeight" => $t11, 
+         "typeObject" => $t12);
     }
     mysql_free_result($result);
 	ob_end_flush();

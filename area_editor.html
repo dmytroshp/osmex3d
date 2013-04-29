@@ -10,7 +10,7 @@
         <script src="scripts/BoundingBox.js"></script>
         <script src="scripts/ObjectScene.js"></script>
         <script src="scripts/InterfaceScene.js"></script>
-        <script src="scripts/Grid.js"></script>
+        <script src="scripts/OsmArea.js"></script>
         <script src="scripts/Camera.js"></script>
         <script src="scripts/CameraController.js"></script>
         <script src="scripts/Block.js"></script>
@@ -192,14 +192,11 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var FIRST_PICKABLE_OBJ = 6;
-            var GRID_SIZE = 60;
-            var MIN_LON = 30.738636;
-            var MIN_LAT = 46.438659;
-            var MAX_LON = 30.744118;
-            var MAX_LAT = 46.441975;
-            var JSON_BUILDINGS = "{\"tile_id\":\"775670321\",\"builds\":[{\"id\":\"974\",\"scaleX\":\"15.002246\",\"scaleY\":\"20\",\"scaleZ\":\"9.441226\",\"rotationX\":\"0\",\"rotationY\":\"3.043413\",\"rotationZ\":\"0\",\"positionLon\":\"30.745653\",\"positionLat\":\"46.47748\"},{\"id\":\"975\",\"scaleX\":\"16.249423\",\"scaleY\":\"20\",\"scaleZ\":\"17.913192\",\"rotationX\":\"0\",\"rotationY\":\"3.035753\",\"rotationZ\":\"0\",\"positionLon\":\"30.74608\",\"positionLat\":\"46.477411\"}]}";
-            
+            var MIN_LON = 30.74217;//30.742171;
+            var MIN_LAT = 46.44087;//46.440271;//46.438659;
+            var MAX_LON = 30.7466;//30.746596;
+            var MAX_LAT = 46.43788;//46.437879;//46.441975;
+
             var container;
 
             var renderer;
@@ -215,7 +212,7 @@
             var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
-            var groundGrid, groundPlane;
+            var osmArea, groundPlane;
 
             var sizerGizmo, rotationGizmo, movingGizmo, actionPlane;
 
@@ -282,18 +279,19 @@
 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
-                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 1500, 1, 1500);
+                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 4000, 1, 4000);
                 camera.rotation.x -= Math.PI / 4;
                 camera.position.z = 100;
-                camera.position.y = 100;
+                camera.position.y = 300;
 
                 cameraController = new OSMEX.CameraController(camera);
                 cameraController.addEventListener('change', onCameraChange);
+                cameraController.maxPolarAngle = Math.PI / 2.1; // limit vertical rotation to prevent rotating under ground
 
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
-                objectScene.fog = new THREE.Fog(0xFBFBFB, 1, 1500);
+                objectScene.fog = new THREE.Fog(0xccf2ff, 1, 4000);
 
                 objectScene.add(new THREE.AmbientLight(0x3f3f3f));
                 interfaceScene.add(new THREE.AmbientLight(0x3f3f3f));
@@ -307,19 +305,11 @@
                 interfaceScene.add(interfaceLight);
 
                 // GROUND
-                groundGrid = new OSMEX.Grid(60, 4);
-                objectScene.add(groundGrid);
+                osmArea = new OSMEX.OsmArea(MIN_LON, MIN_LAT, MAX_LON, MAX_LAT);
+                objectScene.add(osmArea);
 
                 groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
                 objectScene.add(groundPlane);
-                
-                /*var gridGeom = new THREE.PlaneGeometry (120,120,1,1);
-                var gridMaterial = new THREE.MeshBasicMaterial( );
-                gridMaterial.side = THREE.DoubleSide;
-                gridPlane = new THREE.Mesh(gridGeom,gridMaterial);
-                gridPlane.rotation.x = 1.555;
-                gridPlane.visible = false;              
-                objectScene.add(gridPlane);*/
 
                 sizerGizmo = new OSMEX.SizerGizmo();
                 interfaceScene.add(sizerGizmo);
@@ -352,75 +342,62 @@
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                 window.addEventListener('resize', onWindowResize, false);
                 
-                fillEditor(JSON_BUILDINGS);
-            }
+                getBuildings (MIN_LON, MIN_LAT, MAX_LON, MAX_LAT, function(json)
+                {
+                        var ob = jQuery.parseJSON(json);
 
-            function fillEditor(json) {
-                getBuildings (MIN_LON,MIN_LAT,MAX_LON,MAX_LAT);
-                var ob = jQuery.parseJSON(json);
-                for (var i = 0; i < ob.builds.length; i++){
-                    var obj = sketchFactory.createObject(1);
-                    obj.id = ob.builds[i].id;
-                    obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
-                    obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
-                    var position = LanLot2local(ob.builds[i].positionLat, ob.builds[i].positionLon);
-                    obj.position = position;
-                    objectScene.add(obj);
-                    //console.log (obj);
-                }                   
+                        for (var i = 0; i < ob.builds.length; i++) {
+
+                            var obj = sketchFactory.createObject(ob.builds[i].typeObject, function(obj)
+                            {
+                                obj.id = ob.builds[i].id;
+                                obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
+                                obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
+                                obj.position = osmArea.LonLatHeightToXyz(ob.builds[i].positionLon, ob.builds[i].positionLat, ob.builds[i].positionHeight);
+                                objectScene.add(obj);
+                            });
+                        }
+                });
             }
 
             function saveScene() {
-                postScene(objectScene);
-            }
-
-            function coordinates(lat, lon) {
-                this.lat = lat;
-                this.lon = lon;
-            }
-
-            function local2LatLon(vector) {
-
-                var lonDiff = MAX_LON - MIN_LON;
-                var latDiff = MAX_LAT - MIN_LAT;
-                var lonStep = lonDiff / (GRID_SIZE * 2);
-                var latStep = latDiff / (GRID_SIZE * 2);
-                var lon = MIN_LON + ((vector.x + GRID_SIZE) * lonStep);
-                var lat = MAX_LAT - ((vector.z + GRID_SIZE) * latStep);
-                var coords = new coordinates(lat, lon);
-                return coords;
-            }
-            
-            function LanLot2local(lat, lon) {
-
-                var lonDiff = MAX_LON - MIN_LON;
-                var latDiff = MAX_LAT - MIN_LAT;
-                var lonStep = lonDiff / (GRID_SIZE * 2);
-                var latStep = latDiff / (GRID_SIZE * 2);
                 
-                var x = ((lon - MIN_LON) / lonStep) - GRID_SIZE; 
-                var z = ((MAX_LAT - lat) / latStep) - GRID_SIZE; 
-                var vector = new THREE.Vector3(x,0,z);
-                return vector;
-            }
-            
-            function calculateDistance (firstNode, secondNode){
-                return (111.2 * Math.sqrt(Math.pow((firstNode.lat-secondNode.lat),2) + Math.pow((firstNode.lon-secondNode.lon)*Math.cos(Math.PI*firstNode.lat/180),2))*1000);
+               var objArray = new Array();
+
+               for (var i = 0, l = scene.children.length; i < l; i++) {
+
+                    var obj = scene.children[i];
+
+                    if (obj instanceof OSMEX.Block) {
+
+                        if (obj.isDeleted === true) {
+
+                            if (obj.isCreated === false) objArray.push(obj);
+                        }
+                        else if (obj.isCreated === true) {
+
+                            objArray.push(obj);
+                        }
+                        else if (obj.isModified === true) {
+
+                            objArray.push(obj);
+                        }
+                    }
+                }
+
+                ajaxPostScene(objArray, osmArea);
             }
 
             function addBoundingBox() {
-                if ($("#BBox").prop("checked")) {
-                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
-                            objectScene.children[i].bbox.setVisibility(true);
-                        else {
-                            objectScene.children[i].bbox.setVisibility(false);
-                        }
+                
+                for (var i = 0, l = objectScene.children.length; i < l; i++) {
+                    
+                    var obj = objectScene.children[i];
 
-                } else {
-                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
-                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
-                            objectScene.children[i].bbox.setVisibility(false);
+                    if (obj.bbox && obj.visible) {
+
+                        obj.bbox.setVisibility($("#BBox").prop("checked"));
+                    }
                 }
             }
 
@@ -438,17 +415,6 @@
                     boxBuilder.finishBuild();
                 }
             }
-            /*function addObject(element) {
-                //alert($(element).attr('id'));
-                if ($(element).attr('id') != "noarrows") {
-                    BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
-                    BUILDING.Sketch.pickable = false;
-                    BUILDING.position.set(-1000, -1000, -1000);
-                    objectScene.add(BUILDING);
-                }
-            }*/
-
-
 
             function onWindowResize() {
 
@@ -514,19 +480,7 @@
 
                 boxBuilder.onMouseMove(mouse);
                 
-                sketchFactory.onMouseMove(mouse);                
-                /*if (BUILDING) {
-
-                    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-                    projector.unprojectVector(vector, camera);
-                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                    var intersectPoint = ray.intersectPlane(groundPlane);
-
-                    if (intersectPoint !== undefined) {
-
-                        BUILDING.position.copy(intersectPoint);
-                    }
-                }*/
+                sketchFactory.onMouseMove(mouse);
         
                 if (DRAGGING) {
                     
@@ -597,21 +551,36 @@
 
                     var pickedObject = getPickedObject();
                     
-                        if (PICKED != pickedObject) {
-                            if (PICKED) {
-                                if (PICKED.material.emissive) {
-                                    PICKED.material.emissive.setHex(PICKED.oldEmissive);
-                                }
-                            }
-                            PICKED = pickedObject;
-
-                            if (PICKED) {
-                                if (PICKED.material.emissive) {
-                                    PICKED.oldEmissive = PICKED.material.emissive.getHex();
-                                    PICKED.material.emissive.setHex(0xff0000);
-                                }   
-                            }
-                        }
+                    if ( PICKED != pickedObject ) {
+ 
+                         if ( PICKED ) {
+                            
+                            if ( PICKED.material.emissive ) {
+                                
+                                 PICKED.material.emissive.setHex( PICKED.oldEmissive );
+                             }
+                             else {
+                                 
+                                 PICKED.material.color.setHex( PICKED.oldColor );
+                             }
+                         }
+ 
+                         PICKED = pickedObject;
+ 
+                         if ( PICKED ) {
+                             
+                             if ( PICKED.material.emissive ) {
+                                 
+                                 PICKED.oldEmissive = PICKED.material.emissive.getHex();
+                                 PICKED.material.emissive.setHex( 0xff0000 );
+                             }
+                             else {
+                             
+                                 PICKED.oldColor = PICKED.material.color.getHex();
+                                 PICKED.material.color.setHex( 0xffff00 );
+                             }
+                         }
+                     }
                     
                 }
             }
@@ -633,34 +602,6 @@
                         sketchFactory.onLeftClick(mouse);
                         return;
                     }
-                    
-                    
-                    /*if (BUILDING) {
-
-                        var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-                        projector.unprojectVector(vector, camera);
-                        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
-                        var intersectPoint = ray.intersectPlane(groundPlane);
-                        //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-                        //var intersects = raycaster.intersectObject( gridPlane );
-                        
-                        //if ( intersects.length > 0 ) {
-                            console.log ("here")
-                            var object = new OSMEX.SketchBuilder(BUILDING.name);
-                            object.Sketch.position.copy(intersectPoint);
-                            object.Sketch.material.color.setHex(0xffffff);
-                            if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked")) 
-                                object.Sketch.remove(object.Sketch.children[0]);
-                            object.Sketch.id = 0;
-                            object.Sketch.isCreated = true;
-                            object.Sketch.isModified = false;
-                            object.Sketch.isDeleted = false;
-                            objectScene.add(object.Sketch);
-                        //}
-                        objectScene.remove(BUILDING);
-
-                    }*/
-            
 
                     if (PICKED) {
                         
