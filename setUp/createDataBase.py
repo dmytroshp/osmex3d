@@ -35,7 +35,7 @@ CREATE_DATABASE_3 = """CREATE TABLE IF NOT EXISTS objectType (
   id INT NOT NULL auto_increment,
   name varchar(255) NOT NULL,
   CategoryID int(11) NOT NULL,
-  geometryStr TEXT  NOT NULL,
+  geometryStr MEDIUMTEXT NOT NULL,
   PRIMARY KEY  (id)
 );"""
 
