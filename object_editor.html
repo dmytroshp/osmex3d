@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>OSMEX3D Sketch builder</title>
+        <title>OSMEX3D Geometry builder</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <script src="threejs/three.js"></script>
@@ -46,7 +46,7 @@
                     <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
                 </form>\
             </div>";
-            var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
+            var red_alert_template = "<div style='position:absolute;top:5px; left:5px; z-index: 1; width:300px; display:none;' id='message' class='ui-widget'>\
                     <div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
                         <p>\
                         <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
@@ -92,69 +92,69 @@
                 position:absolute;
             }
             #dragging {
-                background-image: url('img/48x48/6.png');               
+                background-image: url('img/48x48/6.jpg');               
             }
             #dragging:hover {
-                background-image: url('img/48x48/6_over.png');               
+                background-image: url('img/48x48/6_over.jpg');               
             }                         
             #dragging.selected
             {
-                background-image: url('img/48x48/6_pressed.png');               
+                background-image: url('img/48x48/6_pressed.jpg');               
             }
 
             #moving {
-                background-image: url('img/48x48/2.png');               
+                background-image: url('img/48x48/2.jpg');               
             }
             #moving:hover {
-                background-image: url('img/48x48/2_over.png');               
+                background-image: url('img/48x48/moving_over.jpg');               
             }                        
             #moving.selected
             {
-                background-image: url('img/48x48/2_pressed.png');               
+                background-image: url('img/48x48/moving_pressed.jpg');               
             }
 
             #scaling {
-                background-image: url('img/48x48/3.png');               
+                background-image: url('img/48x48/3.jpg');               
             }
             #scaling:hover {
-                background-image: url('img/48x48/3_over.png');               
+                background-image: url('img/48x48/scaling_over.jpg');               
             }                        
             #scaling.selected
             {
-                background-image: url('img/48x48/3_pressed.png');               
+                background-image: url('img/48x48/scaling_pressed.jpg');               
             }
 
             #rotating {
-                background-image: url('img/48x48/5.png');               
+                background-image: url('img/48x48/rotating.jpg');               
             }
             #rotating:hover {
-                background-image: url('img/48x48/5_over.png');               
+                background-image: url('img/48x48/rotating_over.jpg');               
             }                        
             #rotating.selected
             {
-                background-image: url('img/48x48/5_pressed.png');               
+                background-image: url('img/48x48/rotating_pressed.jpg');               
             }
 
             #deleting {
-                background-image: url('img/48x48/1.png');               
+                background-image: url('img/48x48/deleting.jpg');               
             }
             #deleting:hover {
-                background-image: url('img/48x48/1_over.png');               
+                background-image: url('img/48x48/deleting_over.jpg');               
             }                        
             #deleting.selected
             {
-                background-image: url('img/48x48/1_pressed.png');               
+                background-image: url('img/48x48/deleting_pressed.jpg');               
             }
 
             #build_box {
-                background-image: url('img/48x48/7.png');               
+                background-image: url('img/48x48/build_box.jpg');               
             }
             #build_box:hover {
-                background-image: url('img/48x48/7_over.png');               
+                background-image: url('img/48x48/build_box_over.jpg');               
             }                        
             #build_box.selected
             {
-                background-image: url('img/48x48/7_pressed.png');               
+                background-image: url('img/48x48/build_box_pressed.jpg');               
             }
             
             #publish {
@@ -162,51 +162,7 @@
             }
             #publish:hover {
                 background-image: url('img/publish_hovered.png');               
-            }
-            #union {
-                background-image: url('img/48x48/8.png');  
-            }
-            #union:hover {
-                background-image: url('img/48x48/8_over.png');  
-            }
-            #union.selected {
-                background-image: url('img/48x48/8_pressed.png');  
-            }
-            #complement_1-2 {
-                background-image: url('img/48x48/10.png');  
-            }
-            #complement_1-2:hover {
-                background-image: url('img/48x48/10_over.png');  
-            }
-            #complement_1-2.selected {
-                background-image: url('img/48x48/10_pressed.png');  
-            }
-            #complement_2-1 {
-                background-image: url('img/48x48/9.png');  
-            }
-            #complement_2-1:hover {
-                background-image: url('img/48x48/9_over.png');  
-            }
-            #complement_2-1.selected {
-                background-image: url('img/48x48/9_pressed.png');  
-            }
-            #intersection {
-                background-image: url('img/48x48/11.png');  
-            }
-            #intersection:hover {
-                background-image: url('img/48x48/11_over.png');  
-            }
-            #intersection.selected {
-                background-image: url('img/48x48/11_pressed.png');  
-            }
-            #rollback {
-                background-image: url('img/48x48/12.png');  
-            }
-            #rollback:hover {
-                background-image: url('img/48x48/12_over.png');  
-            }           
-            
-            
+            }                        
         </style>
     </head>
     <body>
@@ -216,37 +172,30 @@
                 </select>  
             </div>
 
-            <div id="rollback" class="group3" style="width:48px;height:48px;float:left;">
-                &nbsp;
+            <div id="rollback" class="group3" style="width:40px;height:40px;float:left;">
+                <img src='img/rollback.png'>
             </div>
 
         </div>
 
         <div id="topbar" style="visibility:hidden;display:inline;float:right;">
-            <div id ="default" style="float:left;">
-                <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp;
-                </div>
+            <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
             </div>
-            
-            <div id="tochange" style="float:left;">
-                <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp; 
-                </div>
-                <div id="scaling" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp;
-                </div>
-                <div id="rotating" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp;
-                </div>
-                <div id="deleting" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp;
-                </div>
+            <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp; 
             </div>
-            <div id="build" style="float:left;">
-                <div id="build_box" class="group1" style="width:48px;height:48px;float:left;">
-                    &nbsp;
-                </div>
+            <div id="scaling" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="rotating" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="deleting" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
+            </div>
+            <div id="build_box" class="group1" style="width:48px;height:48px;float:left;">
+                &nbsp;
             </div>
         </div>
 
@@ -270,17 +219,17 @@
         </div>
 
         <div id="bottombar" style="visibility:hidden;display:inline;float:right;">            
-            <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:48px;height:48px;float:left;">
-                &nbsp;
+            <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='img/union.png'>
             </div>
-            <div id="complement_1-2" class="group3" title="Difference. Subtraction of one object from another (first object is subtracted by second one)." style="width:48px;height:48px;float:left;">
-                &nbsp;
+            <div id="complement_1-2" class="group3" title="Difference. Subtraction of one object from another (first object is subtracted by second one)." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='img/complement_1-2.png'>
             </div>
-            <div id="complement_2-1" class="group3" title="Difference. Subtraction of one object from another (second object is subtracted by first one)." style="width:48px;height:48px;float:left;">
-                &nbsp;
+            <div id="complement_2-1" class="group3" title="Difference. Subtraction of one object from another (second object is subtracted by first one)." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='img/complement_2-1.png'>
             </div>            
-            <div id="intersection" class="group3" title="Intersection. Portion common to both objects." style="width:48px;height:48px;float:left;">
-                &nbsp;
+            <div id="intersection" class="group3" title="Intersection. Portion common to both objects." style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
+                <img src='img/intersection.png'>
             </div>
 
         </div>
@@ -330,10 +279,6 @@
 
             var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh, imageData;
             
-            var OPERATED = false;
-            var firstObject, secondObject, resultObj;
-            
-            
             init();
             animate();
 
@@ -349,40 +294,18 @@
                         });
                     }
                     
-                    $(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
-                        'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
-                        'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
-                        'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
-                        'img/48x48/5.png', 'img/48x48/5_over.png', 'img/48x48/5_pressed.png',
-                        'img/48x48/6.png', 'img/48x48/6_over.png', 'img/48x48/6_pressed.png',
-                        'img/48x48/7.png', 'img/48x48/7_over.png', 'img/48x48/7_pressed.png',
-                        'img/48x48/8.png', 'img/48x48/8_over.png', 'img/48x48/8_pressed.png',
-                        'img/48x48/9.png', 'img/48x48/9_over.png', 'img/48x48/9_pressed.png',
-                        'img/48x48/10.png', 'img/48x48/10_over.png', 'img/48x48/10_pressed.png',
-                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
-                        'img/48x48/12.png', 'img/48x48/12_over.png',
-                        'img/publish.png','img/publish_hovered.png'
-                   ]).preload();
+                    $(['img/48x48/6.jpg','img/48x48/6_over.jpg','img/48x48/6_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg','img/publish.png','img/publish_hovered.png']).preload();
                     
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
                     });
-                    
-                    $("#tochange").css({
-                       "margin-left": 5 + "px" 
-                    });
-                    $("#build").css({
-                       "margin-left": 5 + "px" 
-                    });
-                    
-                    $("#listOfOperations").css({
-                       "opacity":  0.7
-                    });
+
 
                     $("#leftbar").css({
                         "left": 10 + "px",
                         "top": window.innerHeight - $("#leftbar").height() - 10 + "px",
+                        "opacity": 0.3,
                         "visibility": "visible"
                     });
 
@@ -428,6 +351,7 @@
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
+                        addBoundingBox();
                     });
 
                     $(".group3").tooltip();
@@ -435,25 +359,6 @@
 
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
-                    // мышка
-                    /*myDialog.keyup(function () {
-                         var name = $("#name");
-                        $.ajax({
-                                    type: "POST",
-                                    
-                                    url: "server_scripts/checkUniqueName.php",
-                                    cache: false,
-                                    data: {name: name.val()}, 
-                                    success: function(data) {
-                                        if (data != "0") {
-                                            showErrorMessage("Error. Name '" + name.val() + "' exists.");
-                                        }
-                                       console.log(data);
-                                    }
-                                        
-                        });
-                    });*/
-  
                     myDialog.dialog({
                         autoOpen: false,
                         height: 600,
@@ -461,43 +366,31 @@
                         resizable: false,
                         modal: true,
                         buttons: {
-                            /*"Test": function() {
+                            "Test": function() {
                                 // TEST ONLY
-                                var name = $("#name");
-                                $.ajax({
-                                    type: "POST",
-                                    url: "server_scripts/checkUniqueName.php",
-                                    cache: false,
-                                    data: {name: name.val()}, 
-                                    success: function(data) {
-                                        console.log(data);
-                                    }
-                                });
-                            },*/
+                                saveScene();
+                            },
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
+                                var geometryExporter = new THREE.GeometryExporter();
+                                var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
+
+                                imageData = iconRenderer.domElement.toDataURL("image/png");
+
+                                ajaxNewSketch(name, category, serializedGeometry, imageData);
                                 
-                                                                
-                               
-                                    
-                                    var geometryExporter = new THREE.GeometryExporter();
-                                    var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
+                                while (selectedObj.length > 0) {
+                                    selectedObj.pop();
+                                }
+                                CLICKED[0].material.emissive.setHex(0x000000);
+                                if (CLICKED[1] != null) {
+                                    CLICKED[1].material.emissive.setHex(0x000000);
+                                }
+                                CLICKED[0] = null;
+                                CLICKED[1] = null;
+                                
+                                $(this).dialog("close");
 
-                                    imageData = iconRenderer.domElement.toDataURL("image/png");
-
-                                    ajaxNewSketch(name, category, serializedGeometry, imageData);
-
-                                    while (selectedObj.length > 0) {
-                                        selectedObj.pop();
-                                    }
-                                    CLICKED[0].material.emissive.setHex(0x000000);
-                                    if (CLICKED[1] != null) {
-                                        CLICKED[1].material.emissive.setHex(0x000000);
-                                    }
-                                    CLICKED[0] = null;
-                                    CLICKED[1] = null;
-
-                                    $(this).dialog("close");
                             },
                             Cancel: function() {
                                 
@@ -529,7 +422,6 @@
                             iconCameraController.enabled = false;
                             cameraController.enabled = true;
                         }
-                        
                     });
 
                     $(".group4").click(function() {
@@ -656,7 +548,7 @@
                 alert.appendTo('body');
                 //$("#msgtext").html(text);
                 alert.fadeIn(600, function() {
-                    timeout_id = setTimeout(hideMessage, 440);
+                    timeout_id = setTimeout(hideMessage, 4400);
                 });
             }
 
@@ -680,20 +572,23 @@
             }
 
             function addBoundingBox() {
-                for (var i = 0, l = objectScene.children.length; i < l; i++) {
-                    
-                    var obj = objectScene.children[i];
+                if ($("#BBox").prop("checked")) {
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].visible != false && objectScene.children[i].bbox.visible == false )
+                            objectScene.children[i].bbox.setVisibility(true);
+                        else {
+                            objectScene.children[i].bbox.setVisibility(false);
+                        }
 
-                    if (obj.bbox && obj.visible) {
-
-                        obj.bbox.setVisibility($("#BBox").prop("checked"));
-                    }
+                } else {
+                    for (var i = FIRST_PICKABLE_OBJ, l = objectScene.children.length; i < l; i++)
+                        if (objectScene.children[i].geometry != null && objectScene.children[i].bbox.visible == true)
+                            objectScene.children[i].bbox.setVisibility(false);
                 }
             }
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -706,7 +601,7 @@
                 }
             }
 
-             function buildNewGeometryElement(element) {
+            function buildNewGeometryElement(element) {
                 if ($(element).attr('id') == "rollback") {
 
                     if (operationStack.length > 0) {
@@ -726,124 +621,61 @@
                         removeFromListOfOperations();
                     }
                 } else {
-                    if (!OPERATED  && (!CLICKED[0] || !CLICKED[1])) {
+                    if (!CLICKED[0] || !CLICKED[1]) {
                         showErrorMessage("Error. Select two objects.");
-                    } else {                      
-                        
-                        
-                        var first_bsp;
-                        var second_bsp;
-                        
+                    } else {
+
+                        var first_bsp = new ThreeBSP(CLICKED[0]);
+                        var second_bsp = new ThreeBSP(CLICKED[1]);
+
                         var nameOfOperation, result_bsp;
                         var scale;
                         
-                        
-                        if (OPERATED) {
-                             resultObj.visible = false;
-                            objectScene. remove(resultObj);
-                            operationStack.shift();
-                            //resultObj = null;
-                            first_bsp = new ThreeBSP(firstObject);
-                            second_bsp = new ThreeBSP(secondObject);
-                                 
-                                 removeFromListOfOperations(); 
-                        } else {                      
-                        
-                            firstObject = CLICKED[0].clone();
-                            secondObject = CLICKED[1].clone();
-                            first_bsp = new ThreeBSP(CLICKED[0]);
-                            second_bsp = new ThreeBSP(CLICKED[1]);
-                            OPERATED = true;                            
-                        } 
-                            if ($(element).attr('id') == "union") {
-                                nameOfOperation = "Union";
-                                result_bsp = first_bsp.union(second_bsp);
-                                scale = firstObject.scale;
-                            } else if ($(element).attr('id') == "intersection") {
-                                nameOfOperation = "Intersection";
-                                result_bsp = first_bsp.intersect(second_bsp);
-                                scale = firstObject.scale;
-                            } else if ($(element).attr('id') == "complement_2-1") {
-                                nameOfOperation = "Complement(2-1)";
-                                result_bsp = second_bsp.subtract(first_bsp);
-                                scale = firstObject.scale;
-                            } else if ($(element).attr('id') == "complement_1-2") {
-                                nameOfOperation = "Complement(1-2)";
-                                result_bsp = first_bsp.subtract(second_bsp);
-                                scale = firstObject.scale;
-                            }
+                        if ($(element).attr('id') == "union") {
+                            nameOfOperation = "Union";
+                            result_bsp = first_bsp.union(second_bsp);
+                            scale = CLICKED[0].scale;
+                        } else if ($(element).attr('id') == "intersection") {
+                            nameOfOperation = "Intersection";
+                            result_bsp = first_bsp.intersect(second_bsp);
+                            scale = CLICKED[0].scale;
+                        } else if ($(element).attr('id') == "complement_2-1") {
+                            nameOfOperation = "Complement(2-1)";
+                            result_bsp = second_bsp.subtract(first_bsp);
+                            scale = CLICKED[1].scale;
+                        } else if ($(element).attr('id') == "complement_1-2") {
+                            nameOfOperation = "Complement(1-2)";
+                            result_bsp = first_bsp.subtract(second_bsp);
+                            scale = CLICKED[0].scale;
+                        }
 
-                            var material = new THREE.MeshPhongMaterial({color: 0x000000});
-                            
-                            
-                            
-                            var geometry = result_bsp.toGeometry();
-                        
-                            geometry.computeBoundingBox();
-                            var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x) / 2;
-                            var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y) / 2;
-                            var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z) / 2;
+                        var material = new THREE.MeshPhongMaterial({color: 0xffffff, shading: THREE.SmoothShading});
+                        var resultObj = result_bsp.toMesh(material);
+                        //resultObj.geometry.computeVertexNormals();
 
-                            var resultScale = new THREE.Vector3(scaleX, scaleY, scaleZ);
-                            var resultPosition = geometry.boundingBox.center();
+                        resultObj.scale = scale;
+                        resultObj.pickable = true;
+                        resultObj.visible = true;
+                        resultObj.name = "undef"; 
+                        resultObj.bbox = new OSMEX.BoundingBox(resultObj);
+                        resultObj.bbox.scale = new THREE.Vector3(10,10,10);
+                        resultObj.add(this.bbox);
+                        resultObj.bbox.setVisibility(true);
+                        objectScene.add(resultObj);
 
-                            var rotationMatrix = new THREE.Matrix4().extractRotation(result_bsp.matrix);
-                            var resultRotation = new THREE.Vector3().setEulerFromRotationMatrix( rotationMatrix );
+                        CLICKED[0].visible = false;
+                        CLICKED[1].visible = false;
 
-                            var scaleMatrix = new THREE.Matrix4().makeScale( scaleX, scaleY, scaleZ );
-                            var resultMatrix = new THREE.Matrix4().multiplyMatrices( rotationMatrix, scaleMatrix );
-                            resultMatrix.elements[12] = resultPosition.x;
-                            resultMatrix.elements[13] = resultPosition.y;
-                            resultMatrix.elements[14] = resultPosition.z;
-                            var invResultMatrix = new THREE.Matrix4().getInverse( resultMatrix );
+                        var newSelected = [];
+                        while (selectedObj.length > 0) {
+                            newSelected.push(selectedObj.pop());
+                        }
+                        var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
+                        operationStack.push(newOperation);
+                        saveAtListOfOperations(newOperation.id + 1 + ". " + newOperation.type);
 
-                            for ( var i = 0, il = geometry.vertices.length; i < il; i++ ) {
-
-                                geometry.vertices[i].applyMatrix4(invResultMatrix);
-                            }
-
-                            geometry.computeCentroids();
-                            geometry.computeFaceNormals();
-                            //geometry.computeVertexNormals();
-
-                           resultObj = new OSMEX.Block( geometry, material );
-
-                            resultObj.position = resultPosition.clone();
-                            resultObj.scale = resultScale.clone();
-                            resultObj.rotation = resultRotation.clone();
-                            
-                            
-                            
-                            //resultObj.pickable = true;
-                            //resultObj.visible = true;
-                            resultObj.name = "undef"; 
-                            
-                            if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
-                            
-                            
-                            objectScene.add(resultObj);
-
-                            if (CLICKED[0]) {CLICKED[0].visible = false;CLICKED[0].setVisibility(false);}
-                            
-                            if (CLICKED[1]) {CLICKED[1].visible = false;CLICKED[1].setVisibility(false);}
-
-                            var newSelected = [];
-                            while (selectedObj.length > 0) {
-                                newSelected.push(selectedObj.pop());
-                            }
-                            //var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
-                            var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
-                            operationStack.push(newOperation);
-                             
-                            saveAtListOfOperations(newOperation.id + 1 + ". " + newOperation.type);
-
-                            //resultObj.oldColor = pickedObject.material.color.getHex(); 
-                            resultObj.material.color.setHex( 0x008000 );
-                            
-                            CLICKED[0] = resultObj;
-                            selectedObj.push(resultObj.clone());
-                            CLICKED[1] = null;
-                            OPERATED = true;
+                        CLICKED[0] = null;
+                        CLICKED[1] = null;
                     }
                 }
             }
@@ -938,7 +770,7 @@
                             pickedObject.material.color.setHex( 0x008000 ); 
                             
                             CLICKED[0] = pickedObject;
-                            selectedObj.push((pickedObject.clone()));
+                            selectedObj.push(pickedObject);
                             
                         }
                         else if (CLICKED[0] == pickedObject) {
@@ -955,7 +787,7 @@
                             pickedObject.material.color.setHex( 0x004080 ); 
                             
                             CLICKED[1] = pickedObject;
-                            selectedObj.push((pickedObject.clone()));
+                            selectedObj.push(pickedObject);
                             
                         }
                         else if (CLICKED[1] == pickedObject) {
@@ -971,12 +803,11 @@
                         else {
                             
                             pickedObject.oldColor = pickedObject.material.color.getHex(); 
-                            pickedObject.material.color.setHex( 0x008000 ); 
+                            pickedObject.material.color.setHex( 0x004080 ); 
                             
                             CLICKED[0] = pickedObject;
-                            selectedObj.unshift((pickedObject.clone()));
+                            selectedObj.unshift(pickedObject);
                         }
-                        OPERATED = false;
                     }
 
                 }
@@ -1088,7 +919,6 @@
                              }
                          }
                      }
-                     
                     
                 }
             }
