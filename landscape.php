@@ -221,7 +221,7 @@ function TileBlds () {
 			var initReady=true;
 			var Exist1stTl=false;
 			var UnitToPixelScale;
-			var tileSizeRoot=3454245.2736;// in [m]
+			var tileSizeRoot=40077413.5808;// in [m]
 			var lvlbldactive=17;//-1;
 			var maxidinque=-1;
 			var distfor17=-1;
@@ -275,8 +275,8 @@ function TileBlds () {
 var TLoad = new function () {
     this.maxid=9999999999999;
 	//set 1st coordinates for 1st tileRoots
-	this.startX=-1727122.6368;
-	this.startZ=-1727122.6368;
+	this.startX=-20038706.7904;
+	this.startZ=-20038706.7904;
 	this.stepGrid=(Math.abs(this.startX)*2)/8;
 	this.idforloadroot=-1;
 	this.ReadyForRoot=true;
@@ -466,9 +466,9 @@ this.loaded = function () {
               var _z=lat2tile(cenlat,18)
               var num18trow=Math.pow(2,18)-1
               var _k=tileSizeRoot/num18trow
-              var coordx=_x*_k-1727122.6368
-              var coordz=_z*_k-1727122.6368
-              var tilesize=(lon2tile(maxlon,18)-lon2tile(minlon,18))*13.1769
+              var coordx=_x*_k-20038706.7904
+              var coordz=_z*_k-20038706.7904
+              var tilesize=(lon2tile(maxlon,18)-lon2tile(minlon,18))*152.8832
               var coordy=tilesize*UnitToPixelScale/256  ; //256-na lvl nige512	
               Camera.position.set(coordx, coordy, coordz);
               CameraController.target.x+=coordx
@@ -486,9 +486,9 @@ this.loaded = function () {
               var lon2=tile2lon(_x+1,zoom);
               var numzoomtrow=Math.pow(2,18)-1
               var _k=tileSizeRoot/numzoomtrow
-              var coordx=_x*_k-1727122.6368
-              var coordz=_z*_k-1727122.6368
-              var tilesize=(lon2tile(Math.max(lon2,lon1),zoom)-lon2tile(Math.min(lon2,lon1),zoom))*Math.pow(2,18-zoom)*13.1769
+              var coordx=_x*_k-20038706.7904
+              var coordz=_z*_k-20038706.7904
+              var tilesize=(lon2tile(Math.max(lon2,lon1),zoom)-lon2tile(Math.min(lon2,lon1),zoom))*Math.pow(2,18-zoom)*152.8832
               var coordy=tilesize*UnitToPixelScale/256  ; //256-na lvl nige	
               Camera.position.set(coordx, coordy, coordz);
               CameraController.target.x+=coordx
@@ -699,7 +699,7 @@ this.loaded = function () {
 				       var b=parseInt(jstr.builds[j].id);
 				       //alert(" Build id "+b)
 					   MeshOfBlds[b] = new THREE.Mesh(
-                            new THREE.CubeGeometry(0.25,0.2,0.25),
+                            new THREE.CubeGeometry(2.9,2.32,2.9),
                            //new THREE.MeshBasicMaterial({color: 0x000000, opacity: 1})
 				           new THREE.MeshBasicMaterial({
 				           color: 0xd78254//,
