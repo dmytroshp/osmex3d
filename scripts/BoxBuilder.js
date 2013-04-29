@@ -16,9 +16,9 @@ OSMEX.BoxBuilder = function ( ) {
     this.MIN_WIDTH = 1.0;
     this.MIN_HEIGHT = 1.0;
     
-    this.MAX_LENGTH = 100.0;
-    this.MAX_WIDTH = 100.0;
-    this.MAX_HEIGHT = 100.0;
+    this.MAX_LENGTH = 300.0;
+    this.MAX_WIDTH = 300.0;
+    this.MAX_HEIGHT = 300.0;
     
     this.MAX_DELTA_HEIGHT = (this.MAX_HEIGHT - this.MIN_HEIGHT) / 2;
     
@@ -193,7 +193,7 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
                 var heightVec = intersectPoint.clone().sub(this.centerPos);
                 var height = this.heightNormal.dot(heightVec);
                 
-                if (Math.abs(this.box.scale.y - height) < this.MAX_DELTA_HEIGHT) {
+                //if (Math.abs(this.box.scale.y - height) < this.MAX_DELTA_HEIGHT) {
 
                     this.box.position = this.centerPos.clone();
 
@@ -210,7 +210,7 @@ OSMEX.BoxBuilder.prototype.onMouseMove = function ( mouse ) {
 
                     this.box.scale.y = height;
                     this.text.innerHTML = 'height: ' + height.toFixed(1) + 'm';
-                }
+                //}
             }  
            
         }

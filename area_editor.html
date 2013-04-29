@@ -2,9 +2,10 @@
 <html lang="en">
     <head>
         <title>OSMEX3D Area editor</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        
         <script src="threejs/three.js"></script>
-        <script src="threejs/GeometryExporter.js"></script>
-        <script src="threejs/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
 
         <script src="scripts/BoundingBox.js"></script>
@@ -291,10 +292,11 @@
 
                     $(".save").click(function() {
                         saveScene();
+                        // Here we need to be switched to Landscape
                     });
                     
                     $(".cancel").click(function() {
-                        sketchFactory.stopBuild();
+                        // Here we need to be switched to Landscape
                     });
 
                 });
@@ -373,7 +375,7 @@
                 renderer.autoClear = false;
                 
                 renderer.shadowMapEnabled = true;
-                renderer.shadowMapType = THREE.PCFSoftShadowMap;
+                renderer.shadowMapType = THREE.PCFShadowMap;
 
                 container.appendChild(renderer.domElement);
 
@@ -382,21 +384,21 @@
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                 window.addEventListener('resize', onWindowResize, false);
                 
-                getBuildings (MIN_LON, MIN_LAT, MAX_LON, MAX_LAT, function(json)
+                getBuildings(MIN_LON, MIN_LAT, MAX_LON, MAX_LAT, function(json)
                 {
-                        var ob = jQuery.parseJSON(json);
+                    var ob = jQuery.parseJSON(json);
 
-                        for (var i = 0; i < ob.builds.length; i++) {
+                    for (var i = 0; i < ob.builds.length; i++) {
 
-                            var obj = sketchFactory.createObject(ob.builds[i].typeObject, function(obj)
-                            {
-                                obj.id = ob.builds[i].id;
-                                obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
-                                obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
-                                obj.position = osmArea.LonLatHeightToXyz(ob.builds[i].positionLon, ob.builds[i].positionLat, ob.builds[i].positionHeight);
-                                objectScene.add(obj);
-                            });
-                        }
+                        var obj = sketchFactory.createObject(ob.builds[i].typeObject, function(obj)
+                        {
+                            obj.id = ob.builds[i].id;
+                            obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
+                            obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
+                            obj.position = osmArea.LonLatHeightToXyz(ob.builds[i].positionLon, ob.builds[i].positionLat, ob.builds[i].positionHeight);
+                            objectScene.add(obj);
+                        });
+                    }
                 });
             }
 
@@ -449,7 +451,7 @@
             }
 
             function setArrowsType(element) {
-                //alert($(element).attr('id'));
+                
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -534,12 +536,11 @@
                     projector.unprojectVector(vector, camera);
                     var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
                     var intersectPoint = ray.intersectPlane(groundPlane);
-                    //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-                    //var intersects = raycaster.intersectObject( gridPlane );
                     
-                    //if ( intersects.length > 0 ) {
+                    if (intersectPoint !== undefined) {
+                        
                         DRAGGING.position.copy(intersectPoint.sub(offsetVector));
-                    //}
+                    }
                 }
                 else if (SIZING) {
                     

@@ -19,11 +19,11 @@ OSMEX.MovingGizmoPlane = function ( dir, hex ) {
     
    meshMaterial.side = THREE.DoubleSide;
    
-   var planeGeometry = new THREE.PlaneGeometry(8, 8);
+   var planeGeometry = new THREE.PlaneGeometry(4, 4);
    this.planeFront = new THREE.Mesh( planeGeometry, meshMaterial );
    this.planeBack = new THREE.Mesh( planeGeometry, meshMaterial );
-   this.planeFront.position.set( 0, 0, 4 );
-   this.planeBack.position.set( 0, 0, -4); 
+   this.planeFront.position.set( 0, 0, 2 );
+   this.planeBack.position.set( 0, 0, -2); 
    this.add( this.planeFront );
    this.add( this.planeBack );
    

@@ -29,8 +29,6 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
     
     if (this.currentObject !== null) {
         
-        console.log("LOADED");
-        
         this.currentObject.setVisibility(true);
         if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
         
@@ -48,9 +46,7 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
 
                 var intersector = intersects[i];
 
-                if (intersector.object instanceof OSMEX.Block && intersector.object.visible) {
-                    
-                    console.log("intersector.object.name=", intersector.object.name);
+                if ((intersector.object instanceof OSMEX.Block) && intersector.object.visible) {
 
                     intersectPoint = intersector.point;
                     break;
@@ -428,8 +424,6 @@ function getUnpackedGeometry( packedGeometry ) {
 }
 
 OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCreated ) {
-    
-    var _this = this;
     
     var _this = this;
     
