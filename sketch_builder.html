@@ -65,7 +65,6 @@
                 margin: 0px;
                 overflow: hidden;
             }
-            label, input { display:block; }
             input.text { margin-bottom:12px; width:95%; padding: .4em; }
             fieldset { padding:0; border:0; margin-top:25px; }
             div#users-contain { width: 350px; margin: 20px 0; }
@@ -395,19 +394,19 @@
                     });
 
                     $("#rightbar").css({
-                        "right": '50px',//window.innerWidth - ($("#topbar").width() / 2) + "px",
+                        "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
                         "visibility": "visible"
                     });
 
                     $("#righttopbar").css({
-                        "right": '50px',//(window.innerWidth) - ($("#topbar").width()) + "px",
+                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
                         "top": ($("#topbar").height() / 2) + "px",
                         "visibility": "visible"
                     });
 
                     $("#right-bottombar").css({
-                        "right": '50px',//window.innerWidth - ($("#right-bottombar").width()) - ($("#topbar").width() / 4) + "px",
+                        "left": window.innerWidth - ($("#right-bottombar").width()) - ($("#topbar").width() / 4) + "px",
                         "top": (window.innerHeight) - ($("#right-bottombar").height() + 10) + "px",
                         "visibility": "visible"
                     });
@@ -435,6 +434,7 @@
 
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
+                    // мышка
                     myDialog.keyup(function () {
                          var name = $("#name");
                         $.ajax({
@@ -452,6 +452,7 @@
                                         
                         });
                     });
+  
                     myDialog.dialog({
                         autoOpen: false,
                         height: 600,
@@ -488,9 +489,11 @@
                                     while (selectedObj.length > 0) {
                                         selectedObj.pop();
                                     }
-                                    CLICKED[0].material.emissive.setHex(0x000000);
+                                    CLICKED[0].material.emissive.setHex(0x111111);
+                                    CLICKED[0].material.color.setHex(0x111111);
                                     if (CLICKED[1] != null) {
                                         CLICKED[1].material.emissive.setHex(0x000000);
+                                        CLICKED[0].material.color.setHex(0x111111);
                                     }
                                     CLICKED[0] = null;
                                     CLICKED[1] = null;
@@ -505,6 +508,7 @@
                         open: function( event, ui ) {
                     
                             CLICKED[0].material.emissive.setHex(0x000000);
+                            CLICKED[0].material.color.setHex(0x111111);
                             
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
                             iconScene.add(iconMesh);
@@ -691,7 +695,7 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
+                //if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -718,8 +722,10 @@
                         var tmp;
                         for (var i = 0; i < rollbackOperation.input.length; i++) {
                             tmp = rollbackOperation.input[i];
-                            tmp.material.emissive.setHex(0x000000);
+                            tmp.material.emissive.setHex(0x111111);
+                            tmp.material.color.setHex(0x111111);
                             tmp.visible = true;
+                            objectScene.add(tmp);
                         }
                         removeFromListOfOperations();
                     }
@@ -771,7 +777,7 @@
                                 scale = firstObject.scale;
                             }
 
-                            var material = new THREE.MeshPhongMaterial({color: 0x000000});
+                            var material = new THREE.MeshPhongMaterial();//{color: 0x111111});
                             
                             
                             
@@ -802,18 +808,13 @@
 
                             geometry.computeCentroids();
                             geometry.computeFaceNormals();
-                            //geometry.computeVertexNormals();
 
-                           resultObj = new OSMEX.Block( geometry, material );
+                            resultObj = new OSMEX.Block( geometry, material );
 
                             resultObj.position = resultPosition.clone();
                             resultObj.scale = resultScale.clone();
                             resultObj.rotation = resultRotation.clone();
                             
-                            
-                            
-                            //resultObj.pickable = true;
-                            //resultObj.visible = true;
                             resultObj.name = "undef"; 
                             
                             if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
@@ -1117,9 +1118,9 @@
 
                         if (arrowMode == "deleting") {
                             if (CLICKED[0] != null)
-                            CLICKED[0].material.emissive.setHex(0x000000);
+                            CLICKED[0].material.emissive.setHex(0x000000);                            
                             if (CLICKED[1] != null)
-                            CLICKED[1].material.emissive.setHex(0x000000);
+                            CLICKED[1].material.emissive.setHex(0x000000);                            
                             CLICKED.length = 0;                             
                             selectedObj.length = 0;
                             objectScene.remove(PICKED);
@@ -1231,6 +1232,8 @@
                 event.preventDefault();
                 if (event.button == 0) {
 
+                    if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();
+                    
                     if (SIZING) {
 
                         SIZING.restoreDefaultLength();
