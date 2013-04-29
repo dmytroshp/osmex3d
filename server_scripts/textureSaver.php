@@ -38,7 +38,7 @@ foreach ($pack as $region) {
     }
     $uid=  mysql_insert_id();
     //mysql_close($connection);
-    $prefix=TEXTURE_PATH."/".$uid."_".$region['name'];
+    $prefix=$_SERVER['DOCUMENT_ROOT'].'/'.TEXTURE_PATH."/".$uid."_".$region['name'];
     $pattern="/data:image\/(png|jpeg|jpg|gif|tiff|tif);base64,(.*)/i";
     if(preg_match($pattern, $region['dataurl'],$match))
     {
@@ -57,7 +57,7 @@ foreach ($pack as $region) {
         $image=imagecreatefromstring($data);
         if($image!==FALSE)
         {
-            $thumbnail=  image_resize($image, TWIDTH, THEIGHT);
+            $thumbnail=  image_resize($image, 96, 96);
             imagepng($thumbnail, $prefix.'_mini.png');
         }
             

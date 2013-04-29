@@ -235,7 +235,7 @@ def createRectangle(boundBox, building, database):
                 constant *= -1
             angleOffset = ((abs(angle1) + abs(angle2))/2) * constant
             INSERT_RECTANGLE = "INSERT INTO objectInstance VALUES (null, %f, %f, %f, \
-            %f, %f, %f, %f, %f, %d);" % (X_COORD, Y_COORD, Z_COORD, 0.0, angleOffset, 0.0,
+            %f, %f, %f, %f, %f, 0, %d);" % (X_COORD, Y_COORD, Z_COORD, 0.0, angleOffset, 0.0,
                                          center_x, center_y, 1)
             database.execute(INSERT_RECTANGLE)
         except Exception as errw:

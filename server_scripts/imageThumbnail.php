@@ -5,7 +5,7 @@ function image_resize($source, $dst_w,$dst_h)
     $height=  imagesy($source);
     $aspectRatio=$width/$height;
     $w=0;$h=0;$x=0;$y=0;
-    if($aspectRatio>=1) 
+    if($aspectRatio>=1.0) 
     {
         $w=$dst_w;
         $h=  floor($w/$aspectRatio);

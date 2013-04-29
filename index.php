@@ -15,7 +15,10 @@ mysql_close($connection);
 
 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
 if(!isset($_GET['zoom']))
+{
     $landscapeMode='boundary';
+    $zoom=0;
+}
 else
 {
     $landscapeMode='zoom';
@@ -33,21 +36,44 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
     <head>
         <title>OSMEX3D</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" href="css/jqueryui.css" />
-        <link rel="stylesheet" href="css/main.css" />
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!--        <link rel="stylesheet" href="css/jqueryui.css" />-->
+        
+<!--        <script src="threejs/three.js"></script>
+        <script src="scripts/Camera.js"></script>
+        <script src="scripts/CameraController.js"></script>
+        <script src="scripts/TileMesh.js"></script>
+        <script src="scripts/AreaSelector.js"></script>
+        <script src="scripts/Detector.js"></script>
+
+        <script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
+        <script type="text/javascript" src="server_scripts/Functions.js"></script>-->
+        
         <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
-        <script type="text/javascript" src="jquery/jquery-ui.js"></script>
+        <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+        <script type="text/javascript" src="jquery/jquery.color.js"></script>
+        <script type="text/javascript" src="jquery/jquery.Jcrop.min.js"></script>
+        
+        <script type="text/javascript" src="scripts/TextureBuilder.prototypes.js"></script>
+        <script type="text/javascript" src="scripts/TextureBuilder.js"></script>
+        
+        <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/jcrop/jquery.Jcrop.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/TextureBuilder.css" rel="stylesheet" />
+        <link rel="stylesheet" href="css/main.css" />
+        
         <script type="text/javascript">
             <?php
                 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
                 echo<<<HERE
-                    var landscapeMode='$landscapeMode';
-                    var minlon=$minlon;
-                    var minlat=$minlat;
-                    var maxlon=$maxlon;
-                    var maxlat=$maxlat;
-                    var mlon=$mlon;
-                    var mlat=$mlat;
+                    landscapeMode='$landscapeMode';
+                    minlon=$minlon;
+                    minlat=$minlat;
+                    maxlon=$maxlon;
+                    maxlat=$maxlat;
+                    mlon=$mlon;
+                    mlat=$mlat;
+                    zoom=$zoom;
 HERE;
             ?>
             var searchbar_template="<div id='searchbar'>\
@@ -64,113 +90,139 @@ HERE;
                 </div>\
              </div>";
             $(document).ready(function(){
-                var flag=1;
+                $(document).tooltip({
+                    items: ".prev",
+                    content: function(){
+                        var src = $(this).attr("src");
+                        var res = src.substring(0, src.length-9);
+                        var ending = ".png";
+                        res+=ending;
+                        return "<img class='fullPicture' src='"+res+"'>";
+                    },
+                    position: {
+                        my: "center+150 bottom",
+                        at: "center top"
+                    }
+                });
+//         Making tabs from containers                                              
                 $(".accordionContainer").tabs();
+                //$("#objectEditor").tabs();
+//         Calculating height for containers                         
                 var heightObj = $(window).height()*0.95;
                 $("#sidebar").css("height", heightObj);
-                $(".accordionContainer").css("height", heightObj-100);
                 $("#content").css("height", heightObj);
-                $(".accordion").css("font-family", "verdana");
+                $(".accordionContainer").css("height", heightObj-100);
+                $("#objectEditor").height($("#content").height() - 8);
+//         EVENT HANDLERS
+//            1. Event handler for flip
                 $(".flip").click(function(){
                     $(this).next(".slidingPanel").slideToggle(500);
                 });
-                $("#objectEditor").tabs();
-                $("#objectEditor").height($("#content").height() - 8);
-                $(".prev").mouseenter(function (){
-                    var position = $(this).position();
-                    var src = $(this).attr("src");
-                    var res = src.substring(0, src.length-9);
-                    var ending = ".png";
-                    res+=ending;
-                    $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
-                    $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
-                    
+//            2. Event handler for search input (sketches tab)
+                
+                // Work area tabs
+                var initializator={
+                    tabMap:{
+                        url:'ajax/landscapeEditor.html',
+                        activator:function(){
+                            var iframe=this.find('iframe');
+                            iframe.css('width',this.width());
+                            iframe.css('height',this.height());
+                            if(landscapeMode=='zoom') 
+                                iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&rnd='+Math.random());
+                            else
+                                iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&rnd='+Math.random());
+                        }//prepareMap();}
+                    },
+                    tabGeo:{
+                        url:'ajax/objectEditor.html',
+                        activator:function(){}
+                    },
+                    tabTxt:{
+                        url:'ajax/textureBuilder.html',
+                        activator:function(){prepareTextureBuilder();}
+                    }
+                };
+                function forceRefreshPanel(index)
+                {
+                    var key=$('#objectEditor ul li:eq('+index+')').attr('id');
+                    var panel=$('#objectEditor > div:not(#searchbar)').eq(index);
+                    panel.load(initializator[key].url,'',function(){
+                                initializator[key].activator.call(panel,index);
+                    });
+                    $("#objectEditor").tabs({active:index});
+                }
+                $("#objectEditor").tabs({
+                    beforeActivate:function(event, ui){
+                        if(ui.newPanel.is(':empty'))
+                        {
+                            var key=ui.newTab.attr('id');
+                            ui.newPanel.load(initializator[key].url,'',function(){
+                                initializator[key].activator.call(ui.newPanel,event,ui);
+                            });
+                        }
+                    }
                 });
-                $(".prev").mouseleave(function (){
-                  $("#fullPic").remove();
-                });
+                
                 $("#accSearch").keyup(function (){
                     $.ajax({
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
-                        success:function(result){
+                        success:function(result)
+                        {
                             $(".accordion").empty();
                             $(".accordion").html(result);
+                  //    !  Handlers don't work after clearing the accordion, we need to assign it again
                             $(".flip").click(function(){
-                    $(this).next(".slidingPanel").slideToggle(500);
-                });
-                $(".prev").mouseenter(function (){
-                    var position = $(this).position();
-                    var src = $(this).attr("src");
-                    var res = src.substring(0, src.length-9);
-                    var ending = ".png";
-                    res+=ending;
-                    $("#sidebar").append('<div id="fullPic"><img src='+res+' height=128 width=128></div>');
-                    $("#fullPic").css("top", position.top+"px").css("left", (position.left+60)+"px").fadeIn("slow");
-                    
-                });
-                $(".prev").mouseleave(function (){
-                  $("#fullPic").remove();
-                });
+                                $(this).next(".slidingPanel").slideToggle(500);
+                            });          
                         }
-                    });
-                });
-                $("#tabGeo").css("display","none");
-                            $("#tabTxt").css("display","none");
-                            $("#backBtn").css("display","none");
-                            $("#editBtn").val("Edit");
-                            $(".accordionContainer").css("display", "none");
-                            width=$("#searchDivc").width();
-                            $("#searchDivc").width(width-150);
-                            $("#sidebar").width(width-150);
-                            $("#content").css("width", "75%");
-                            flag=0;
+                    }); //end of ajax
+                }); //end of search input handler
+//            3. Event handler for button "Collapse All"  
                 $("#collapseImg").click(function (){
-                    $(".slidingPanel").slideUp("fast");
+                    $(".slidingPanel").slideToggle("fast");
                 });
-                $("#backBtn").click(function (){
-                    if(flag){
-                            $("#tabGeo").css("display","none");
-                            $("#tabTxt").css("display","none");
-                            $(this).css("display","none");
-                            $("#editBtn").val("Edit");
-                            $(".accordionContainer").css("display", "none");
-                            width=$("#searchDivc").width();
-                            $("#searchDivc").width(width-150);
-                            $("#sidebar").width(width-150);
-                            $("#content").css("width", "75%");
-                            flag=0;
-                    }
-
-                });
-                $("#editBtn").click(function (){
-                    if(!flag){
-                        flag=1;
-                    $("#tabGeo").css("display","block");
+//            4. Event handler for mode selector            
+                $("#mode").change(function (){
+                    if($("#mode :selected").val()==="Edit mode")
+                        {
+                            $("#tabGeo").css("display","block");
                             $("#tabTxt").css("display","block");
-                            $("#backBtn").css("display","block");
-                            $("#editBtn").val("Save");
                             $(".accordionContainer").css("display", "block");
                             width=$("#searchDivc").width();
                             $("#searchDivc").width(width+150);
                             $("#sidebar").width(width+150);
-                            $("#content").css("width", "62%");
-                    }
+                            $("#content").css("width", "64%");
+                        }
+                    if($("#mode :selected").val()==="View mode")
+                        {
+                            forceRefreshPanel(0);
+                            $("#tabGeo").css("display","none");
+                            $("#tabTxt").css("display","none");
+                            $(".accordionContainer").css("display", "none");
+                            width=$("#searchDivc").width();
+                            $("#searchDivc").width(width-150);
+                            $("#sidebar").width(width-150);
+                            $("#content").css("width", "75%");
+                        }
                 });
-                //var searchbar=$(searchbar_template);
-                //searchbar.insertAfter('#objectEditor ul');
+//            5. Submit OSM Search Handler
                 $("#osmSearchForm").submit(function(){
                     if($('#searchbar').size()==0)
                     {
-                        $("#objectEditor div").css({'margin-left':'250px'});
+                        $("#objectEditor").children('div').css({'margin-left':'250px'});
                         var searchbar=$(searchbar_template);
                         searchbar.insertAfter('#objectEditor ul');
+                        $('iframe')[0].contentWindow.onWindowResize();
                         //$('#searchbar').next().css({'margin-left':'250px'});
                         $(".close_link").click(function(){
                             //$('#searchbar').next().css({'margin-left':'0px'});
-                            $("#objectEditor div").css({'margin-left':'0px'});
+                            $("#objectEditor").children('div').css({'margin-left':'0px'});
                             $('#searchbar').remove();
+                            $('iframe').css('width',$('iframe').parent().width());
+                            $('iframe').css('height',$('iframe').parent().height());
                         });
                     }
                     $("#nominatium").html('<br><center><img align="center" src="img/searching.gif"/></center>');
@@ -182,16 +234,87 @@ HERE;
                         dataType:'json',
                         success:function(result){
                             $("#nominatium").html(result['nominatium']);
+                            
                             $("#nominatium ul").next().remove();
                             $("#nominatium ul").next().remove();
                             $("#geonames").html(result['geonames']);
                             $("#geonames ul").next().remove();
                             $("#geonames ul").next().remove();
+                            $('.set_position').click(function(){
+                                var link=$(this);
+                                if(link.attr('data-zoom'))
+                                {
+                                    landscapeMode='zoom';
+                                    minlon=0;
+                                    minlat=0;
+                                    maxlon=0;
+                                    maxlat=0;
+                                    mlon=Number(link.attr('data-lon'));
+                                    mlat=Number(link.attr('data-lat'));
+                                    zoom=Number(link.attr('data-zoom'));
+                                }
+                                else
+                                {
+                                    landscapeMode='boundary';
+                                    minlon=Number(link.attr('data-min-lon'));
+                                    minlat=Number(link.attr('data-min-lat'));
+                                    maxlon=Number(link.attr('data-max-lon'));
+                                    maxlat=Number(link.attr('data-max-lat'));
+                                    mlon=0;
+                                    mlat=0;
+                                    zoom=0;
+                                }
+                                if($("#mode :selected").val()!=="View mode")
+                                {
+                                    var mydialog=$(dialog_template).attr('title','Switch to search result');
+                                    mydialog.find('p').append('Are you shure you want to switch to the search result?');
+                                    mydialog.dialog({
+                                        resizable: false,
+                                          height:140,
+                                          modal: true,
+                                          buttons: {
+                                            "Yes": function() {
+                                              forceRefreshPanel(0);
+                                              $( this ).dialog( "close" );
+                                            },
+                                            "No": function() {
+                                              $( this ).dialog( "close" );
+                                            }
+                                        }
+                                    });
+                                    //forceRefreshPanel(0);  
+                                }
+                                else
+                                    forceRefreshPanel(0);
+                                return false;
+                            });
                             //$(result).appendTo('#nominatium');
                         }
                      });
                      return false;
                 });
+//           6. Image Container handlers                
+                $(".imgContainer").mouseenter(function(){
+                    $(this).css("cursor", "pointer");
+                    $(this).css("")
+                });
+                $(".imgContainer").mouseleave(function(){
+                    $(this).css("cursor", "default");
+                });
+//               END OF EVENT HANDLERS   
+//            Setting default mode to view mode 
+                $("#tabGeo").css("display","block");
+                $("#tabTxt").css("display","block");
+                $(".accordionContainer").css("display", "block");
+                //width=$("#searchDivc").width();
+                //$("#searchDivc").width(width+150);
+                //$("#sidebar").width(width+150);
+                $("#content").css("width", "64%");
+                //var searchbar=$(searchbar_template);
+                //searchbar.insertAfter('#objectEditor ul');
+                forceRefreshPanel(0);
+                //
+                //$("#objectEditor").tabs({active:0});
             });
         </script>
     </head>
@@ -213,13 +336,13 @@ HERE;
                         <li><a href="#txt">Textures</a></li>
                         </ul>
                         <img id="collapseImg" src="img/collapse.png">
-                        <input id="accSearch" type="search">
+                        <input id="accSearch" type="search" placeholder="Start typing a name here...">
                         <div id="acc" class="accordion ui-widget ui-widget-content ui-corner-all">
                             <?php
                             global $array;
                             foreach ($array as $nameFigureType => $instances) {
                                 echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
-                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
+                                echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all">';
                                 
                                 for($i=0;$i<sizeof($instances);$i++)
                                 {
@@ -234,17 +357,28 @@ HERE;
                             }
                             ?>
                         </div>
+                        <div id="txt" class="ui-widget ui-widget-content ui-corner-all">
+                            <?php
+                            
+                            ?>
+                        </div>
                     </div>
                 </div>
                 <div id="content">
                     <div id="objectEditor">
                         <ul>
                             <li id="tabMap"><a href="#map">Map</a></li>
-                            <li id="tabGeo"><a href="#geoBuilder">Geometry Builder</a></li>
+                            <li id="tabGeo"><a href="#geoBuilder">Sketch Builder</a></li>
                             <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
-                        <input id="editBtn" type="button" value="Save">
-                         <input id="backBtn" type="button" value="Simple View">
+                        <select id="mode" size="1">
+                            <option value="View mode">
+                                View Mode
+                            </option>
+                            <option selected value="Edit mode">
+                                Edit Mode
+                            </option>
+                        </select>
                         <div id="map"></div>
                         <div id="geoBuilder"></div>
                         <div id="txtBuilder"></div>
