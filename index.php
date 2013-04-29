@@ -60,6 +60,7 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
         <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
         <link type="text/css" href="css/jcrop/jquery.Jcrop.min.css" rel="stylesheet" />
         <link type="text/css" href="css/TextureBuilder.css" rel="stylesheet" />
+        <link type="text/css" href="css/SketchBuilder.css" rel="stylesheet" />
         <link rel="stylesheet" href="css/main.css" />
         
         <script type="text/javascript">
@@ -134,7 +135,7 @@ HERE;
                                 iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&rnd='+Math.random());
                         }//prepareMap();}
                     },
-                    tabGeo:{
+                    tabSketch:{
                         url:'ajax/objectEditor.html',
                         activator:function(){}
                     },
@@ -188,7 +189,7 @@ HERE;
                 $("#mode").change(function (){
                     if($("#mode :selected").val()==="Edit mode")
                         {
-                            $("#tabGeo").css("display","block");
+                            $("#tabSketch").css("display","block");
                             $("#tabTxt").css("display","block");
                             $(".accordionContainer").css("display", "block");
                             width=$("#searchDivc").width();
@@ -199,7 +200,7 @@ HERE;
                     if($("#mode :selected").val()==="View mode")
                         {
                             forceRefreshPanel(0);
-                            $("#tabGeo").css("display","none");
+                            $("#tabSketch").css("display","none");
                             $("#tabTxt").css("display","none");
                             $(".accordionContainer").css("display", "none");
                             width=$("#searchDivc").width();
@@ -303,7 +304,7 @@ HERE;
                 });
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
-                $("#tabGeo").css("display","block");
+                $("#tabSketch").css("display","block");
                 $("#tabTxt").css("display","block");
                 $(".accordionContainer").css("display", "block");
                 //width=$("#searchDivc").width();
@@ -368,7 +369,7 @@ HERE;
                     <div id="objectEditor">
                         <ul>
                             <li id="tabMap"><a href="#map">Map</a></li>
-                            <li id="tabGeo"><a href="#geoBuilder">Sketch Builder</a></li>
+                            <li id="tabSketch"><a href="#sketchBuilder">Sketch Builder</a></li>
                             <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
                         <select id="mode" size="1">
@@ -380,7 +381,7 @@ HERE;
                             </option>
                         </select>
                         <div id="map"></div>
-                        <div id="geoBuilder"></div>
+                        <div id="sketchBuilder"></div>
                         <div id="txtBuilder"></div>
                     </div>
                 </div>
