@@ -389,18 +389,19 @@
 
                     $("#bottombar").css({
                         "left": (window.innerWidth / 2) - ($("#bottombar").width() / 2) + "px",
-                        "bottom": '50px',//window.innerHeight - ($("#bottombar").height() + 10) + "px",
+                        "top": window.innerHeight - ($("#bottombar").height() + 10) + "px",
+                        //"margin-bottom": 250 + "px",
                         "visibility": "visible"
                     });
 
                     $("#rightbar").css({
-                        "right":'50px', //window.innerWidth - ($("#topbar").width() / 2) + "px",
+                        "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
                         "visibility": "visible"
                     });
 
                     $("#righttopbar").css({
-                        "right": '50px',//(window.innerWidth) - ($("#topbar").width()) + "px",
+                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
                         "top": ($("#topbar").height() / 2) + "px",
                         "visibility": "visible"
                     });
@@ -571,7 +572,8 @@
 
                 });
 
-
+                                
+                
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
                 camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 1500, 1, 1500);
