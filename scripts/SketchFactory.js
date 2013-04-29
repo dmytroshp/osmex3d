@@ -1,6 +1,6 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-OSMEX.SketchFactory = function (  ) { 
+OSMEX.SketchFactory = function ( ) {
     
     THREE.Object3D.call( this );
     
@@ -30,7 +30,7 @@ OSMEX.SketchFactory.prototype.onMouseMove = function ( mouse ) {
     if (this.currentObject !== null) {
         
         this.currentObject.setVisibility(true);
-        if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
+        if (!$("#BBox").prop("checked")) this.currentObject.bbox.setVisibility(false);
         
         var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
         projector.unprojectVector(vector, camera);
@@ -83,7 +83,7 @@ OSMEX.SketchFactory.prototype.finishBuild = function() {
         
         this.currentObject.material = this.usualMaterial.clone();
         this.currentObject.pickable = true;
-        if (!$("#BBox").prop("checked"))  this.currentObject.bbox.setVisibility(false);
+        if (!$("#BBox").prop("checked")) this.currentObject.bbox.setVisibility(false);
         
         this.parent.add(this.currentObject);
         this.currentObject = null;
@@ -226,14 +226,14 @@ function getUnpackedGeometry( packedGeometry ) {
             type = faces[ offset ++ ];
 
 
-            isQuad              = isBitSet( type, 0 );
-            hasMaterial         = isBitSet( type, 1 );
-            hasFaceUv           = isBitSet( type, 2 );
-            hasFaceVertexUv     = isBitSet( type, 3 );
-            hasFaceNormal       = isBitSet( type, 4 );
+            isQuad = isBitSet( type, 0 );
+            hasMaterial = isBitSet( type, 1 );
+            hasFaceUv = isBitSet( type, 2 );
+            hasFaceVertexUv = isBitSet( type, 3 );
+            hasFaceNormal = isBitSet( type, 4 );
             hasFaceVertexNormal = isBitSet( type, 5 );
-            hasFaceColor	    = isBitSet( type, 6 );
-            hasFaceVertexColor  = isBitSet( type, 7 );
+            hasFaceColor	= isBitSet( type, 6 );
+            hasFaceVertexColor = isBitSet( type, 7 );
 
             //console.log("type", type, "bits", isQuad, hasMaterial, hasFaceUv, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
 
