@@ -92,69 +92,69 @@
                 position:absolute;
             }
             #dragging {
-                background-image: url('img/48x48/dragging.png');               
+                background-image: url('img/48x48/6.png');
             }
             #dragging:hover {
-                background-image: url('img/48x48/dragging_over.png');               
+                background-image: url('img/48x48/6_over.png');
             }
             #dragging.selected
             {
-                background-image: url('img/48x48/dragging_pressed.png');               
+                background-image: url('img/48x48/6_pressed.png');
             }
 
             #moving {
-                background-image: url('img/48x48/moving.png');               
+                background-image: url('img/48x48/2.png');
             }
             #moving:hover {
-                background-image: url('img/48x48/moving_over.png');               
+                background-image: url('img/48x48/2_over.png');
             }
             #moving.selected
             {
-                background-image: url('img/48x48/moving_pressed.png');               
+                background-image: url('img/48x48/2_pressed.png');
             }
 
             #scaling {
-                background-image: url('img/48x48/scaling.png');               
+                background-image: url('img/48x48/3.png');
             }
             #scaling:hover {
-                background-image: url('img/48x48/scaling_over.png');               
+                background-image: url('img/48x48/3_over.png');
             }
             #scaling.selected
             {
-                background-image: url('img/48x48/scaling_pressed.png');               
+                background-image: url('img/48x48/3_pressed.png');
             }
 
             #rotating {
-                background-image: url('img/48x48/rotating.png');               
+                background-image: url('img/48x48/5.png');
             }
             #rotating:hover {
-                background-image: url('img/48x48/rotating_over.png');               
+                background-image: url('img/48x48/5_over.png');
             }
             #rotating.selected
             {
-                background-image: url('img/48x48/rotating_pressed.png');               
+                background-image: url('img/48x48/5_pressed.png');
             }
 
             #deleting {
-                background-image: url('img/48x48/deleting.png');               
+                background-image: url('img/48x48/1.png');
             }
             #deleting:hover {
-                background-image: url('img/48x48/deleting_over.png');               
+                background-image: url('img/48x48/1_over.png');
             }
             #deleting.selected
             {
-                background-image: url('img/48x48/deleting_pressed.png');               
+                background-image: url('img/48x48/1_pressed.png');
             }
 
             #build_box {
-                background-image: url('img/48x48/build_box.png');               
+                background-image: url('img/48x48/7.png');
             }
             #build_box:hover {
-                background-image: url('img/48x48/build_box_over.png');               
+                background-image: url('img/48x48/7_over.png');
             }
             #build_box.selected
             {
-                background-image: url('img/48x48/build_box_pressed.png');               
+                background-image: url('img/48x48/7_pressed.png');
             }
             
             #publish {
@@ -205,6 +205,7 @@
             #rollback:hover {
                 background-image: url('img/48x48/12_over.png');
             }
+            
             
         </style>
     </head>
@@ -261,6 +262,7 @@
             <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cylinder.png'>
             </div>
+            <br/>
             <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/sphere.png'>
             </div>
@@ -311,7 +313,7 @@
 
             var CLICKED = [null, null];
 
-            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
+            var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
             var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
@@ -399,8 +401,8 @@
                     });
 
                     $("#righttopbar").css({
-                        "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
-                        "top": 20 + "px",
+                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
+                        "top": ($("#topbar").height() / 2) + "px",
                         "visibility": "visible"
                     });
 
@@ -689,6 +691,7 @@ console.log(data);
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
+                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -1227,9 +1230,7 @@ console.log(data);
 
                 event.preventDefault();
                 if (event.button == 0) {
-                    
-                    if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();
-                    
+
                     if (SIZING) {
 
                         SIZING.restoreDefaultLength();
@@ -1238,7 +1239,6 @@ console.log(data);
                     if (SCALING)
                         SCALING.restoreDefaultScale();
 
-                    BUILDING = null;
                     DRAGGING = null;
                     SIZING = null;
                     SCALING = null;

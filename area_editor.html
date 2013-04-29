@@ -53,69 +53,69 @@
             }   
 
             #dragging {
-                background-image: url('img/48x48/dragging.png');               
+                background-image: url('img/48x48/6.jpg');               
             }
             #dragging:hover {
-                background-image: url('img/48x48/dragging_over.png');               
+                background-image: url('img/48x48/6_over.jpg');               
             }                         
             #dragging.selected
             {
-                background-image: url('img/48x48/dragging_pressed.png');               
+                background-image: url('img/48x48/6_pressed.jpg');               
             }
 
             #moving {
-                background-image: url('img/48x48/moving.png');               
+                background-image: url('img/48x48/moving.jpg');               
             }
             #moving:hover {
-                background-image: url('img/48x48/moving_over.png');               
+                background-image: url('img/48x48/moving_over.jpg');               
             }                        
             #moving.selected
             {
-                background-image: url('img/48x48/moving_pressed.png');               
+                background-image: url('img/48x48/moving_pressed.jpg');               
             }
 
             #scaling {
-                background-image: url('img/48x48/scaling.png');               
+                background-image: url('img/48x48/scaling.jpg');               
             }
             #scaling:hover {
-                background-image: url('img/48x48/scaling_over.png');               
+                background-image: url('img/48x48/scaling_over.jpg');               
             }                        
             #scaling.selected
             {
-                background-image: url('img/48x48/scaling_pressed.png');               
+                background-image: url('img/48x48/scaling_pressed.jpg');               
             }
 
             #rotating {
-                background-image: url('img/48x48/rotating.png');               
+                background-image: url('img/48x48/rotating.jpg');               
             }
             #rotating:hover {
-                background-image: url('img/48x48/rotating_over.png');               
+                background-image: url('img/48x48/rotating_over.jpg');               
             }                        
             #rotating.selected
             {
-                background-image: url('img/48x48/rotating_pressed.png');               
+                background-image: url('img/48x48/rotating_pressed.jpg');               
             }
 
             #deleting {
-                background-image: url('img/48x48/deleting.png');               
+                background-image: url('img/48x48/deleting.jpg');               
             }
             #deleting:hover {
-                background-image: url('img/48x48/deleting_over.png');               
+                background-image: url('img/48x48/deleting_over.jpg');               
             }                        
             #deleting.selected
             {
-                background-image: url('img/48x48/deleting_pressed.png');               
+                background-image: url('img/48x48/deleting_pressed.jpg');               
             }
 
             #build_box {
-                background-image: url('img/48x48/build_box.png');               
+                background-image: url('img/48x48/build_box.jpg');               
             }
             #build_box:hover {
-                background-image: url('img/48x48/build_box_over.png');               
+                background-image: url('img/48x48/build_box_over.jpg');               
             }                        
             #build_box.selected
             {
-                background-image: url('img/48x48/build_box_pressed.png');               
+                background-image: url('img/48x48/build_box_pressed.jpg');               
             }
                                   
             #save {
@@ -132,19 +132,14 @@
                 background-image: url('img/cancel_hovered.png');               
             } 
                                   
-            
         </style>
     </head>
     <body>
 
         <div id="topbar" style="visibility:hidden;display:inline;float:right;">
-            <div id ="default" style="float:left;">
             <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
-            </div>
-            
-            <div id="tochange" style="float:left;">
             <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp; 
             </div>
@@ -157,12 +152,9 @@
             <div id="deleting" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
-            </div>
-            <div id="build" style="float:left;">
             <div id="build_box" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
-        </div>
         </div>
 
             <div id="righttopbar" style="width:250px;visibility:hidden;display:block;text-align:left;">
@@ -246,44 +238,25 @@
                         });
                     }
                     
-                    $(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
-                        'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
-                        'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
-                        'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
-                        'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
-                        'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
-                        'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
-                    ]).preload();
+                    $(['img/48x48/6.jpg','img/48x48/6_over.jpg','img/48x48/6_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg','img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png']).preload();
                     
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
                     });
-                    
-                     $("#tochange").css({
-                       "margin-left": 5 + "px" 
-                    });
-                    $("#build").css({
-                       "margin-left": 5 + "px" 
-                    });
-                    
+
                     $("#rightbar").css({
                         "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
                         "visibility": "visible"
                     });
 
-                    /*$("#righttopbar").css({
+                    $("#righttopbar").css({
                         "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
                         "top": 20 + "px",
                         "visibility": "visible"
-                    });*/
-
-                    $("#righttopbar").css({
-                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
-                        "top": ($("#topbar").height() / 2) + "px",
-                        "visibility": "visible"
                     });
+
 
                     $(".group1").click(function() {
                         $(".selected").removeClass("selected");
@@ -410,12 +383,10 @@
 
                 var lonDiff = MAX_LON - MIN_LON;
                 var latDiff = MAX_LAT - MIN_LAT;
-                var distanceForLon = calculateDistance(new coordinates(MAX_LAT,MIN_LON),new coordinates(MAX_LAT,MAX_LON));
-                var distanceForLat = calculateDistance(new coordinates(MIN_LAT,MIN_LON),new coordinates(MAX_LAT,MIN_LON));
-                var lonStep = lonDiff / distanceForLon;
-                var latStep = latDiff / distanceForLat;
-                var lon = MIN_LON + ((vector.x + (distanceForLon/2)) * lonStep);
-                var lat = MAX_LAT - ((vector.z + (distanceForLat/2)) * latStep);
+                var lonStep = lonDiff / (GRID_SIZE * 2);
+                var latStep = latDiff / (GRID_SIZE * 2);
+                var lon = MIN_LON + ((vector.x + GRID_SIZE) * lonStep);
+                var lat = MAX_LAT - ((vector.z + GRID_SIZE) * latStep);
                 var coords = new coordinates(lat, lon);
                 return coords;
             }
@@ -424,13 +395,11 @@
 
                 var lonDiff = MAX_LON - MIN_LON;
                 var latDiff = MAX_LAT - MIN_LAT;
-                var distanceForLon = calculateDistance(new coordinates(MAX_LAT,MIN_LON),new coordinates(MAX_LAT,MAX_LON));
-                var distanceForLat = calculateDistance(new coordinates(MIN_LAT,MIN_LON),new coordinates(MAX_LAT,MIN_LON));
-                var lonStep = lonDiff / distanceForLon;
-                var latStep = latDiff / distanceForLat;
+                var lonStep = lonDiff / (GRID_SIZE * 2);
+                var latStep = latDiff / (GRID_SIZE * 2);
                 
-                var x = ((lon - MIN_LON) / lonStep) - (distanceForLon/2); 
-                var z = ((MAX_LAT - lat) / latStep) - (distanceForLat/2); 
+                var x = ((lon - MIN_LON) / lonStep) - GRID_SIZE; 
+                var z = ((MAX_LAT - lat) / latStep) - GRID_SIZE; 
                 var vector = new THREE.Vector3(x,0,z);
                 return vector;
             }
@@ -457,6 +426,7 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
+                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -468,6 +438,17 @@
                     boxBuilder.finishBuild();
                 }
             }
+            /*function addObject(element) {
+                //alert($(element).attr('id'));
+                if ($(element).attr('id') != "noarrows") {
+                    BUILDING = new OSMEX.SketchBuilder($(element).attr('id'));
+                    BUILDING.Sketch.pickable = false;
+                    BUILDING.position.set(-1000, -1000, -1000);
+                    objectScene.add(BUILDING);
+                }
+            }*/
+
+
 
             function onWindowResize() {
 
@@ -534,6 +515,18 @@
                 boxBuilder.onMouseMove(mouse);
                 
                 sketchFactory.onMouseMove(mouse);                
+                /*if (BUILDING) {
+
+                    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                    projector.unprojectVector(vector, camera);
+                    var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                    var intersectPoint = ray.intersectPlane(groundPlane);
+
+                    if (intersectPoint !== undefined) {
+
+                        BUILDING.position.copy(intersectPoint);
+                    }
+                }*/
         
                 if (DRAGGING) {
                     
@@ -639,7 +632,35 @@
                         
                         sketchFactory.onLeftClick(mouse);
                         return;
-                    }            
+                    }
+                    
+                    
+                    /*if (BUILDING) {
+
+                        var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
+                        projector.unprojectVector(vector, camera);
+                        var ray = new THREE.Ray(camera.position, vector.sub(camera.position).normalize());
+                        var intersectPoint = ray.intersectPlane(groundPlane);
+                        //var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+                        //var intersects = raycaster.intersectObject( gridPlane );
+                        
+                        //if ( intersects.length > 0 ) {
+                            console.log ("here")
+                            var object = new OSMEX.SketchBuilder(BUILDING.name);
+                            object.Sketch.position.copy(intersectPoint);
+                            object.Sketch.material.color.setHex(0xffffff);
+                            if (object.Sketch.children[0].name == "BoundingBox" && !$("#BBox").prop("checked")) 
+                                object.Sketch.remove(object.Sketch.children[0]);
+                            object.Sketch.id = 0;
+                            object.Sketch.isCreated = true;
+                            object.Sketch.isModified = false;
+                            object.Sketch.isDeleted = false;
+                            objectScene.add(object.Sketch);
+                        //}
+                        objectScene.remove(BUILDING);
+
+                    }*/
+            
 
                     if (PICKED) {
                         
@@ -649,10 +670,8 @@
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
 
                         if (arrowMode == "deleting") {
-                            console.log (PICKED);
                             PICKED.isDeleted = true;
                             PICKED.visible = false;
-                            PICKED.bbox.setVisibility(false);
                             //objectScene.remove(PICKED);
                             document.getElementById("dragging").click();
                         }
@@ -770,8 +789,6 @@
                     if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
                         SELECTED.isModified = true;
                     }
-                    
-                    if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();
 
                     if (SIZING) {
 

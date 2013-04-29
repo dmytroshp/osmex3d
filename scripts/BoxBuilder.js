@@ -89,8 +89,6 @@ OSMEX.BoxBuilder.prototype.onLeftClick = function ( mouse ) {
             this.build();
             
             this.currentState = BoxBuilderState.NOT_STARTED;
-            
-             document.getElementById("dragging").click();
         }
         
         else {
@@ -235,7 +233,7 @@ OSMEX.BoxBuilder.prototype.build = function () {
     
     var buildedBox = this.box.clone();
     buildedBox.material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
-    if ($("#BBox").prop("checked")) buildedBox.bbox.setVisibility(true);
+    if ($("#BBox").prop("checked")) buildedBox.add(new OSMEX.BoundingBox(buildedBox));
     buildedBox.name = "cube";
     buildedBox.typeID = 1;
     buildedBox.isCreated = true;
