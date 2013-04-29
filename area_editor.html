@@ -53,69 +53,69 @@
             }   
 
             #dragging {
-                background-image: url('img/48x48/6.jpg');               
+                background-image: url('img/48x48/dragging.png');              
             }
             #dragging:hover {
-                background-image: url('img/48x48/6_over.jpg');               
+                background-image: url('img/48x48/dragging_over.png');              
             }                         
             #dragging.selected
             {
-                background-image: url('img/48x48/6_pressed.jpg');               
+                background-image: url('img/48x48/dragging_pressed.png');              
             }
 
             #moving {
-                background-image: url('img/48x48/moving.jpg');               
+                background-image: url('img/48x48/moving.png');             
             }
             #moving:hover {
-                background-image: url('img/48x48/moving_over.jpg');               
+                background-image: url('img/48x48/moving_over.png');              
             }                        
             #moving.selected
             {
-                background-image: url('img/48x48/moving_pressed.jpg');               
+                background-image: url('img/48x48/moving_pressed.png');             
             }
 
             #scaling {
-                background-image: url('img/48x48/scaling.jpg');               
+                background-image: url('img/48x48/scaling.png');   
             }
             #scaling:hover {
-                background-image: url('img/48x48/scaling_over.jpg');               
+                background-image: url('img/48x48/scaling_over.png');  
             }                        
             #scaling.selected
             {
-                background-image: url('img/48x48/scaling_pressed.jpg');               
+                background-image: url('img/48x48/scaling_pressed.png');   
             }
 
             #rotating {
-                background-image: url('img/48x48/rotating.jpg');               
+                background-image: url('img/48x48/rotating.png');   
             }
             #rotating:hover {
-                background-image: url('img/48x48/rotating_over.jpg');               
+                background-image: url('img/48x48/rotating_over.png');    
             }                        
             #rotating.selected
             {
-                background-image: url('img/48x48/rotating_pressed.jpg');               
+                background-image: url('img/48x48/rotating_pressed.png');
             }
 
             #deleting {
-                background-image: url('img/48x48/deleting.jpg');               
+                background-image: url('img/48x48/deleting.png');
             }
             #deleting:hover {
-                background-image: url('img/48x48/deleting_over.jpg');               
+                background-image: url('img/48x48/deleting_over.png');
             }                        
             #deleting.selected
             {
-                background-image: url('img/48x48/deleting_pressed.jpg');               
+                background-image: url('img/48x48/deleting_pressed.png');
             }
 
             #build_box {
-                background-image: url('img/48x48/build_box.jpg');               
+                background-image: url('img/48x48/build_box.png');
             }
             #build_box:hover {
-                background-image: url('img/48x48/build_box_over.jpg');               
+                background-image: url('img/48x48/build_box_over.png');
             }                        
             #build_box.selected
             {
-                background-image: url('img/48x48/build_box_pressed.jpg');               
+                background-image: url('img/48x48/build_box_pressed.png');
             }
                                   
             #save {
@@ -137,9 +137,13 @@
     <body>
 
         <div id="topbar" style="visibility:hidden;display:inline;float:right;">
+            <div id ="default" style="float:left;">
             <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
+            </div>
+            
+            <div id="tochange" style="float:left;">
             <div id="moving" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp; 
             </div>
@@ -152,9 +156,12 @@
             <div id="deleting" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
+            </div>
+            <div id="build" style="float:left;">
             <div id="build_box" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
+        </div>
         </div>
 
             <div id="righttopbar" style="width:250px;visibility:hidden;display:block;text-align:left;">
@@ -235,11 +242,25 @@
                         });
                     }
                     
-                    $(['img/48x48/6.jpg','img/48x48/6_over.jpg','img/48x48/6_pressed.jpg', 'img/48x48/moving.jpg','img/48x48/moving_over.jpg','img/48x48/moving_pressed.jpg', 'img/48x48/scaling.jpg','img/48x48/scaling_over.jpg','img/48x48/scaling_pressed.jpg','img/48x48/rotating.jpg','img/48x48/rotating_over.jpg','img/48x48/rotating_pressed.jpg','img/48x48/deleting.jpg','img/48x48/deleting_over.jpg','img/48x48/deleting_pressed.jpg','img/48x48/build_box.jpg','img/48x48/build_box_over.jpg','img/48x48/build_box_pressed.jpg','img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png']).preload();
-                    
+                    $(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
+                         'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
+                         'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
+                         'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
+                         'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
+                         'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
+                         'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
+                     ]).preload();
+
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
+                    });
+                    
+                    $("#tochange").css({
+                       "margin-left": 5 + "px" 
+                    });
+                    $("#build").css({
+                       "margin-left": 5 + "px" 
                     });
 
                     $("#rightbar").css({
@@ -249,11 +270,10 @@
                     });
 
                     $("#righttopbar").css({
-                        "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
-                        "top": 20 + "px",
+                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
+                        "top": ($("#topbar").height() / 2) + "px",
                         "visibility": "visible"
                     });
-
 
                     $(".group1").click(function() {
                         $(".selected").removeClass("selected");
@@ -403,7 +423,6 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
@@ -613,6 +632,7 @@
                         if (arrowMode == "deleting") {
                             PICKED.isDeleted = true;
                             PICKED.visible = false;
+                            PICKED.bbox.setVisibility(false);
                             //objectScene.remove(PICKED);
                             document.getElementById("dragging").click();
                         }
@@ -730,6 +750,8 @@
                     if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
                         SELECTED.isModified = true;
                     }
+                    
+                    if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();
 
                     if (SIZING) {
 

@@ -49,7 +49,7 @@ function ajaxPostScene(array, osmArea) {
             type: "POST",
             url: "server_scripts/AddInstance.php",
             cache: false,
-            data: {object_uid: array[i].id, object_scaleX: array[i].scale.x, object_scaleY: array[i].scale.y, object_scaleZ: array[i].scale.z, object_rotationX: array[i].rotation.x, object_rotationY: array[i].rotation.y, object_rotationZ: array[i].rotation.z, object_positionLat: lonLatHeight.latitude, object_positionLon: lonLatHeight.longitude, object_positionHeight: lonLatHeight.height, object_referID: array[i].typeID, isDeleted: array[i].isDeleted},
+            data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: lonLatHeight.latitude, positionLon: lonLatHeight.longitude, positionHeight: lonLatHeight.height, objectType: array[i].typeId, isDeleted: array[i].isDeleted},
             success: function(data) {
                 alert(data);
             },
