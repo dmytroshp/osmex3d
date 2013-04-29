@@ -499,7 +499,7 @@
                                     CLICKED[0].material.color.setHex(0x111111);
                                     if (CLICKED[1] != null) {
                                         CLICKED[1].material.emissive.setHex(0x000000);
-                                        CLICKED[0].material.color.setHex(0x111111);
+                                        CLICKED[1].material.color.setHex(0x111111);
                                     }
                                     CLICKED[0] = null;
                                     CLICKED[1] = null;
@@ -513,8 +513,8 @@
                         },
                         open: function( event, ui ) {
                     
-                            CLICKED[0].material.emissive.setHex(0x000000);
-                            CLICKED[0].material.color.setHex(0x111111);
+                            //CLICKED[0].material.emissive.setHex(0x000000);
+                            //CLICKED[0].material.color.setHex(0x111111);
                             
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
                             iconScene.add(iconMesh);
