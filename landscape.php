@@ -679,7 +679,9 @@ this.loaded = function () {
 
                 if(jstr.id>=0){	
 
-                    }else{console.debug("! Reject request id is out of range!");}
+                    }else{
+                        ////console.debug("! Reject request id is out of range!");
+                        }
 					 //r=(delete tile);
                     // console.debug("del  "+r);
                       jstr=null;					
@@ -817,7 +819,7 @@ this.loaded = function () {
 				  }
 			      r=delete triangleMesh[id];
 			      triangleMesh[id]=null
-			      console.debug("del "+triangleMesh[id]+" id "+id+" "+r)
+			      //console.debug("del "+triangleMesh[id]+" id "+id+" "+r)
 				}
 				if(req){
 				  if(triangleMesh[(id*4+1)])deltilemesh((id*4+1));
@@ -837,7 +839,7 @@ this.loaded = function () {
                   arrTile[id].destroy();
                   delete arrTile[id];
                   arrTile[id]=null;
-                  console.debug("Delete "+arrTile[id]+" id "+id)
+                  //console.debug("Delete "+arrTile[id]+" id "+id)
 				}
 				if(req){
 				  if(arrTile[(id*4+1)])deltile((id*4+1));
@@ -944,7 +946,7 @@ this.loaded = function () {
 	            });*/
 //console.debug("id "+id);
 
-				console.debug("id "+id);
+				//console.debug("id "+id);
                 arrTex[id].magFilter = THREE.LinearFilter;
                 arrTex[id].minFilter = THREE.LinearFilter;
 				arrTex[id].anisotropy = maxAnisotropy;
@@ -962,7 +964,7 @@ this.loaded = function () {
 				triangleMesh[id].visible=true;
 				//if(arrTile[id].lvl>15)triangleMesh[id].visible=false;
 
-				console.debug("Crt "+triangleMesh[id]+" id "+id)
+				//console.debug("Crt "+triangleMesh[id]+" id "+id)
 				
 				//arrCurRoot.push(id);
 				
@@ -1056,8 +1058,8 @@ this.loaded = function () {
 			}
 
 			function checkTiles() {
-				console.debug(" ")
-				console.debug(" ")
+				//console.debug(" ")
+				//console.debug(" ")
 				
 				
 			if(initTilesIndx<initTiles.length)
@@ -1096,7 +1098,7 @@ this.loaded = function () {
 			  if(dist2b>110){arrCurBld.splice(curBldId,1);delbuildsoftile(curbld);}
 			  }*/
 
-				console.debug("arrCurRoot.length "+arrCurRoot.length)	
+				//console.debug("arrCurRoot.length "+arrCurRoot.length)	
 				//&&TLoad.idforloadroot!=arrCurRoot[j]&&TLoad.ReadyForRoot
 				var InitArray = new Array();
 				
@@ -1235,17 +1237,19 @@ this.loaded = function () {
 							{
 							    if(typeof(arrTile[arrCurRoot[i]]) != "undefined" && arrTile[arrCurRoot[i]] != null)
 								{
-					              if(arrTile[arrCurRoot[i]].prnt==prntId){console.debug("del  "+i);arrCurRoot[i]=0;count++;}
+					              if(arrTile[arrCurRoot[i]].prnt==prntId){
+                                                          //console.debug("del  "+i);arrCurRoot[i]=0;count++;
+                                                      }
 								}
 					        }
 					      arrCurRoot.sort();
-                          console.debug("count  "+count);						  
+                          //console.debug("count  "+count);						  
 					      for(i=0 ;i<count;i++)arrCurRoot.shift();
-						   console.debug("crt  "+prntId+" ");
+						   /*console.debug("crt  "+prntId+" ");
 						   console.debug("del  "+(prntId*4+1)+" ");
 						   console.debug("del  "+(prntId*4+2)+" ");
 						   console.debug("del  "+(prntId*4+3)+" ");
-						   console.debug("del  "+(prntId*4+4)+" ");
+						   console.debug("del  "+(prntId*4+4)+" ");*/
 						   deltilemesh((prntId*4+1));
 						   deltilemesh((prntId*4+2));
 						   deltilemesh((prntId*4+3));
