@@ -1,5 +1,5 @@
-function getCustomGeometry(id){
-    var objGeometry;
+function getCustomGeometry(id, successCallback){
+
     $.ajax({
         async:false,
         type:'GET',
@@ -11,46 +11,28 @@ function getCustomGeometry(id){
         },
         data: {rID:id},
         dataType:'text',
-        success:function(response)
-        {    
-            if (response === null) {
-
-                var objGeometryStr = getCustomGeometry(response);
-
-                objGeometry = getUnpackedGeometry(objGeometryStr);
-
-                objGeometry.computeCentroids();
-                objGeometry.computeFaceNormals();          
-                var obj = new OSMEX.Block( objGeometry, this.usualMaterial.clone() );
-                sketchFactory.currentObject = obj;
-            }
-        },
+        success: successCallback,
         error:function()
         {
             console.debug("Can't load geometry");
         }
         
     });
-    return objGeometry;
-    
 }
 
-function getBuildings(_tile_id,_minlon,_minlat,_maxlon,_maxlat){
+function getBuildings(_minlon,_minlat,_maxlon,_maxlat, successCallback){
     $.ajax({
         async:true,
         type:'GET',
         url:'server_scripts/getBuildings.php',
         cache: false,
-		processData: true,
+        processData: true,
         headers: {
             'Content-Type': 'application/json'
         },
-        data: {tile_id: _tile_id, minlon: _minlon, minlat: _minlat,maxlon: _maxlon,maxlat: _maxlat},
+        data: {tile_id: 0, minlon: _minlon, minlat: _minlat,maxlon: _maxlon,maxlat: _maxlat},
         dataType:'text',
-        success:function(r)
-        {
-            JSON_BUILDINGS = r;
-        },
+        success: successCallback,
         error:function()
         {
             console.debug("Can't load buildings");
@@ -60,25 +42,14 @@ function getBuildings(_tile_id,_minlon,_minlat,_maxlon,_maxlat){
 	
 }
 
-function postScene(scene) {
-    var objArray = new Array();
-    for (var i = FIRST_PICKABLE_OBJ, l = scene.children.length; i < l; i++){
-        if (scene.children[i].isDeleted === true && scene.children[i].isCreated === false) objArray.push(scene.children[i]);
-            else if(scene.children[i].isDeleted === false && scene.children[i].isCreated === true) objArray.push(scene.children[i]);
-                else if (scene.children[i].isDeleted === false && scene.children[i].isCreated === false && scene.children[i].isModified === true)
-                    objArray.push(scene.children[i])
-    }
-    ajaxPostScene(objArray)
-}
-
-function ajaxPostScene(array) {
+function ajaxPostScene(array, osmArea) {
     for (var i = 0; i < array.length; i++) {
-        var coords = local2LatLon(array[i].position);
+        var lonLatHeight = osmArea.XyzToLonLatHeight(array[i].position);
         $.ajax({
             type: "POST",
             url: "server_scripts/AddInstance.php",
             cache: false,
-            data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: coords.lat, positionLon: coords.lon,positionHeight:array[i].position.y, objectType: array[i].typeId, isDeleted: array[i].isDeleted},
+            data: {object_uid: array[i].id, object_scaleX: array[i].scale.x, object_scaleY: array[i].scale.y, object_scaleZ: array[i].scale.z, object_rotationX: array[i].rotation.x, object_rotationY: array[i].rotation.y, object_rotationZ: array[i].rotation.z, object_positionLat: lonLatHeight.latitude, object_positionLon: lonLatHeight.longitude, object_positionHeight: lonLatHeight.height, object_referID: array[i].typeID, isDeleted: array[i].isDeleted},
             success: function(data) {
                 alert(data);
             },
