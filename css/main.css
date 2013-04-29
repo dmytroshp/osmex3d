@@ -181,15 +181,13 @@ body
     display: inline-block;
 }
 #osmSearch input[type="text"] {
-    width: 165px;
-    padding: 3px;
     font-size: 14px;
     line-height: 15px;
     padding: 2px 0px 2px 5px;
     box-shadow: inset #DDD 0px 1px 3px;
     box-sizing: border-box;
     border: 1px solid #ccc;
-    width: 88%;
+    width: 84%;
 }
 #searchbar
 {
