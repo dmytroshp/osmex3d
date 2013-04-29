@@ -127,7 +127,7 @@
                 background-image: url('img/48x48/rotating.png');               
             }
             #rotating:hover {
-                background-image: url('img/48x48/rotating_over.png');
+                background-image: url('img/48x48/5_over.png');
             }
             #rotating.selected
             {
@@ -386,8 +386,8 @@
                     });
 
                     $("#righttopbar").css({
-                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
-                        "top": ($("#topbar").height() / 2) + "px",
+                        "left": window.innerWidth - ($("#righttopbar").width()) - ($("#topbar").width() / 4) + "px",
+                        "top": 20 + "px",
                         "visibility": "visible"
                     });
 
