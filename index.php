@@ -112,7 +112,7 @@ HERE;
                 var heightObj = $(window).height()*0.97;
                 $("#sidebar").css("height", heightObj);
                 $("#content").css("height", heightObj);
-                $(".accordionContainer").css("height", heightObj-202);
+                $(".accordionContainer").css("height", heightObj-180);
                 $("#objectEditor").height($("#content").height() - 8);
 //         EVENT HANDLERS
 //            1. Event handler for flip
@@ -240,6 +240,7 @@ HERE;
                             $("#searchDivc").width(width+150);
                             $("#sidebar").width(width+150);
                             $("#content").css("width", "64%");
+                            $("#description").css("display", "none");
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
@@ -251,6 +252,7 @@ HERE;
                             $("#searchDivc").width(width-150);
                             $("#sidebar").width(width-150);
                             $("#content").css("width", "75%");
+                            $("#description").css("display", "block");
                         }
                 });
 //            5. Submit OSM Search Handler
@@ -396,7 +398,7 @@ HERE;
         <body>
             <div id="mainContainer">
                 <div id="sidebar">
-		    <div id="logo"><img src="img/logo.png" height="70" width="60"></div>
+		    <div id="logo"><img src="img/logo.png" height="130" width="120"></div>
                     <div id="searchDivc">
                     <div id="osmSearch">
                         <form id="osmSearchForm">
@@ -405,9 +407,7 @@ HERE;
                         </form>
                     </div>
                     </div>
-                    <div>
                         <p id="description">Here is some description...You can add here what you want (height of this text - 80px maximum)</p>
-                    </div>
                     <div class="accordionContainer">
                         <ul>
                         <li><a id="sketchTab" href="#acc">Sketches</a></li>

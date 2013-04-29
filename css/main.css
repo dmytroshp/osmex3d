@@ -110,7 +110,7 @@ body
  }
  #searchDivc{
      position: absolute;
-     top: 75px;
+     top: 130px;
      left: 5px;
      right: 5px;
  }
@@ -139,7 +139,7 @@ body
      
  }
  .accordionContainer{
-     top: 5px;
+     top: 30px;
      position: relative;
  }
  .scrollHelper{
@@ -254,4 +254,5 @@ ul.results-list li p{
     margin-bottom: 0px;
     margin-top: 26px;
     font-size: 0.6em;
+    display: none;
 }
