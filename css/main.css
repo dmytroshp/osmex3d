@@ -251,3 +251,9 @@ ul.results-list li p{
     font-size: 0.5em;
     padding-left: 20px; 
 }
+#description{
+    height: 80px;
+    margin-bottom: 0px;
+    margin-top: 26px;
+    font-size: 0.6em;
+}

@@ -388,7 +388,7 @@ HERE;
                     </div>
                     </div>
                     <div>
-                        <p style="height: 80px;margin-bottom: 0px;margin-top: 26px;font-size: 0.6em;">Here is some description...You can add here what you want (height of this text - 80px maximum)</p>
+                        <p id="description">Here is some description...You can add here what you want (height of this text - 80px maximum)</p>
                     </div>
                     <div class="accordionContainer">
                         <ul>
