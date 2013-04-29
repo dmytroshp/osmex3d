@@ -54,6 +54,14 @@
                         </p>\
                     </div>\
                 </div>";
+    var white_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
+                    <div class='ui-state-default ui-corner-all' style='padding: 0 .7em;'>\
+                        <p>\
+                        <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
+                        <p id='msgtext'></p>\
+                        </p>\
+                    </div>\
+                </div>";
             var alert = {};
             var timeout_id = 0;
         </script>
@@ -268,7 +276,7 @@
 
         </div>
 
-        <div id="bottombar" style="visibility:hidden;display:inline;float:right;">            
+        <div id="bottombar" title="Double click on an object to select it for geometry operations." style="visibility:hidden;display:inline;float:right;">            
             <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
@@ -335,6 +343,7 @@
             
             init();
             animate();
+            showStartMessage("Double click on an object to select it for geometry operations.");
 
             function init() {
 
@@ -434,9 +443,9 @@
                         $(this).addClass("selected");
                         buildNewGeometryElement(this);
                     });
-
+                    
                     $(".group3").tooltip();
-
+                    
 
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
@@ -481,30 +490,26 @@
                             },*/
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
-                                
-                                                                
-                               
-                                    
-                                    var geometryExporter = new THREE.GeometryExporter();
-                                    var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
+                                var geometryExporter = new THREE.GeometryExporter();
+                                var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
 
-                                    imageData = iconRenderer.domElement.toDataURL("image/png");
+                                imageData = iconRenderer.domElement.toDataURL("image/png");
 
-                                    ajaxNewSketch(name, category, serializedGeometry, imageData);
+                                ajaxNewSketch(name, category, serializedGeometry, imageData);
 
-                                    while (selectedObj.length > 0) {
-                                        selectedObj.pop();
-                                    }
-                                    CLICKED[0].material.emissive.setHex(0x111111);
-                                    CLICKED[0].material.color.setHex(0x111111);
-                                    if (CLICKED[1] != null) {
-                                        CLICKED[1].material.emissive.setHex(0x000000);
-                                        CLICKED[1].material.color.setHex(0x111111);
-                                    }
-                                    CLICKED[0] = null;
-                                    CLICKED[1] = null;
+                                while (selectedObj.length > 0) {
+                                    selectedObj.pop();
+                                }
+                                CLICKED[0].material.emissive.setHex(0x111111);
+                                CLICKED[0].material.color.setHex(0x111111);
+                                if (CLICKED[1] != null) {
+                                    CLICKED[1].material.emissive.setHex(0x000000);
+                                    CLICKED[1].material.color.setHex(0x111111);
+                                }
+                                CLICKED[0] = null;
+                                CLICKED[1] = null;
 
-                                    $(this).dialog("close");
+                                $(this).dialog("close");
                             },
                             Cancel: function() {
                                 
@@ -513,9 +518,6 @@
                         },
                         open: function( event, ui ) {
                     
-                            //CLICKED[0].material.emissive.setHex(0x000000);
-                            //CLICKED[0].material.color.setHex(0x111111);
-                            
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
                             iconScene.add(iconMesh);
                             
@@ -655,6 +657,19 @@
                     alert.fadeOut(1000, function() {
                     });
             }
+            
+            function showStartMessage(text) {
+                clearTimeout(timeout_id);
+                if (alert.remove)
+                    alert.remove();
+                alert = $(white_alert_template);
+                alert.find("#msgtext").html(text);
+                alert.appendTo('body');
+                alert.fadeIn(600, function() {
+                    timeout_id = setTimeout(hideMessage, 2000);
+                });
+            }
+            
             function showErrorMessage(text)
             {
                 clearTimeout(timeout_id);
@@ -702,7 +717,7 @@
 
             function setArrowsType(element) {
                 //alert($(element).attr('id'));
-                //if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
+                if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
                 
                 if (arrowMode === "build_box") {
