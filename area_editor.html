@@ -32,6 +32,39 @@
 
         <script src="scripts/AjaxRequests.js"></script>
         
+        <script type="text/javascript">
+    		jQuery(document).ready(function(){
+			 
+				// preload images
+				preload(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
+                         'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
+                         'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
+                         'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
+                         'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
+                         'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
+                         'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
+                     ]);
+			 
+			function preload(images) {
+				if (typeof document.body == "undefined") return;
+				try {
+			 
+					var div = document.createElement("div");
+					var s = div.style;
+						s.position = "absolute";
+					s.top = s.left = 0;
+					s.visibility = "hidden";
+					document.body.appendChild(div);
+					div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
+					var lastImg = div.lastChild;
+					lastImg.onload = function() { document.body.removeChild(document.body.lastChild); };
+				 }
+				 catch(e) {
+					// Error. Do nothing.
+				}
+			}
+			});
+		</script>
 
 
         <style>
@@ -239,7 +272,7 @@
                 document.body.appendChild(container);
 
                 $(document).ready(function() {
-                    $.fn.preload = function() {
+                    /*$.fn.preload = function() {
                         this.each(function(){
                             $('<img/>')[0].src = this;
                         });
@@ -253,7 +286,7 @@
                          'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
                          'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
                      ]).preload();
-
+                    */
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
