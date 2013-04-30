@@ -586,15 +586,35 @@ this.loaded = function () {
 
 				maxAnisotropy = renderer.getMaxAnisotropy();
                                 
+                                 function tile2long(x,z) {
+                                  return (x/Math.pow(2,z)*360-180);
+                                 }
+                                 function tile2lat(y,z) {
+                                  var n=Math.PI-2*Math.PI*y/Math.pow(2,z);
+                                  return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
+                                 }
+                                
                                 areaSelector = new OSMEX.AreaSelector( function(startPoint, endPoint)
                                 {
-                                    console.log("finish");
-                                    var MIN_LON = 0;
-                                    var MAX_LON = 0;
-                                    var MIN_LAT = 0;
-                                    var MAX_LAT = 0;
+                                    var halfSize = 20038706.7904;
+                                    var tileSize = 152.8832;
+                                    var tileLevel = 18;
                                     
-                                    /// HERE SWITCHING TO AREA_EDITOR.HTML WITH PARAMETERS ABOVE
+                                    var x1 = (startPoint.x + halfSize) / tileSize;
+                                    var y1 = (startPoint.z + halfSize) / tileSize;
+                                    
+                                    var x2 = (endPoint.x + halfSize) / tileSize;
+                                    var y2 = (endPoint.z + halfSize) / tileSize;
+                                    
+                                    var min_lon = tile2long(x1, tileLevel);
+                                    var max_lon = tile2long(x2, tileLevel);
+                                    
+                                    var min_lat = tile2lat(y1, tileLevel);
+                                    var max_lat = tile2lat(y2, tileLevel);
+                                    
+                                    console.log("minlon=", min_lon, "&minlat=", min_lat, "&maxlon=", max_lon, "&maxlat=", max_lat);
+                                    
+                                    /// HERE SWITCHING TO AREA_EDITOR.HTML WITH PARAMETERS min_lon, min_lat, max_lon, max_lat
                                 });
                                 scene.add(areaSelector);
 
