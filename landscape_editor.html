@@ -626,7 +626,7 @@ this.loaded = function () {
                             obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
                             var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
                             var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
-			                obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,0.5/*jstr.builds[j].positionHeight*/,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
+			                obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,jstr.builds[j].positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
 				            obj.typeObject = parseFloat(jstr.builds[j].TypeID);
 				            MeshOfBlds[b]=obj;
 						    scene.add(MeshOfBlds[b]);
