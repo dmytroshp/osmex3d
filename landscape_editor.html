@@ -35,6 +35,9 @@
 
 		<script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
         <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
+        <script src="scripts/BoundingBox.js"></script>		
+        <script src="scripts/Block.js"></script>		
+        <script src="scripts/SketchFactory.js"></script>	
 
 		<script>
 //Class of tile		
@@ -104,6 +107,7 @@ function TileBlds () {
 			var curBldId = -1;
 			var arrTile = new Array();
 			var arrTileBlds = new Array();
+			var sketchFactory;
 
 			var timerid=0;
 			var timer=1;
@@ -461,7 +465,7 @@ this.loaded = function () {
 			  //document.addEventListener('keydown',onDocumentKeyDown,false);
 			  
 			  //render();
-			  
+			  sketchFactory = new OSMEX.SketchFactory();
 			  timer=setInterval( checkTiles , 15);
 
 			}
@@ -557,7 +561,7 @@ this.loaded = function () {
 				                      }
 									  
 
-			function responseServerCubes(s) {
+			/*function responseServerCubes(s) {
 
 				var jstr;
 				jstr=jQuery.parseJSON(s);
@@ -599,7 +603,44 @@ this.loaded = function () {
 				}
 				jstr=null;
 				TLoad.loaded()	
-               }				
+               }	*/
+			function responseServerCubes(s) {
+
+				var jstr;
+				jstr=jQuery.parseJSON(s);
+				if(typeof(arrTileBlds[jstr.tile_id]) != "undefined" && arrTileBlds[jstr.tile_id] != null)
+				{
+				  if(jstr.tile_id>=0&&arrTileBlds[jstr.tile_id].id!=undefined)
+				  {
+				
+				   var id=jstr.tile_id;
+				   //alert(id)
+				   //alert("builtile "+id)
+                   for(var j=0;j<jstr.builds.length;j++)
+				   {
+				       var b=parseInt(jstr.builds[j].id);
+                       var obj = sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
+                        {
+                            obj.id = id;
+                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX), parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ));
+                            obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
+                            var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
+                            var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
+			                obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,0.5/*jstr.builds[j].positionHeight*/,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
+				            obj.typeObject = parseFloat(jstr.builds[j].TypeID);
+				            MeshOfBlds[b]=obj;
+						    scene.add(MeshOfBlds[b]);
+                            arrTileBlds[id].arrIndxsBlds[j]=b;            
+                        });
+						
+					}
+				//render();
+				//arrCurBld.push(id);	
+                }				
+				}
+				jstr=null;
+				TLoad.loaded()	
+               }			   
 
 
 			function onWindowResize() {

@@ -12,6 +12,9 @@
                 <script src="scripts/AreaSelector.js"></script>
                 <script src="scripts/Detector.js"></script>
                 <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
+                <script src="scripts/BoundingBox.js"></script>		
+                <script src="scripts/Block.js"></script>		
+                <script src="scripts/SketchFactory.js"></script>	
                 
                 <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
 		<style>
@@ -213,6 +216,7 @@ function TileBlds () {
 			var curBldId = -1;
 			var arrTile = new Array();
 			var arrTileBlds = new Array();
+			var sketchFactory;
 
 			var timerid=0;
 			var timer=1;
@@ -645,7 +649,7 @@ this.loaded = function () {
 			  //document.addEventListener('keydown',onDocumentKeyDown,false);
 			  
 			  //render();
-			  
+			  sketchFactory = new OSMEX.SketchFactory();
 			  timer=setInterval( checkTiles , 15);
 
 			}
@@ -722,30 +726,24 @@ this.loaded = function () {
 				   var id=jstr.tile_id;
 				   //alert(id)
 				   //alert("builtile "+id)
-                   for(var j=0;j<jstr.builds.length;j++){
+                   for(var j=0;j<jstr.builds.length;j++)
+				   {
 				       var b=parseInt(jstr.builds[j].id);
-				       //alert(" Build id "+b)
-					   MeshOfBlds[b] = new THREE.Mesh(
-                            new THREE.CubeGeometry(1.5,1.5,1.5),
-                           //new THREE.MeshBasicMaterial({color: 0x000000, opacity: 1})
-				           new THREE.MeshBasicMaterial({
-				           color: 0xd78254//,
-				           //'map':texture,
-				           //wireframe: false,
-				           //side:THREE.DoubleSide,
-                           //'overdraw': true
-				                })
-                            );
-
-			    var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
-                var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
-			    MeshOfBlds[b].position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,parseFloat(jstr.builds[j].positionHeight),arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
-                MeshOfBlds[b].scale.set(parseFloat(jstr.builds[j].scaleX),parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ));  
-			    MeshOfBlds[b].rotation.set(parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY), parseFloat(jstr.builds[j].rotationZ));
-                scene.add( MeshOfBlds[b]);
-				MeshOfBlds[b].visible=true;
-				arrTileBlds[id].arrIndxsBlds[j]=b;
-					   }
+                       var obj = sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
+                        {
+                            obj.id = id;
+                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX), parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ));
+                            obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
+                            var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
+                            var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
+			                obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,jstr.builds[j].positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
+				            obj.typeObject = parseFloat(jstr.builds[j].TypeID);
+				            MeshOfBlds[b]=obj;
+						    scene.add(MeshOfBlds[b]);
+                            arrTileBlds[id].arrIndxsBlds[j]=b;            
+                        });
+						
+					}
 				//render();
 				//arrCurBld.push(id);	
                 }				
