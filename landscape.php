@@ -706,7 +706,7 @@ this.loaded = function () {
 				       var b=parseInt(jstr.builds[j].id);
 				       //alert(" Build id "+b)
 					   MeshOfBlds[b] = new THREE.Mesh(
-                            new THREE.CubeGeometry(2.9,2.32,2.9),
+                            new THREE.CubeGeometry(1.5,1.5,1.5),
                            //new THREE.MeshBasicMaterial({color: 0x000000, opacity: 1})
 				           new THREE.MeshBasicMaterial({
 				           color: 0xd78254//,
@@ -719,8 +719,8 @@ this.loaded = function () {
 
 			    var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
                 var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
-			    MeshOfBlds[b].position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,0.5,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
-                MeshOfBlds[b].scale.set(parseFloat(jstr.builds[j].scaleX),8,parseFloat(jstr.builds[j].scaleZ));  
+			    MeshOfBlds[b].position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,parseFloat(jstr.builds[j].positionHeight),arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
+                MeshOfBlds[b].scale.set(parseFloat(jstr.builds[j].scaleX),parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ));  
 			    MeshOfBlds[b].rotation.set(parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY), parseFloat(jstr.builds[j].rotationZ));
                 scene.add( MeshOfBlds[b]);
 				MeshOfBlds[b].visible=true;
