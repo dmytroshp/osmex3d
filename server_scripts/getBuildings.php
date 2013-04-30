@@ -35,7 +35,7 @@ EOD;
         $t12 = $row["TypeID"];
         $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
          "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10, "positionHeight" => $t11, 
-         "typeObject" => $t12);
+         "TypeID" => $t12);
     }
     mysql_free_result($result);
 	ob_end_flush();
