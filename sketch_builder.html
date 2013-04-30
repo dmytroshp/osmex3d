@@ -68,7 +68,7 @@
 
         <style>
             body {
-                font-family: Monospace;
+                font: 62.5% "Trebuchet MS", sans-serif;
                 background-color: #f0f0f0;
                 margin: 0px;
                 overflow: hidden;
@@ -495,7 +495,9 @@
 
                                 imageData = iconRenderer.domElement.toDataURL("image/png");
 
-                                ajaxNewSketch(name, category, serializedGeometry, imageData);
+                                var result=ajaxNewSketch(name, category, serializedGeometry, imageData);
+                                showStartMessage(result);
+                                //console.debug(data);
 
                                 while (selectedObj.length > 0) {
                                     selectedObj.pop();

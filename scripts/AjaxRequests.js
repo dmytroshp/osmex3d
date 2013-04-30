@@ -60,14 +60,18 @@ function ajaxPostScene(array, osmArea) {
     }
 }
 
-function ajaxNewSketch(name, category, serializedGeometry) {
+function ajaxNewSketch(name, category, serializedGeometry,imageData) {
+    var result;
     $.ajax({
         type: "POST",
+        async:false,
         url: "server_scripts/NewSketch.php",
         cache: false,
-        data: {name: name.val(), category: category.val(), geometry: serializedGeometry}, 
+        data: {name: name.val(), category: category.val(), geometry: serializedGeometry,imageData:imageData},
+        dataType:'text',
         success: function(data) {
-            //alert(data);
+            result=data;
         }
     });
+    return result;
 }

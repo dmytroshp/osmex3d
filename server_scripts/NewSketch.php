@@ -12,19 +12,25 @@ $result = mysql_query($q);
 $count = mysql_fetch_array($result);
 mysql_free_result($result);
 if ($count[0] == 0) {
-    $query = sprintf("INSERT INTO objectcategory ( id, name ) VALUES(NULL, '%s')", mysql_real_escape_string($category));
-    mysql_query($query);
-
+    
     $q = sprintf("SELECT id FROM objectcategory WHERE name='%s'", mysql_real_escape_string($category));
     $result = mysql_query($q);
     $id = mysql_fetch_array($result);
+    if($id===FALSE)
+    {
+        $query = sprintf("INSERT INTO objectcategory ( id, name ) VALUES(NULL, '%s')", mysql_real_escape_string($category));
+        mysql_query($query);
+        $id['id']=  mysql_insert_id();
+    }
     mysql_free_result($result);
     $i = $id['id'];
+   
     
     $query = sprintf("INSERT INTO objecttype ( name, CategoryID, geometryStr ) VALUES('%s', ".$i.", '%s')", mysql_real_escape_string($name), mysql_real_escape_string(serialize($serializedGeometry)));
+    //echo $query;
     mysql_query($query);
     $uid=  mysql_insert_id();
-    $prefix=PREVIEWS_PATH."/".$uid."_".$name;
+    $prefix='../'.PREVIEWS_PATH."/".$uid."_".$name;
     $pattern="/data:image\/(png|jpeg|jpg|gif|tiff|tif);base64,(.*)/i";
     if(preg_match($pattern, $imageData,$match))
     {
@@ -46,7 +52,7 @@ if ($count[0] == 0) {
     {
         echo "Wrong image data format.\n";
     }
-    echo "Success";
+    echo "Saving completed.";
     
 } else {
     echo "Error.\nYou need to change figure's name.";
