@@ -180,10 +180,9 @@ HERE;
                         }
                     }
                 });
-                
-                $("#accSearch").keyup(function (){
-                    if(tabSelected===1){
-                        $.ajax({
+                window.refreshAccordion=function()
+                {
+                    $.ajax({
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
@@ -197,6 +196,10 @@ HERE;
                             });          
                         }
                     }); //end of ajax
+                }
+                $("#accSearch").keyup(function (){
+                    if(tabSelected===1){
+                        window.refreshAccordion();
                     }
                     if(tabSelected===2){
                         $.ajax({

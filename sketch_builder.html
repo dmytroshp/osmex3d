@@ -37,7 +37,7 @@
         
         <script type="text/javascript">
             var dialog_template = "<div id='dialog-form' title='New Sketch'>\
-                <form>\
+                <form style='z-index:999;'>\
                     <p>Icon (use mouse with right button pressed to rotate):</p>\
                     <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:235px;height:235px;'></div></div>\
                     <label for='name'>Name:</label>\
@@ -469,8 +469,8 @@
                     });
   
                     myDialog.dialog({
+                        zIndex: 999,
                         autoOpen: false,
-                        height: 600,
                         width: 450,
                         resizable: false,
                         modal: true,
@@ -498,6 +498,7 @@
                                 var result=ajaxNewSketch(name, category, serializedGeometry, imageData);
                                 showStartMessage(result);
                                 //console.debug(data);
+                                window.parent.refreshAccordion();
 
                                 while (selectedObj.length > 0) {
                                     selectedObj.pop();
@@ -530,7 +531,8 @@
                             iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
                             iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
                             
-                            iconCameraController.enabled = true;
+                            //iconCameraController.enabled = true;
+                            detachHandlers();
                             cameraController.enabled = false;
                         },
                         close: function( event, ui ) {
@@ -540,6 +542,7 @@
                             
                             iconCameraController.enabled = false;
                             cameraController.enabled = true;
+                            attachHandlers();
                         }
                         
                     });
@@ -564,6 +567,12 @@
                     iconRenderer.setClearColorHex(0xffffff, 1);
                     iconRenderer.autoClear = false;
                     $("#iconCanvas").append(iconRenderer.domElement);
+                    $("#iconCanvas").mouseenter(function(){
+                        iconCameraController.enabled = true;
+                    });
+                    $("#iconCanvas").mouseleave(function(){
+                        iconCameraController.enabled = false;
+                    });
 
                     iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
                     
@@ -642,13 +651,25 @@
 
                 container.appendChild(renderer.domElement);
 
+                attachHandlers();
+                
+            }
+            function attachHandlers()
+            {
                 document.addEventListener('mousemove', onDocumentMouseMove, false);
                 document.addEventListener('mousedown', onDocumentMouseDown, false);
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                 document.addEventListener('dblclick', onDocumentDoubleClick, false);
                 window.addEventListener('resize', onWindowResize, false);
             }
-
+            function detachHandlers()
+            {
+                document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                document.removeEventListener('mousedown', onDocumentMouseDown, false);
+                document.removeEventListener('mouseup', onDocumentMouseUp, false);
+                document.removeEventListener('dblclick', onDocumentDoubleClick, false);
+                window.removeEventListener('resize', onWindowResize, false);
+            }
             function saveScene() {
                         postScene(ADDED, MODIFIED, REMOVED);
             }
