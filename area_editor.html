@@ -66,7 +66,6 @@
 			});
 		</script>
 
-
         <style>
             body {
                 font-family: Monospace;
@@ -233,10 +232,10 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var MIN_LON = 30.74217;//30.742171;
-            var MIN_LAT = 46.44087;//46.440271;//46.438659;
-            var MAX_LON = 30.7466;//30.746596;
-            var MAX_LAT = 46.43788;//46.437879;//46.441975;
+            var MIN_LON = 30.781658;
+            var MAX_LAT = 46.563803;
+            var MAX_LON = 30.787264;
+            var MIN_LAT = 46.567185;
 
             var container;
 
@@ -272,21 +271,7 @@
                 document.body.appendChild(container);
 
                 $(document).ready(function() {
-                    /*$.fn.preload = function() {
-                        this.each(function(){
-                            $('<img/>')[0].src = this;
-                        });
-                    }
                     
-                    $(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
-                         'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
-                         'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
-                         'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
-                         'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
-                         'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
-                         'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
-                     ]).preload();
-                    */
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
@@ -423,13 +408,14 @@
 
                     for (var i = 0; i < ob.builds.length; i++) {
 
-                        var obj = sketchFactory.createObject(ob.builds[i].TypeID, function(obj)
+                        var obj = sketchFactory.createObject(ob.builds[i].typeObject, function(obj)
                         {
                             obj.id = ob.builds[i].id;
-                            obj.TypeID = ob.builds[i].TypeID;
-                            obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
-                            obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
+                            obj.scale = new THREE.Vector3 (parseFloat(ob.builds[i].scaleX), parseFloat(ob.builds[i].scaleY),parseFloat(ob.builds[i].scaleZ));
+                            obj.rotation = new THREE.Vector3 (parseFloat(ob.builds[i].rotationX), parseFloat(ob.builds[i].rotationY),parseFloat(ob.builds[i].rotationZ));
                             obj.position = osmArea.LonLatHeightToXyz(ob.builds[i].positionLon, ob.builds[i].positionLat, ob.builds[i].positionHeight);
+                            obj.typeObject = parseFloat(ob.builds[i].typeObject);
+
                             objectScene.add(obj);
                         });
                     }
@@ -440,9 +426,9 @@
                 
                var objArray = new Array();
 
-               for (var i = 0, l = scene.children.length; i < l; i++) {
+               for (var i = 0, l = objectScene.children.length; i < l; i++) {
 
-                    var obj = scene.children[i];
+                    var obj = objectScene.children[i];
 
                     if (obj instanceof OSMEX.Block) {
 
@@ -450,11 +436,11 @@
 
                             if (obj.isCreated === false) objArray.push(obj);
                         }
-                        else if (obj.isCreated === true) {
+                        else if (obj.isCreated === true ) {
 
                             objArray.push(obj);
                         }
-                        else if (obj.isModified === true) {
+                        else if (obj.isCreated === false && obj.isModified === true) {
 
                             objArray.push(obj);
                         }

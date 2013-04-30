@@ -90,7 +90,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     this.makeGeometry(objectTypeId, function(geometry)
     {
         _this.currentObject = new OSMEX.Block( geometry, _this.buildMaterial );
-        _this.currentObject.TypeID = objectTypeId;
+        _this.currentObject.typeObject = objectTypeId;
         _this.currentObject.pickable = false;
         _this.currentObject.setVisibility(false);
         _this.currentObject.name = _this.name;
@@ -119,7 +119,7 @@ OSMEX.SketchFactory.prototype.finishBuild = function() {
         arrowMode = null;
         this.currentObject = null;
         this.name = null;
-        this.typeId = null;
+        this.typeObject = null;
     }
 };
 
@@ -155,7 +155,7 @@ OSMEX.SketchFactory.prototype.getCachedGeometry = function( objectTypeId ) {
     
     var objGeometry;
     
-    this.typeId = objectTypeId;
+    this.typeObject = objectTypeId;
     
     // Cube
     if (objectTypeId == 1) {
@@ -202,8 +202,10 @@ OSMEX.SketchFactory.prototype.getCachedGeometry = function( objectTypeId ) {
     return objGeometry;
 }
 
-function getUnpackedGeometry( packedGeometry ) {
+function getUnpackedGeometry( _packedGeometry ) {
 
+	var packedGeometry = jQuery.parseJSON(_packedGeometry);
+	
     function isBitSet( value, position ) {
 
             return value & ( 1 << position );
@@ -238,7 +240,7 @@ function getUnpackedGeometry( packedGeometry ) {
 
     // disregard empty arrays
 
-    for ( i = 0; i < packedGeometry.uvs.length; i++ ) {
+   /* for ( i = 0; i < packedGeometry.uvs.length; i++ ) {
 
             if ( packedGeometry.uvs[ i ].length ) nUvLayers ++;
 
@@ -249,7 +251,7 @@ function getUnpackedGeometry( packedGeometry ) {
             geometry.faceUvs[ i ] = [];
             geometry.faceVertexUvs[ i ] = [];
 
-    }
+    }*/
 
     offset = 0;
     zLength = vertices.length;
@@ -433,7 +435,7 @@ OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCre
         var obj = new OSMEX.Block( geometry, _this.usualMaterial.clone() );
 
         obj.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
-        obj.TypeID = objectTypeId;
+        obj.typeObject = objectTypeId;
         
         onObjectCreated(obj);
     });

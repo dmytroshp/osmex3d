@@ -1,4 +1,4 @@
-function getCustomGeometry(id, successCallback){
+function getCustomGeometry(_id, successCallback){
 
     $.ajax({
         async:false,
@@ -9,7 +9,7 @@ function getCustomGeometry(id, successCallback){
         headers: {
             'Content-Type': 'application/json'
         },
-        data: {rID:id},
+        data: {id:_id},
         dataType:'text',
         success: successCallback,
         error:function()
@@ -30,7 +30,7 @@ function getBuildings(_minlon,_minlat,_maxlon,_maxlat, successCallback){
         headers: {
             'Content-Type': 'application/json'
         },
-        data: {tile_id: 0, minlon: _minlon, minlat: _minlat,maxlon: _maxlon,maxlat: _maxlat},
+        data: {tile_id: 0, minlon: _minlon, minlat: _maxlat,maxlon: _maxlon,maxlat: _minlat},
         dataType:'text',
         success: successCallback,
         error:function()
@@ -49,7 +49,7 @@ function ajaxPostScene(array, osmArea) {
             type: "POST",
             url: "server_scripts/AddInstance.php",
             cache: false,
-            data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: lonLatHeight.latitude, positionLon: lonLatHeight.longitude, positionHeight: lonLatHeight.height, TypeID: array[i].TypeID, isDeleted: array[i].isDeleted},
+            data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: lonLatHeight.latitude, positionLon: lonLatHeight.longitude, positionHeight: lonLatHeight.height, typeObject: array[i].typeObject, isDeleted: array[i].isDeleted},
             success: function(data) {
                 //alert(data);
             },
