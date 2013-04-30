@@ -627,7 +627,7 @@ this.loaded = function () {
                             var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
                             var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
 			                obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,jstr.builds[j].positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
-				            obj.typeObject = parseFloat(jstr.builds[j].TypeID);
+				            obj.TypeID = jstr.builds[j].TypeID;
 				            MeshOfBlds[b]=obj;
 						    scene.add(MeshOfBlds[b]);
                             arrTileBlds[id].arrIndxsBlds[j]=b;            
