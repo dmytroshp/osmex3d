@@ -193,10 +193,10 @@ HERE;
                   //    !  Handlers don't work after clearing the accordion, we need to assign it again
                             $(".flip").click(function(){
                                 $(this).next(".slidingPanel").slideToggle(500);
-                            });          
+                            });   
                         }
-                    }); //end of ajax
-                }
+                    }); //end of ajax 
+                };
                 $("#accSearch").keyup(function (){
                     if(tabSelected===1){
                         window.refreshAccordion();
@@ -223,13 +223,30 @@ HERE;
                                 {
                                     $("#txt").html(str);
                                 }
-                                $(".imgContainer").mouseenter(function(){
-                                    $(this).css("cursor", "pointer");
-                                });
-                                $(".imgContainer").mouseleave(function(){
-                                    $(this).css("cursor", "default");
-                                });
                             }
+                        });
+                        $("#txt").children(".imgContainer").click(function(){
+                            if(!$(this).hasClass("clicked"))
+                            {
+                                $(this).css("border", "1px solid red");
+                                $(this).unbind("mouseleave");
+                                $(this).unbind("mouseenter");
+                            }
+                            else
+                            {
+                                $(this).css("border", "1px solid white");
+                                $(this).bind("mouseleave");
+                                $(this).bind("mouseenter");
+                            }
+                            $(this).toggleClass("clicked");
+                        });
+                        $("#txt").children(".imgContainer").mouseenter(function(){
+                            $(this).css("cursor", "pointer");
+                            $(this).css("border", "1px solid red");
+                        });
+                        $("#txt").children(".imgContainer").mouseleave(function(){
+                            $(this).css("cursor", "default");
+                            $(this).css("border", "1px solid white");
                         });
                     }
                     
@@ -364,9 +381,26 @@ HERE;
 //           6. Image Container handlers                
                 $(".imgContainer").mouseenter(function(){
                     $(this).css("cursor", "pointer");
+                    $(this).css("border", "1px solid red");
                 });
                 $(".imgContainer").mouseleave(function(){
                     $(this).css("cursor", "default");
+                    $(this).css("border", "1px solid white");
+                });
+                $(".imgContainer").click(function(){
+                    if(!$(this).hasClass("clicked"))
+                    {
+                        $(this).css("border", "1px solid red");
+                        $(this).unbind("mouseleave");
+                        $(this).unbind("mouseenter");
+                    }
+                    else
+                    {
+                        $(this).css("border", "1px solid white");
+                        $(this).bind("mouseleave");
+                        $(this).bind("mouseenter");
+                    }
+                    $(this).toggleClass("clicked");
                 });
 //           7. Search handler
                 $("#sketchTab").click(function (){
@@ -378,7 +412,7 @@ HERE;
                     $("#collapseImg").css("display","none");
                     $.ajax({
                             url:"server_scripts/getTexture.php?mode=thumbnails&from=0&to=15&qw=f",
-                            async: true,
+                            async: false,
                             cache: false,
                             dataType:'json',
                             success:function(result)
@@ -390,14 +424,32 @@ HERE;
                                     str+="<div class='desc'>"+result[i].name+"</div></div>";
                                 }
                                 $("#txt").html(str);
-                                $(".imgContainer").mouseenter(function(){
-                                    $(this).css("cursor", "pointer");
-                                });
-                                $(".imgContainer").mouseleave(function(){
-                                    $(this).css("cursor", "default");
-                                });
+                                
                             }
-                        }); 
+                        });
+                        $("#txt").children(".imgContainer").click(function(){
+                            if(!$(this).hasClass("clicked"))
+                            {
+                                $(this).css("border", "1px solid red");
+                                $(this).unbind("mouseleave");
+                                $(this).unbind("mouseenter");
+                            }
+                            else
+                            {
+                                $(this).css("border", "1px solid white");
+                                $(this).bind("mouseleave");
+                                $(this).bind("mouseenter");
+                            }
+                            $(this).toggleClass("clicked");
+                        });
+                        $("#txt").children(".imgContainer").mouseenter(function(){
+                            $(this).css("cursor", "pointer");
+                            $(this).css("border", "1px solid red");
+                        });
+                        $("#txt").children(".imgContainer").mouseleave(function(){
+                            $(this).css("cursor", "default");
+                            $(this).css("border", "1px solid white");
+                        });
                 });    
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
@@ -445,9 +497,9 @@ HERE;
                                 
                                 for($i=0;$i<sizeof($instances);$i++)
                                 {
-                                    echo '<div class=imgContainer>';
+                                    echo '<div class="imgContainer">';
                                     echo '<img class="prev" src="previews/'.$instances[$i]['previewFileName'].'_mini.png">';
-                                    echo '<div class=desc>';
+                                    echo '<div class="desc">';
                                     echo $instances[$i]['name'];
                                     echo '</div></div>';
                                 }
