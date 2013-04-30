@@ -1,21 +1,19 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-OSMEX.AreaSelector = function (  ) { 
+OSMEX.AreaSelector = function ( onFinishSelecting ) { 
     
     THREE.Object3D.call( this );
     
-    this.MIN_LENGTH = 20.0;
-    this.MIN_WIDTH = 20.0;
+    this.MIN_LENGTH = 40.0;
+    this.MIN_WIDTH = 40.0;
     
-    this.MAX_LENGTH = 100.0;
-    this.MAX_WIDTH = 100.0;
+    this.MAX_LENGTH = 600.0;
+    this.MAX_WIDTH = 600.0;
     
     this.startPos = null;
     this.endPos = null;
-    
-    this.startTile = null;
-    this.endTile = null;
-    
+    this.areaAllowed = false;
+        
     var material = new THREE.MeshBasicMaterial( { color: 0xffff00, transparent: true, opacity: 0.5 } );
     var geometry = new THREE.CubeGeometry( 1, 1, 1 );
      
@@ -27,79 +25,59 @@ OSMEX.AreaSelector = function (  ) {
     this.enabled = false;
     
     this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
+    
+    this.onFinishSelecting = onFinishSelecting;
 };
 
 OSMEX.AreaSelector.prototype = Object.create( THREE.Object3D.prototype );
 
 OSMEX.AreaSelector.prototype.getObjectInfoOverMouse = function ( mouse ) {
     
-    /*var projector = new THREE.Projector();
+    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
     
-    var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-    projector.unprojectVector(vector, camera);
-    
-    var rayDirection = vector.sub(camera.position.clone().normalize()).normalize();
-    
-    console.log("rayDirection: ", rayDirection);
+    camera.projectionMatrixInverse.getInverse( camera.projectionMatrix );
 
-    var raycaster = new THREE.Raycaster(camera.position, rayDirection);
-    
-    
-    
-    var intersects = raycaster.intersectObjects(this.parent.children, true);
-    
-    console.log("intersects.length: ", intersects.length);
+    var cameraMatrixWorld = camera.matrixWorld.clone();
+    cameraMatrixWorld.elements[12] = 0;
+    //cameraMatrixWorld.elements[13] = position.y;
+    cameraMatrixWorld.elements[14] = 0;
+    var _viewProjectionMatrix = new THREE.Matrix4().multiplyMatrices( cameraMatrixWorld, camera.projectionMatrixInverse );
 
-    if (intersects.length > 0) {
-
-        for (i = 0; i < intersects.length; i++) {
-            
-            var intersector = intersects[i];
-
-            //if (intersector.object.pickable && intersector.object.visible) {
-                
-                console.log("objectInfo is got");
-
-                return intersector;
-            //}
-        }
-    }
-    
-    return null;*/
-    
-    var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
-    var projector = new THREE.Projector();
-    projector.unprojectVector(vector, camera);
-    var ray = new THREE.Ray(camera.position, vector.sub(camera.position.clone().normalize()).normalize());
+    vector.applyProjection( _viewProjectionMatrix );
+  
+    var direction = vector.clone().sub(new THREE.Vector3(0, camera.position.y, 0)).normalize();
+    var ray = new THREE.Ray(camera.position, direction);
     var intersectPoint = ray.intersectPlane(this.groundPlane);
     
     return intersectPoint;
 };
 
 OSMEX.AreaSelector.prototype.onLeftMouseButtonDown = function ( mouse ) {
+    
+    if (this.enabled === false)
+        return;
 
     var intersectPoint = this.getObjectInfoOverMouse(mouse);
     
-    if (intersectPoint !== null) {
+    if (intersectPoint !== undefined) {
     
-        this.startPos = intersectPoint;
-        this.enabled = true;
-        
-        console.log("startPos");
+        if (this.endPos) {
+            
+            this.finishSelecting();
+        }
+        else {
+            
+            this.startPos = intersectPoint.clone();
+        }
     }
 };
 
 OSMEX.AreaSelector.prototype.onLeftMouseButtonUp = function ( mouse ) {
     
-    if (this.enabled === false || this.startPos === null || this.endPos === null)
-        return;
-    
-    this.finishBuild();
-    this.startBuild();
 }
 
 OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
-    
+
     if (this.enabled === false || this.startPos === null)
         return;
     
@@ -107,9 +85,9 @@ OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
     
     var intersectPoint = this.getObjectInfoOverMouse(mouse);
     
-    if (intersectPoint !== null) { 
+    if (intersectPoint !== undefined) { 
 
-        this.endPos = intersectPoint;
+        this.endPos = intersectPoint.clone();
 
         var diag = this.endPos.clone().sub(this.startPos);
 
@@ -120,6 +98,7 @@ OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
 
         if (newLen < this.MIN_LENGTH || newWidth < this.MIN_WIDTH) {
 
+            this.areaAllowed = false;
             this.box.material.color = new THREE.Color( 0xff0000 );
         }
         else {
@@ -127,6 +106,7 @@ OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
             newLen = Math.min(newLen, this.MAX_LENGTH);
             newWidth = Math.min(newWidth, this.MAX_WIDTH);
 
+            this.areaAllowed = true;
             this.box.material.color = new THREE.Color( 0xffff00 );
         }
 
@@ -147,26 +127,43 @@ OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
     }
 };
 
-OSMEX.AreaSelector.prototype.startBuild = function () {
+OSMEX.AreaSelector.prototype.startSelecting = function () {
     
     this.box.position = new THREE.Vector3(0, 0, 0);
-    this.box.scale = new THREE.Vector3(1.0, 1.0, 1.0);
+    this.box.scale = new THREE.Vector3(4.0, 4.0, 4.0);
     this.box.visible = false;
     this.box.material.color = 0xff0000;
+    this.areaAllowed = false;
     
     this.enabled = true;
-    //cameraController.noPan = true;
+    cameraController.noPan = true;
+    
+    $("#edit_button").addClass("selected");
 };
 
-OSMEX.AreaSelector.prototype.finishBuild = function () {
+OSMEX.AreaSelector.prototype.stopSelecting = function () {
     
     this.startPos = null;
     this.endPos = null;
+    this.areaAllowed = false;
     
     this.enabled = false;
     this.box.visible = false;
     
-    //cameraController.noPan = false;
+    cameraController.noPan = false;
     
-    //$('#build_box').removeClass('selected');
+    $("#edit_button").removeClass("selected");
+};
+
+OSMEX.AreaSelector.prototype.finishSelecting = function () {
+    
+    if (this.areaAllowed === false)
+        return;
+    
+    var startPoint = this.startPos.clone();
+    var endPoint =this.endPos.clone();
+    
+    this.stopSelecting();
+    
+    this.onFinishSelecting(startPoint, endPoint);
 };

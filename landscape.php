@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - trackball camera</title>
+		<title>OSMEX3D MapViewer</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
                 <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
@@ -9,7 +9,6 @@
                 <script src="threejs/three.js"></script>
                 <script src="scripts/Camera.js"></script>
                 <script src="scripts/CameraController.js"></script>
-                <script src="scripts/TileMesh.js"></script>
                 <script src="scripts/AreaSelector.js"></script>
                 <script src="scripts/Detector.js"></script>
                 <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
@@ -30,7 +29,7 @@
                         .slider_place
                         {
                             position:absolute;
-                            top: 60px;
+                            top: 10px;
                             right:20px;
                             width:120px;
                             height:50px;
@@ -70,24 +69,24 @@
                             right:5px;
                             bottom:5px;
                         }
-                        .edit_button
+                        #edit_button
                         {
                             position: absolute;
-                            top:10px;
+                            top:70px;
                             right:30px;
                             width:100px;
                             height:40px;
                             background-image: url('img/edit.png');
                         }
-                        .edit_button.diabled
+                        #edit_button.disabled
                         {
                             background-image: url('img/edit_disabled.png');
                         }
-                        .edit_button:hover
+                        #edit_button.hover
                         {
                             background-image: url('img/edit_hovered.png');
                         }
-                        .edit_button:active
+                        #edit_button.selected
                         {
                             background-image: url('img/edit_pressed.png');
                         }
@@ -128,7 +127,7 @@ echo<<<HERE
 HERE;
 ?>
             <div id="map-controls">
-                <div class="edit_button"></div>
+                <div id="edit_button"></div>
                 <div class="slider_place ui-widget ui-widget-content ui-corner-all">
                     <p class='opc'>Buildings opacity</p>
                     <div id="slider">&nbsp;</div>
@@ -147,6 +146,7 @@ $.each(edit_button,function(value,index){
     img.css('display','none');
     img.appendTo('body');
 });
+
 function Tile () {
     this.id;
 	this.refcount=-1;
@@ -226,8 +226,12 @@ function TileBlds () {
 			var maxidinque=-1;
 			var distfor17=-1;
 
-			var camera, controls, scene, renderer;
+			var camera, cameraController, scene, renderer;
 			var maxAnisotropy;
+                        
+                        var areaSelector;
+                        
+                        var mouse = new THREE.Vector2(0, 0);
 
 			var texture;
 
@@ -251,12 +255,29 @@ function TileBlds () {
                                     buildingsOpacity=ui.value;
                                 }
                             });
+                            $("#edit_button").click(function(){
+                                
+                                if ($(this).hasClass('selected')) {
+
+                                    areaSelector.stopSelecting();
+                                }
+                                else {
+                                    
+                                    areaSelector.startSelecting();
+                                }
+                            });
                             $('#map-controls').mouseenter(function(){
-                                controls.enabled=false;
+                                cameraController.enabled=false;
+                                document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                                document.removeEventListener('mousedown', onDocumentMouseDown, false);
+                                document.removeEventListener('mouseup', onDocumentMouseUp, false);
                                 //camera.noRotate=true;
                             });
                             $('#map-controls').mouseleave(function(){
-                                controls.enabled=true;
+                                cameraController.enabled=true;
+                                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                                document.addEventListener('mousedown', onDocumentMouseDown, false);
+                                document.addEventListener('mouseup', onDocumentMouseUp, false);
                                 //camera.noRotate=false;
                             });
                         });
@@ -498,39 +519,41 @@ this.loaded = function () {
 			function init() {
 			    //land_func(0);// load 1st tileroots
 				//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 10000000 );
-				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 0.01, 10000000 , 0.01, 10000000 );
+				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 1, 40000000 , 1, 20000000 );
+                                oldCameraHeight = 0;
 				//camera.position.set(0, 3454245.2736, 0.0);
 				UnitToPixelScale = window.innerHeight /( 2.0 * getTanDeg(camera.fov / 2.0));
 
-                controls = new OSMEX.CameraController( camera );
-                //controls.userZoomSpeed = 0.43;
-				controls.ZoomSpeed = 0.43;
+                                cameraController = new OSMEX.CameraController( camera );
+                                cameraController.maxPolarAngle = Math.PI / 2.1; // limit vertical rotation to prevent rotating under ground
+				cameraController.ZoomSpeed = 0.43;
 
 
 				if(typeof(landscapeMode) != "undefined" && landscapeMode != null)
 				{
 	               if(landscapeMode=='boundary')
 	               {
-	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,controls)
+	                 setMinMax(minlon,minlat,maxlon,maxlat,camera,cameraController)
 	               }
 	               else if(landscapeMode=='zoom')
 	               {
-	                 setPointZoom(mlon,mlat,zoom,camera,controls)
+	                 setPointZoom(mlon,mlat,zoom,camera,cameraController)
 	               }
 				}else
 				{
-				  setPointZoom(0,0,0,camera,controls)
-				  //setPointZoom(10.86388,48.359621,17,camera,controls)
-				  //setMinMax(25.64,44.4,39.95,54.18,camera,controls)
+				  setPointZoom(0,0,0,camera,cameraController)
+				  //setPointZoom(10.86388,48.359621,17,camera,cameraController)
+				  //setMinMax(25.64,44.4,39.95,54.18,camera,cameraController)
 				}
 
-				//controls.rotateSpeed = 0.01;
+				//cameraController.rotateSpeed = 0.01;
 
-				//controls.addEventListener( 'change', render/*checkTiles*/ );
+				//cameraController.addEventListener( 'change', render/*checkTiles*/ );
                 //timerid=setTimeout(verify, 25);
 
 				//scene
                 scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0xccf2ff, 1, 40000000);
 				//scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
 
@@ -553,16 +576,31 @@ this.loaded = function () {
 				//renderer.setClearColor( scene.fog.color, 1 );
 				//renderer.setDepthTest(true);
 				//renderer.autoClear = true;
-				renderer.setClearColor( new THREE.Color(0xffffff), 1 );
+                                renderer.setClearColor(scene.fog.color, 1);
+                                renderer.autoClear = false;
+                
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 				container = document.getElementById( 'container' );
 				container.appendChild( renderer.domElement );
 
 				maxAnisotropy = renderer.getMaxAnisotropy();
+                                
+                                areaSelector = new OSMEX.AreaSelector( function(startPoint, endPoint)
+                                {
+                                    console.log("finish");
+                                    var MIN_LON = 0;
+                                    var MAX_LON = 0;
+                                    var MIN_LAT = 0;
+                                    var MAX_LAT = 0;
+                                    
+                                    /// HERE SWITCHING TO AREA_EDITOR.HTML WITH PARAMETERS ABOVE
+                                });
+                                scene.add(areaSelector);
 
 				//
                                 //On Window Resize
+                                
 				window.addEventListener( 'resize', onWindowResize, false );
                //wrt("clear")
 			  /* for(var i = 0; i < tiles[0].triangleGeometry.vertices.length; i++) {
@@ -591,37 +629,6 @@ this.loaded = function () {
 			  timer=setInterval( checkTiles , 15);
 
 			}
-
-			function onDocumentKeyDown(event){
-			   var k = 20000.0/3454245.2736;
-			   var delta = k * camera.position.y;
-			   var dx=0,dz=0;
-			   event = event || window.event;
-			   var keycode = event.keyCode;
-			   switch(keycode){
-			   case 37 : //left
-			   dx=(-1)*delta*Math.cos( controls.theta );
-			   dz=delta*Math.sin( controls.theta );
-			   break;
-			   case 38 : // up 
-			   dx=(-1)*delta*Math.sin( controls.theta );
-			   dz=(-1)*delta*Math.cos( controls.theta );
-			   break;
-			   case 39 : // right
-			   dx=delta*Math.cos( controls.theta );
-			   dz=(-1)*delta*Math.sin( controls.theta );
-			   break;
-			   case 40 : //down
-			   dx=delta*Math.sin( controls.theta );
-			   dz=delta*Math.cos( controls.theta );
-			   break;
-			   }
-			   camera.position.x +=dx;
-			   controls.center.x +=dx;
-			   camera.position.z +=dz;
-			   controls.center.z +=dz;
-               checkTiles();
-			   }
 
 
 
@@ -738,14 +745,6 @@ this.loaded = function () {
                 camera.updateProjectionMatrix();
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			function animate() {
-
-				requestAnimationFrame( animate );
-                                controls.update();
-				render();
 
 			}
 
@@ -1290,16 +1289,76 @@ this.loaded = function () {
 				 else{bverify=false;}
 				}*/
 			}
+                        
+                        function update() {
+                            
+                            cameraController.update();
+                            
+                            var newFar = Math.max(camera.position.y * 10, 2500);
+
+                            if (camera.cameraP.far != newFar) {
+
+                                camera.cameraP.far = newFar;
+                                camera.toPerspective();
+                                
+                                scene.fog.far = newFar;
+                            }
+                            
+                            if (camera.position.y < 2000) {
+                                
+                                $("#edit_button").removeClass("disabled");
+                            }
+                            else {
+                                
+                                $("#edit_button").addClass("disabled");
+                            }
+                        }
 
 			function render() {
-			    /*renderer.render( scene, camera );
-				renderer.clear(flase, true, flase);
-				*/
-                //renderer.clear(true, true, true);
-				//renderer.context.depthMask( true );
-				//controls.update();
-                renderer.render( scene, camera);
+
+                            renderer.clear();
+                            renderer.render( scene, camera);
 			}
+                        
+                        function animate() {
+
+                            requestAnimationFrame( animate );
+
+                            update();
+                            render();
+			}
+                        
+                       function onDocumentMouseDown(event) {
+
+                            event.preventDefault();
+
+                            if (event.button == 0) {
+
+                                areaSelector.onLeftMouseButtonDown(mouse);
+
+                            }
+                        }
+
+                        function onDocumentMouseUp(event) {
+
+                            event.preventDefault();
+
+                            if (event.button == 0) {
+
+                                areaSelector.onLeftMouseButtonUp(mouse);
+
+                            }
+                        }
+
+                        function onDocumentMouseMove(event) {
+
+                            event.preventDefault();
+
+                            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                            areaSelector.onMouseMove(mouse);
+                        }
 
 
 
