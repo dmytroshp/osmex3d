@@ -90,6 +90,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     this.makeGeometry(objectTypeId, function(geometry)
     {
         _this.currentObject = new OSMEX.Block( geometry, _this.buildMaterial );
+        _this.currentObject.TypeID = objectTypeId;
         _this.currentObject.pickable = false;
         _this.currentObject.setVisibility(false);
         _this.currentObject.name = _this.name;
@@ -432,6 +433,7 @@ OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCre
         var obj = new OSMEX.Block( geometry, _this.usualMaterial.clone() );
 
         obj.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
+        obj.TypeID = objectTypeId;
         
         onObjectCreated(obj);
     });

@@ -390,9 +390,10 @@
 
                     for (var i = 0; i < ob.builds.length; i++) {
 
-                        var obj = sketchFactory.createObject(ob.builds[i].typeObject, function(obj)
+                        var obj = sketchFactory.createObject(ob.builds[i].TypeID, function(obj)
                         {
                             obj.id = ob.builds[i].id;
+                            obj.TypeID = ob.builds[i].TypeID;
                             obj.scale = new THREE.Vector3 (ob.builds[i].scaleX, ob.builds[i].scaleY,ob.builds[i].scaleZ);
                             obj.rotation = new THREE.Vector3 (ob.builds[i].rotationX, ob.builds[i].rotationY,ob.builds[i].rotationZ);
                             obj.position = osmArea.LonLatHeightToXyz(ob.builds[i].positionLon, ob.builds[i].positionLat, ob.builds[i].positionHeight);

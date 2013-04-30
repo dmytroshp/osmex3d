@@ -6,6 +6,8 @@ OSMEX.Block = function ( geometry, material ) {
     
     this.castShadow = true;
     this.receiveShadow = true;
+    
+    this.TypeID = 1; // geometry type
 	
     this.pickable = true;
     this.isCreated = true;
@@ -24,6 +26,7 @@ OSMEX.Block.prototype.clone = function ( object ) {
 
     if ( object === undefined ) object = new OSMEX.Block( this.geometry, this.material );
     object.pickable = this.pickable;
+    object.TypeID = this.TypeID;
 
     THREE.Mesh.prototype.clone.call( this, object );
 
