@@ -14,7 +14,7 @@ $object_rotationZ = $_POST['rotationZ'];
 $object_positionLat = $_POST['positionLat'];
 $object_positionLon = $_POST['positionLon'];
 $object_positionHeight = $_POST['positionHeight'];
-$object_typeID = $_POST['typeObject'];
+$object_typeID = $_POST['TypeID'];
 $object_isDeleted = $_POST['isDeleted'];
 
 if ($object_uid == 0) {
@@ -29,7 +29,7 @@ if ($object_uid == 0) {
     mysql_query("UPDATE objectInstance SET scaleX=" . $object_scaleX . ", scaleY=" . $object_scaleY . ", scaleZ="
             . $object_scaleZ . ", rotationX=" . $object_rotationX . ", rotationY=" . $object_rotationY . ", rotationZ="
             . $object_rotationZ . ", positionLat=" . $object_positionLat . ", positionLon=" . $object_positionLon
-            . ", typeObject=" . $object_typeID . ", positionHeight=" . $object_positionHeight . " WHERE id=" 
+            . ", TypeID=" . $object_typeID . ", positionHeight=" . $object_positionHeight . " WHERE id=" 
             . $object_uid . ";");
 }
 echo "Success!";
