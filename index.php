@@ -147,7 +147,17 @@ HERE;
                     },
                     tabTxt:{
                         url:'ajax/textureBuilder.html',
-                        activator:function(){prepareTextureBuilder();}
+                        activator:function(){
+                            prepareTextureBuilder();
+                            $(document).on("addTexture", function(e){
+                                for(var i=0;i<e.textures.length;i++)
+                                {
+                                    $('#txt').append("<div class='imgContainer'>\n\
+                                    <img class='prev' src='"+e.textures[i].thumbnail+"'>\
+                                    <div class='desc'>"+e.textures[i].name+"</div></div>");
+                                }
+                            });
+                        }
                     }
                 };
                 function forceRefreshPanel(index)

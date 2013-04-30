@@ -522,6 +522,13 @@ function send(pack)
         success:function(r)
         {
             result=r;
+            if(result.success)
+            {
+                $.event.trigger({
+                    type: "addTexture",
+                    textures:result['textures']
+                });
+            }
         },
         error:function()
         {

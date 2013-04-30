@@ -24,6 +24,7 @@ if(count($pack)==0)
     echo json_encode($response);
     exit;
 }
+$response['textures']=array();
 foreach ($pack as $region) {
     $textureName=  mysql_real_escape_string($region['name']);
     $texturePoints=  mysql_real_escape_string(serialize($region['points']));
@@ -60,7 +61,11 @@ foreach ($pack as $region) {
             $thumbnail=  image_resize($image, 96, 96);
             imagepng($thumbnail, $prefix.'_mini.png');
         }
-            
+        $tmp['uid']=$uid;
+        $tmp['name']=$region['name'];
+        $tmp['thumbnail']=TEXTURE_PATH.'/'.$uid.'_'.$region['name'].'_mini.png';
+        $tmp['image']=TEXTURE_PATH.'/'.$uid.'_'.$region['name'].'.png';
+        $response['textures'][]=$tmp;  
     }
     else
     {
