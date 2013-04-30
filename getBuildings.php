@@ -33,7 +33,7 @@
         $t12 = $rs["TypeID"];
         $fullarr[] = array("id" => $t1, "scaleX" => $t2, "scaleY" => $t3, "scaleZ" => $t4, "rotationX" => $t5,
             "rotationY" => $t7, "rotationZ" => $t8, "positionLon" => $t9, "positionLat" => $t10, "positionHeight" => $t11,
-            "typeObject" => $t12);
+            "TypeID" => $t12);
     }
 
     $result_str = json_encode(array('buildings' => $fullarr));
