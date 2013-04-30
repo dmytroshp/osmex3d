@@ -54,10 +54,10 @@
                         </p>\
                     </div>\
                 </div>";
-    var white_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
+    var white_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 150)+ "px; left:" + (window.innerWidth - 460)/ 2 + "px; z-index: 999; width:460px; display:none;' id='message' class='ui-widget'>\
                     <div class='ui-state-default ui-corner-all' style='padding: 0 .7em;'>\
                         <p>\
-                        <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
+                        \
                         <p id='msgtext'></p>\
                         </p>\
                     </div>\
@@ -343,7 +343,7 @@
             
             init();
             animate();
-            showStartMessage("Double click on an object to select it for geometry operations.");
+            
 
             function init() {
 
@@ -404,7 +404,7 @@
                         "visibility": "visible"
                     });
 
-                    $("#rightbar").css({
+                    $("#rightbar").css({                        
                         //"left": window.innerWidth - ($("#topbar").width() / 2) + "px",
                         "right":'50px',
                         "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
@@ -1100,6 +1100,7 @@
                 }
                 else {
                     
+                    
                     var pickedObject = getPickedObject();
                     
                     if ( PICKED != pickedObject ) {
@@ -1119,6 +1120,8 @@
                          PICKED = pickedObject;
  
                          if ( PICKED ) {
+                             
+                             showStartMessage("Double click on an object to select it for geometry operations.");
                              
                              if ( PICKED.material.emissive ) {
                                  
