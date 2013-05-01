@@ -107,7 +107,7 @@
 
         <style>
             body {
-                font: 62.5% "Trebuchet MS", sans-serif;
+                font-family: Monospace;
                 background-color: #f0f0f0;
                 margin: 0px;
                 overflow: hidden;
@@ -297,7 +297,7 @@
         </div>
 
         <div id="righttopbar" style="visibility:hidden;display:block;text-align:left;">
-            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Display bounding boxes</label>
+            <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Show bounding boxes</label>
         </div>
 
         <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
@@ -375,6 +375,8 @@
             var operationStack = [];
 
             var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh, imageData;
+            
+            var objectLight, interfaceLight
             
             var OPERATED = false;
             var firstObject, secondObject, resultObj;
@@ -511,6 +513,7 @@
                         zIndex: 999,
                         autoOpen: false,
                         width: 450,
+                        height: 600,
                         resizable: false,
                         modal: true,
                         buttons: {
@@ -542,12 +545,13 @@
                                 while (selectedObj.length > 0) {
                                     selectedObj.pop();
                                 }
-                                CLICKED[0].material.emissive.setHex(0x111111);
-                                CLICKED[0].material.color.setHex(0x111111);
+                                CLICKED[0].material.color.setHex( CLICKED[0].oldColor ); 
+
                                 if (CLICKED[1] != null) {
-                                    CLICKED[1].material.emissive.setHex(0x000000);
-                                    CLICKED[1].material.color.setHex(0x111111);
+                                    
+                                    CLICKED[1].material.color.setHex( CLICKED[1].oldColor ); 
                                 }
+                                
                                 CLICKED[0] = null;
                                 CLICKED[1] = null;
 
@@ -559,8 +563,9 @@
                             }
                         },
                         open: function( event, ui ) {
-                    
+
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
+                            iconMesh.scale.copy(CLICKED[0].scale);
                             iconScene.add(iconMesh);
                             
                             iconMesh.geometry.computeBoundingSphere();
@@ -587,14 +592,14 @@
                     });
 
                     $(".group4").click(function() {
-                        
+
                         if (CLICKED[0]) {
 
                             myDialog.dialog("open");
                             
                         } else {
                             
-                            showErrorMessage("Error. Please select an object to publish.");
+                            showErrorMessage("Error! Please select an object to publish.");
                         }
                     });
                     
@@ -606,12 +611,6 @@
                     iconRenderer.setClearColorHex(0xffffff, 1);
                     iconRenderer.autoClear = false;
                     $("#iconCanvas").append(iconRenderer.domElement);
-                    $("#iconCanvas").mouseenter(function(){
-                        iconCameraController.enabled = true;
-                    });
-                    $("#iconCanvas").mouseleave(function(){
-                        iconCameraController.enabled = false;
-                    });
 
                     iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
                     
@@ -633,7 +632,7 @@
                 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
-                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 1500, 1, 1500);
+                camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 3000, 1, 3000);
                 camera.rotation.x -= Math.PI / 4;
                 camera.position.z = 100;
                 camera.position.y = 100;
@@ -644,17 +643,19 @@
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
-                objectScene.fog = new THREE.Fog(0xFBFBFB, 1, 1500);
+                objectScene.fog = new THREE.Fog(0xFBFBFB, 1, 3000);
 
                 objectScene.add(new THREE.AmbientLight(0x3f3f3f));
                 interfaceScene.add(new THREE.AmbientLight(0x3f3f3f));
 
-                var objectLight = new THREE.DirectionalLight(0xffffff);
+                objectLight = new THREE.DirectionalLight(0xffffff);
                 objectLight.position = camera.position;
+                objectLight.target.position = cameraController.target;
                 objectScene.add(objectLight);
 
-                var interfaceLight = new THREE.DirectionalLight(0xffffff);
+                interfaceLight = new THREE.DirectionalLight(0xffffff);
                 interfaceLight.position = camera.position;
+                interfaceLight.target.position = cameraController.target;
                 interfaceScene.add(interfaceLight);
 
                 // GROUND
@@ -709,9 +710,6 @@
                 document.removeEventListener('dblclick', onDocumentDoubleClick, false);
                 window.removeEventListener('resize', onWindowResize, false);
             }
-            function saveScene() {
-                        postScene(ADDED, MODIFIED, REMOVED);
-            }
             
             function hideMessage()
             {
@@ -744,25 +742,6 @@
                 alert.fadeIn(600, function() {
                     timeout_id = setTimeout(hideMessage, 440);
                 });
-            }
-
-            function coordinates() {
-                this.lat = 0;
-                this.lon = 0;
-            }
-
-            function local2LatLon(vector) {
-
-                var lonDiff = MAX_LON - MIN_LON;
-                var latDiff = MAX_LAT - MIN_LAT;
-                var lonStep = lonDiff / (GRID_SIZE * 2);
-                var latStep = latDiff / (GRID_SIZE * 2);
-                var lon = MIN_LON + ((vector.x + GRID_SIZE) * lonStep);
-                var lat = MAX_LAT - ((vector.z + GRID_SIZE) * latStep);
-                var coords = new coordinates();
-                coords.lon = lon;
-                coords.lat = lat;
-                return coords;
             }
 
             function addBoundingBox() {
@@ -823,7 +802,6 @@
                         var second_bsp;
                         
                         var nameOfOperation, result_bsp;
-                        var scale;
                         
                         
                         if (OPERATED) {
@@ -846,24 +824,18 @@
                             if ($(element).attr('id') == "union") {
                                 nameOfOperation = "Union";
                                 result_bsp = first_bsp.union(second_bsp);
-                                scale = firstObject.scale;
                             } else if ($(element).attr('id') == "intersection") {
                                 nameOfOperation = "Intersection";
                                 result_bsp = first_bsp.intersect(second_bsp);
-                                scale = firstObject.scale;
                             } else if ($(element).attr('id') == "complement_2-1") {
                                 nameOfOperation = "Complement(2-1)";
                                 result_bsp = second_bsp.subtract(first_bsp);
-                                scale = firstObject.scale;
                             } else if ($(element).attr('id') == "complement_1-2") {
                                 nameOfOperation = "Complement(1-2)";
                                 result_bsp = first_bsp.subtract(second_bsp);
-                                scale = firstObject.scale;
                             }
 
-                            var material = new THREE.MeshPhongMaterial();//{color: 0x111111});
-                            
-                            
+                            var material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
                             
                             var geometry = result_bsp.toGeometry();
                         
@@ -871,14 +843,16 @@
                             var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x) / 2;
                             var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y) / 2;
                             var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z) / 2;
+                            
+                            var maxScale = Math.max(Math.max(scaleX, scaleY), scaleZ);
 
-                            var resultScale = new THREE.Vector3(scaleX, scaleY, scaleZ);
+                            var resultScale = new THREE.Vector3(maxScale, maxScale, maxScale);
                             var resultPosition = geometry.boundingBox.center();
 
                             var rotationMatrix = new THREE.Matrix4().extractRotation(result_bsp.matrix);
                             var resultRotation = new THREE.Vector3().setEulerFromRotationMatrix( rotationMatrix );
 
-                            var scaleMatrix = new THREE.Matrix4().makeScale( scaleX, scaleY, scaleZ );
+                            var scaleMatrix = new THREE.Matrix4().makeScale( maxScale, maxScale, maxScale );
                             var resultMatrix = new THREE.Matrix4().multiplyMatrices( rotationMatrix, scaleMatrix );
                             resultMatrix.elements[12] = resultPosition.x;
                             resultMatrix.elements[13] = resultPosition.y;
@@ -1372,7 +1346,6 @@
             function onCameraChange() {
 
                 boxBuilder.update();
-                render();
             }
 
 

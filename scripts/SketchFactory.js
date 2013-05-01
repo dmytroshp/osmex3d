@@ -76,7 +76,7 @@ OSMEX.SketchFactory.prototype.isBuilding = function () {
 };
 
 OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
-    
+
     if (this.currentObject !== null) {
         
         this.remove(this.currentObject);
@@ -86,7 +86,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     arrowMode = "building";
     
     var _this = this;
-    
+
     this.makeGeometry(objectTypeId, function(geometry)
     {
         _this.currentObject = new OSMEX.Block( geometry, _this.buildMaterial );
@@ -95,6 +95,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
         _this.currentObject.setVisibility(false);
         _this.currentObject.name = _this.name;
         _this.currentObject.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
+
         _this.add(_this.currentObject);
     });
 };
@@ -130,7 +131,7 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId, onGeometryM
     var objGeometry = this.getCachedGeometry(objectTypeId);
     
     if (!objGeometry) {
-        
+
         var _this = this;
 
         getCustomGeometry(objectTypeId, function(json)
@@ -146,7 +147,7 @@ OSMEX.SketchFactory.prototype.makeGeometry = function( objectTypeId, onGeometryM
         });
     }
     else {
-        
+
         onGeometryMade(objGeometry);
     }
 };
@@ -160,7 +161,7 @@ OSMEX.SketchFactory.prototype.getCachedGeometry = function( objectTypeId ) {
     // Cube
     if (objectTypeId == 1) {
         
-        objGeometry = new THREE.CubeGeometry( 1.5, 1.5, 1.5 ); // for building to fill space
+        objGeometry = new THREE.CubeGeometry( 1.0, 1.0, 1.0 ); // for building to fill space
         this.name = "cube";
     }
     // Sphere
@@ -436,7 +437,7 @@ OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCre
 
         obj.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
         obj.TypeID = objectTypeId;
-        
+
         onObjectCreated(obj);
     });
 };

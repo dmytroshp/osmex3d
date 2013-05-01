@@ -430,7 +430,7 @@
                             obj.rotation = new THREE.Vector3 (parseFloat(ob.builds[i].rotationX), parseFloat(ob.builds[i].rotationY),parseFloat(ob.builds[i].rotationZ));
                             obj.position = osmArea.LonLatHeightToXyz(parseFloat(ob.builds[i].positionLon), parseFloat(ob.builds[i].positionLat), parseFloat(ob.builds[i].positionHeight));
                             obj.TypeID = parseFloat(ob.builds[i].TypeID);
-							obj.isCreated = 0;
+                            obj.isCreated = 0;
                             objectScene.add(obj);
                         });
                     }
@@ -836,6 +836,7 @@
             function animate() {
 
                requestAnimationFrame(animate);
+               
                update();
                render();
             }
@@ -851,7 +852,6 @@
             function onCameraChange() {
 
                 boxBuilder.update();
-                render();
             }
 
 
