@@ -7,12 +7,12 @@ OSMEX.Block = function ( geometry, material ) {
     this.castShadow = true;
     this.receiveShadow = true;
     
-    this.typeObject = 1; // geometry type
+    this.TypeID = 1; // geometry type
 	
     this.pickable = true;
-    this.isCreated = false;
-    this.isModified = false;
-    this.isDeleted = false;
+    this.isCreated = 1;
+    this.isModified = 0;
+    this.isDeleted = 0;
     this.id = 0;
     
     this.bbox = new OSMEX.BoundingBox(this);
@@ -26,7 +26,7 @@ OSMEX.Block.prototype.clone = function ( object ) {
 
     if ( object === undefined ) object = new OSMEX.Block( this.geometry, this.material );
     object.pickable = this.pickable;
-    object.typeObject = this.typeObject;
+    object.TypeID = this.TypeID;
 
     THREE.Mesh.prototype.clone.call( this, object );
 

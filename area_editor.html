@@ -232,10 +232,10 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var MIN_LON = 30.781658;
-            var MAX_LAT = 46.563803;
-            var MAX_LON = 30.787264;
-            var MIN_LAT = 46.567185;
+            var MIN_LON = 30.774035;
+            var MAX_LAT = 46.574192;
+            var MAX_LON = 30.779641;
+            var MIN_LAT = 46.577573;
 
             var container;
 
@@ -271,7 +271,22 @@
                 document.body.appendChild(container);
 
                 $(document).ready(function() {
+                    /*$.fn.preload = function() {
+                        this.each(function(){
+                            $('<img/>')[0].src = this;
+                        });
+                    }
                     
+                    $(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
+                         'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
+                         'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
+                         'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
+                         'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
+                         'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
+                         'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
+                     ]).preload();
+					
+					*/
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
@@ -408,14 +423,14 @@
 
                     for (var i = 0; i < ob.builds.length; i++) {
 
-                        var obj = sketchFactory.createObject(ob.builds[i].typeObject, function(obj)
+                        var obj = sketchFactory.createObject(ob.builds[i].TypeID, function(obj)
                         {
                             obj.id = ob.builds[i].id;
                             obj.scale = new THREE.Vector3 (parseFloat(ob.builds[i].scaleX), parseFloat(ob.builds[i].scaleY),parseFloat(ob.builds[i].scaleZ));
                             obj.rotation = new THREE.Vector3 (parseFloat(ob.builds[i].rotationX), parseFloat(ob.builds[i].rotationY),parseFloat(ob.builds[i].rotationZ));
-                            obj.position = osmArea.LonLatHeightToXyz(ob.builds[i].positionLon, ob.builds[i].positionLat, ob.builds[i].positionHeight);
-                            obj.typeObject = parseFloat(ob.builds[i].typeObject);
-
+                            obj.position = osmArea.LonLatHeightToXyz(parseFloat(ob.builds[i].positionLon), parseFloat(ob.builds[i].positionLat), parseFloat(ob.builds[i].positionHeight));
+                            obj.TypeID = parseFloat(ob.builds[i].TypeID);
+							obj.isCreated = 0;
                             objectScene.add(obj);
                         });
                     }
@@ -432,15 +447,15 @@
 
                     if (obj instanceof OSMEX.Block) {
 
-                        if (obj.isDeleted === true) {
+                        if (obj.isDeleted == 1) {
 
-                            if (obj.isCreated === false) objArray.push(obj);
+                            if (obj.isCreated == 0) objArray.push(obj);
                         }
-                        else if (obj.isCreated === true ) {
+                        else if (obj.isCreated == 1 ) {
 
                             objArray.push(obj);
                         }
-                        else if (obj.isCreated === false && obj.isModified === true) {
+                        else if (obj.isCreated == 0 && obj.isModified === 1) {
 
                             objArray.push(obj);
                         }
@@ -678,7 +693,7 @@
                         var pickRef = (PICKED.pickRef !== undefined ? PICKED.pickRef : PICKED);
 
                         if (arrowMode == "deleting") {
-                            PICKED.isDeleted = true;
+                            PICKED.isDeleted = 1;
                             PICKED.visible = false;
                             PICKED.bbox.setVisibility(false);
                             //objectScene.remove(PICKED);
@@ -796,7 +811,7 @@
                     cameraController.noRotate = false;
 
                     if ((DRAGGING || SIZING || SCALING || ROTATING || MOVING) && SELECTED.id != 0) {
-                        SELECTED.isModified = true;
+                        SELECTED.isModified = 1;
                     }
                     
                     if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();

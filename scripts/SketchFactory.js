@@ -90,7 +90,7 @@ OSMEX.SketchFactory.prototype.startBuild = function( objectTypeId ) {
     this.makeGeometry(objectTypeId, function(geometry)
     {
         _this.currentObject = new OSMEX.Block( geometry, _this.buildMaterial );
-        _this.currentObject.typeObject = objectTypeId;
+        _this.currentObject.TypeID = objectTypeId;
         _this.currentObject.pickable = false;
         _this.currentObject.setVisibility(false);
         _this.currentObject.name = _this.name;
@@ -119,7 +119,7 @@ OSMEX.SketchFactory.prototype.finishBuild = function() {
         arrowMode = null;
         this.currentObject = null;
         this.name = null;
-        this.typeObject = null;
+        this.TypeID = null;
     }
 };
 
@@ -155,7 +155,7 @@ OSMEX.SketchFactory.prototype.getCachedGeometry = function( objectTypeId ) {
     
     var objGeometry;
     
-    this.typeObject = objectTypeId;
+    this.TypeID = objectTypeId;
     
     // Cube
     if (objectTypeId == 1) {
@@ -435,7 +435,7 @@ OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCre
         var obj = new OSMEX.Block( geometry, _this.usualMaterial.clone() );
 
         obj.scale = new THREE.Vector3(_this.DEFAULT_SCALE, _this.DEFAULT_SCALE, _this.DEFAULT_SCALE);
-        obj.typeObject = objectTypeId;
+        obj.TypeID = objectTypeId;
         
         onObjectCreated(obj);
     });

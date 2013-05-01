@@ -46,10 +46,10 @@ function ajaxPostScene(array, osmArea) {
     for (var i = 0; i < array.length; i++) {
         var lonLatHeight = osmArea.XyzToLonLatHeight(array[i].position);
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "server_scripts/AddInstance.php",
             cache: false,
-            data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: lonLatHeight.latitude, positionLon: lonLatHeight.longitude, positionHeight: lonLatHeight.height, typeObject: array[i].typeObject, isDeleted: array[i].isDeleted},
+            data: {uid: array[i].id, scaleX: array[i].scale.x, scaleY: array[i].scale.y, scaleZ: array[i].scale.z, rotationX: array[i].rotation.x, rotationY: array[i].rotation.y, rotationZ: array[i].rotation.z, positionLat: lonLatHeight.latitude, positionLon: lonLatHeight.longitude, positionHeight: lonLatHeight.height, TypeID: array[i].TypeID, isDeleted: array[i].isDeleted},
             success: function(data) {
                 //alert(data);
             },

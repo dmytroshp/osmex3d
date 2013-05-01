@@ -4,18 +4,18 @@ require_once 'config.php';
 if($connection===FALSE || $select_db===FALSE)
     die("MySQL error.");
 
-$object_uid = $_POST['uid'];
-$object_scaleX = $_POST['scaleX'];
-$object_scaleY = $_POST['scaleY'];
-$object_scaleZ = $_POST['scaleZ'];
-$object_rotationX = $_POST['rotationX'];
-$object_rotationY = $_POST['rotationY'];
-$object_rotationZ = $_POST['rotationZ'];
-$object_positionLat = $_POST['positionLat'];
-$object_positionLon = $_POST['positionLon'];
-$object_positionHeight = $_POST['positionHeight'];
-$object_typeID = $_POST['TypeID'];
-$object_isDeleted = $_POST['isDeleted'];
+$object_uid = $_GET['uid'];
+$object_scaleX = $_GET['scaleX'];
+$object_scaleY = $_GET['scaleY'];
+$object_scaleZ = $_GET['scaleZ'];
+$object_rotationX = $_GET['rotationX'];
+$object_rotationY = $_GET['rotationY'];
+$object_rotationZ = $_GET['rotationZ'];
+$object_positionLat = $_GET['positionLat'];
+$object_positionLon = $_GET['positionLon'];
+$object_positionHeight = $_GET['positionHeight'];
+$object_typeID = $_GET['TypeID'];
+$object_isDeleted = $_GET['isDeleted'];
 
 if ($object_uid == 0) {
     $INSERT_OBJECT = "INSERT INTO objectInstance VALUE (NULL, " . $object_scaleX . ", "
