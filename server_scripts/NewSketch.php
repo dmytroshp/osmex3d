@@ -4,6 +4,9 @@ require_once 'imageThumbnail.php';
 $name = $_POST['name'];
 $category = $_POST['category'];
 $serializedGeometry = $_POST['geometry'];
+$origScaleX = $_POST['origScaleX'];
+$origScaleY = $_POST['origScaleY'];
+$origScaleZ = $_POST['origScaleZ'];
 $imageData = $_POST['imageData'];
 if($connection===FALSE||$select_db===FALSE)
     die('MySQL connection error.');
@@ -26,7 +29,7 @@ if ($count[0] == 0) {
     $i = $id['id'];
    
     
-    $query = sprintf("INSERT INTO objecttype ( name, CategoryID, geometryStr ) VALUES('%s', ".$i.", '%s')", mysql_real_escape_string($name), mysql_real_escape_string(serialize($serializedGeometry)));
+    $query = sprintf("INSERT INTO objecttype ( name, CategoryID, geometryStr, origScaleX, origScaleY, origScaleZ ) VALUES('%s', ".$i.", '%s', ".$origScaleX.", ".$origScaleY.", ".$origScaleZ.")", mysql_real_escape_string($name), mysql_real_escape_string(serialize($serializedGeometry)));
     //echo $query;
     mysql_query($query);
     $uid=  mysql_insert_id();

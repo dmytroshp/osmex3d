@@ -31,6 +31,7 @@
         <script src="scripts/RotationGizmoOverlay.js"></script>
         <script src="scripts/RotationGizmo.js"></script>
         <script src="scripts/BoxBuilder.js"></script>
+        <script src="scripts/SketchType.js"></script>
         <script src="scripts/SketchFactory.js"></script>
 
         <script src="scripts/AjaxRequests.js"></script>
@@ -82,7 +83,7 @@
                     <label for='name'>Name:</label>\
                     <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
                     <label for='category'>Category:</label>\
-                    <input type='text' name='email' id='category' value='' class='text ui-widget-content ui-corner-all' />\
+                    <input type='text' name='category' id='category' value='' class='text ui-widget-content ui-corner-all' />\
                 </form>\
             </div>";
             var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
@@ -341,12 +342,6 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var FIRST_PICKABLE_OBJ = 6;
-            var GRID_SIZE = 60;
-            var MIN_LON = 30.73699951171875;
-            var MIN_LAT = 46.470970513345925;
-            var MAX_LON = 30.738372802734375;
-            var MAX_LAT = 46.471916320870406;
 
             var container;
 
@@ -360,7 +355,6 @@
             var CLICKED = [null, null];
 
             var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING;
-            var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
             var offsetVector = new THREE.Vector3();
 
             var groundGrid, groundPlane;
@@ -487,7 +481,6 @@
                     
                     $(".group3").tooltip();
                     
-
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
                     // мышка
@@ -537,7 +530,7 @@
 
                                 imageData = iconRenderer.domElement.toDataURL("image/png");
 
-                                var result=ajaxNewSketch(name, category, serializedGeometry, imageData);
+                                var result=ajaxNewSketch(name, category, serializedGeometry, CLICKED[0].scale, imageData);
                                 showStartMessage(result);
                                 //console.debug(data);
                                 window.parent.refreshAccordion();
@@ -563,8 +556,10 @@
                             }
                         },
                         open: function( event, ui ) {
+                            
+                            var material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
-                            iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), CLICKED[0].material.clone());
+                            iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), material);
                             iconMesh.scale.copy(CLICKED[0].scale);
                             iconScene.add(iconMesh);
                             
@@ -575,9 +570,9 @@
                             iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
                             iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
                             
-                            //iconCameraController.enabled = true;
-                            detachHandlers();
+                            iconCameraController.enabled = true;
                             cameraController.enabled = false;
+                            detachHandlers();
                         },
                         close: function( event, ui ) {
                             
@@ -592,14 +587,26 @@
                     });
 
                     $(".group4").click(function() {
-
-                        if (CLICKED[0]) {
-
-                            myDialog.dialog("open");
+                        
+                        if (CLICKED[0] && CLICKED[1]) {
                             
-                        } else {
+                            showErrorMessage("Error! Please select a single object to publish.");
+                        }
+                        else {
                             
-                            showErrorMessage("Error! Please select an object to publish.");
+                            var selectedObject = CLICKED[0] ? CLICKED[0] : CLICKED[1];
+                            
+                            if (selectedObject) {
+                                
+                                CLICKED[0] = selectedObject;
+                                CLICKED[1] = null;
+                                
+                                myDialog.dialog("open");
+                            }
+                            else {
+                                
+                                showErrorMessage("Error! Please select an object to publish.");
+                            }
                         }
                     });
                     
@@ -772,6 +779,7 @@
             }
 
              function buildNewGeometryElement(element) {
+                 
                 if ($(element).attr('id') == "rollback") {
 
                     if (operationStack.length > 0) {
@@ -792,28 +800,32 @@
                         }
                         removeFromListOfOperations();
                     }
-                } else {
+                }
+                else {
+                    
                     if (!OPERATED  && (!CLICKED[0] || !CLICKED[1])) {
-                        showErrorMessage("Error. Select two objects.");
-                    } else {                      
                         
+                        showErrorMessage("Error. Select two objects.");
+                    }
+                    else {
                         
                         var first_bsp;
                         var second_bsp;
                         
                         var nameOfOperation, result_bsp;
                         
-                        
                         if (OPERATED) {
-                             resultObj.visible = false;
+                            
+                            resultObj.visible = false;
                             objectScene. remove(resultObj);
                             operationStack.shift();
                             //resultObj = null;
                             first_bsp = new ThreeBSP(firstObject);
                             second_bsp = new ThreeBSP(secondObject);
                                  
-                                 removeFromListOfOperations(); 
-                        } else {                      
+                            removeFromListOfOperations(); 
+                        }
+                        else {                      
                         
                             firstObject = CLICKED[0].clone();
                             secondObject = CLICKED[1].clone();
@@ -843,16 +855,14 @@
                             var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x) / 2;
                             var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y) / 2;
                             var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z) / 2;
-                            
-                            var maxScale = Math.max(Math.max(scaleX, scaleY), scaleZ);
 
-                            var resultScale = new THREE.Vector3(maxScale, maxScale, maxScale);
+                            var resultScale = new THREE.Vector3(scaleX, scaleY, scaleZ);
                             var resultPosition = geometry.boundingBox.center();
 
                             var rotationMatrix = new THREE.Matrix4().extractRotation(result_bsp.matrix);
                             var resultRotation = new THREE.Vector3().setEulerFromRotationMatrix( rotationMatrix );
 
-                            var scaleMatrix = new THREE.Matrix4().makeScale( maxScale, maxScale, maxScale );
+                            var scaleMatrix = new THREE.Matrix4().makeScale( scaleX, scaleY, scaleZ );
                             var resultMatrix = new THREE.Matrix4().multiplyMatrices( rotationMatrix, scaleMatrix );
                             resultMatrix.elements[12] = resultPosition.x;
                             resultMatrix.elements[13] = resultPosition.y;
@@ -981,6 +991,7 @@
             }
 
             function onDocumentDoubleClick(event) {
+                
                 event.preventDefault();
 
                 if (event.button == 0) {

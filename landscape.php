@@ -13,7 +13,8 @@
                 <script src="scripts/Detector.js"></script>
                 <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
                 <script src="scripts/BoundingBox.js"></script>		
-                <script src="scripts/Block.js"></script>		
+                <script src="scripts/Block.js"></script>
+                <script src="scripts/SketchType.js"></script>
                 <script src="scripts/SketchFactory.js"></script>	
                 
                 <link type="text/css" href="css/smoothness/jquery-ui-1.10.2.custom.min.css" rel="stylesheet" />
