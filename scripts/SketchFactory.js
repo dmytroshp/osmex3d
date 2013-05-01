@@ -161,7 +161,7 @@ OSMEX.SketchFactory.prototype.getCachedGeometry = function( objectTypeId ) {
     // Cube
     if (objectTypeId == 1) {
         
-        objGeometry = new THREE.CubeGeometry( 1.0, 1.0, 1.0 ); // for building to fill space
+        objGeometry = new THREE.CubeGeometry( 1, 1, 1 );
         this.name = "cube";
     }
     // Sphere

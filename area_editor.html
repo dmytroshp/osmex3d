@@ -426,7 +426,7 @@
                         var obj = sketchFactory.createObject(ob.builds[i].TypeID, function(obj)
                         {
                             obj.id = ob.builds[i].id;
-                            obj.scale = new THREE.Vector3 (parseFloat(ob.builds[i].scaleX), parseFloat(ob.builds[i].scaleY),parseFloat(ob.builds[i].scaleZ));
+                            obj.scale = new THREE.Vector3 (parseFloat(ob.builds[i].scaleX)*1.5, parseFloat(ob.builds[i].scaleY)*1.5,parseFloat(ob.builds[i].scaleZ)*1.5);
                             obj.rotation = new THREE.Vector3 (parseFloat(ob.builds[i].rotationX), parseFloat(ob.builds[i].rotationY),parseFloat(ob.builds[i].rotationZ));
                             obj.position = osmArea.LonLatHeightToXyz(parseFloat(ob.builds[i].positionLon), parseFloat(ob.builds[i].positionLat), parseFloat(ob.builds[i].positionHeight));
                             obj.TypeID = parseFloat(ob.builds[i].TypeID);
