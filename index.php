@@ -471,7 +471,7 @@ HERE;
         <body>
             <div id="mainContainer">
                 <div id="sidebar">
-		    <div id="logo"><img src="img/logo.png" height="130" width="120"></div>
+		    <div id="logo"><img src="img/logo.png" height="130" width="437"></div>
                     <div id="searchDivc">
                     <div id="osmSearch">
                         <form id="osmSearchForm">
