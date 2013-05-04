@@ -619,11 +619,11 @@ this.loaded = function () {
                                     var lat1 = tile2lat(y1, tileLevel);
                                     var lat2 = tile2lat(y2, tileLevel);
                                     
-                                    parent.EDIT_MIN_LON = Math.min(lon1, lon2);
-                                    parent.EDIT_MIN_LAT = Math.max(lat1, lat2);  // min_lat should be greater than max_lat
+                                    parent.EDIT_MIN_LON = Math.min(lon1, lon2);  // LEFT
+                                    parent.EDIT_MIN_LAT = Math.min(lat1, lat2);  // BOTTOM
                                     
-                                    parent.EDIT_MAX_LON = Math.max(lon1, lon2);
-                                    parent.EDIT_MAX_LAT = Math.min(lat1, lat2);  // min_lat should be greater than max_lat
+                                    parent.EDIT_MAX_LON = Math.max(lon1, lon2);  // RIGHT
+                                    parent.EDIT_MAX_LAT = Math.max(lat1, lat2);  // TOP
                                     
                                     parent.enableMapEditing();
                                     

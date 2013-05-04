@@ -4,11 +4,11 @@ OSMEX.AreaSelector = function ( onFinishSelecting ) {
     
     THREE.Object3D.call( this );
     
-    this.MIN_LENGTH = 40.0;
-    this.MIN_WIDTH = 40.0;
+    this.MIN_LENGTH = 50.0;
+    this.MIN_WIDTH = 50.0;
     
-    this.MAX_LENGTH = 400.0;
-    this.MAX_WIDTH = 400.0;
+    this.MAX_LENGTH = 500.0;
+    this.MAX_WIDTH = 500.0;
     
     this.startPos = null;
     this.endPos = null;

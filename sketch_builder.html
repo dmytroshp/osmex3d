@@ -581,22 +581,22 @@
                         
                         if (CLICKED[0] && CLICKED[1]) {
                             
-                            showErrorMessage("Error! Please select a single object to publish.");
+                            showErrorMessage("Please select a single object to publish.");
                         }
                         else {
                             
-                            var selectedObject = CLICKED[0] ? CLICKED[0] : CLICKED[1];
+                            var publishObject = CLICKED[0] ? CLICKED[0] : CLICKED[1];
                             
-                            if (selectedObject) {
+                            if (publishObject) {
                                 
-                                CLICKED[0] = selectedObject;
+                                CLICKED[0] = publishObject;
                                 CLICKED[1] = null;
                                 
                                 myDialog.dialog("open");
                             }
                             else {
                                 
-                                showErrorMessage("Error! Please select an object to publish.");
+                                showErrorMessage("Please select an object to publish by double click.");
                             }
                         }
                     });
@@ -738,7 +738,7 @@
                 alert.appendTo('body');
                 //$("#msgtext").html(text);
                 alert.fadeIn(600, function() {
-                    timeout_id = setTimeout(hideMessage, 440);
+                    timeout_id = setTimeout(hideMessage, 2000);
                 });
             }
 
@@ -774,20 +774,18 @@
                 if ($(element).attr('id') == "rollback") {
 
                     if (operationStack.length > 0) {
-                        CLICKED[0] = null;
-                        CLICKED[1] = null;
+
                         while (selectedObj.length > 0) {
                             selectedObj.pop();
                         }
                         var rollbackOperation = operationStack.pop();
                         objectScene.remove(rollbackOperation.output);
-                        var tmp;
-                        for (var i = 0; i < rollbackOperation.input.length; i++) {
-                            tmp = rollbackOperation.input[i];
-                            tmp.material.emissive.setHex(0x111111);
-                            tmp.material.color.setHex(0x111111);
-                            tmp.visible = true;
-                            objectScene.add(tmp);
+
+                        for (var i = 0; i < 2; i++) {
+                            
+                            var restoredObj = rollbackOperation.input[i];
+                            restoredObj.visible = true;
+                            CLICKED[i] = restoredObj;
                         }
                         removeFromListOfOperations();
                     }
@@ -796,7 +794,7 @@
                     
                     if (!OPERATED  && (!CLICKED[0] || !CLICKED[1])) {
                         
-                        showErrorMessage("Error. Select two objects.");
+                        showErrorMessage("First you should select two objects by double click.");
                     }
                     else {
                         
@@ -997,7 +995,7 @@
                             pickedObject.material.color.setHex( 0x008000 ); 
                             
                             CLICKED[0] = pickedObject;
-                            selectedObj.push((pickedObject.clone()));
+                            selectedObj.push(pickedObject);
                             
                         }
                         else if (CLICKED[0] == pickedObject) {
@@ -1014,7 +1012,7 @@
                             pickedObject.material.color.setHex( 0x004080 ); 
                             
                             CLICKED[1] = pickedObject;
-                            selectedObj.push((pickedObject.clone()));
+                            selectedObj.push(pickedObject);
                             
                         }
                         else if (CLICKED[1] == pickedObject) {
@@ -1033,7 +1031,7 @@
                             pickedObject.material.color.setHex( 0x008000 ); 
                             
                             CLICKED[0] = pickedObject;
-                            selectedObj.unshift((pickedObject.clone()));
+                            selectedObj.unshift(pickedObject);
                         }
                         OPERATED = false;
                     }
@@ -1136,7 +1134,7 @@
  
                          if ( PICKED ) {
                              
-                             showStartMessage("Double click on an object to select it for geometry operations.");
+                             //showStartMessage("Double click on an object to select it for geometry operations.");
                              
                              if ( PICKED.material.emissive ) {
                                  

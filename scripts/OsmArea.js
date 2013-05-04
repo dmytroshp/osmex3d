@@ -11,35 +11,35 @@ OSMEX.OsmArea = function ( minLon, minLat, maxLon, maxLat ) {
     
     THREE.Object3D.call( this );
     
-    this.minLon = minLon;
-    this.minLat = minLat;
+    this.leftLon = minLon;
+    this.rightLon = maxLon;
     
-    this.maxLon = maxLon;
-    this.maxLat = maxLat;
+    this.bottomLat = minLat;
+    this.topLat = maxLat;
     
     this.tileSizeInMeters = 152.8832; // 18th level tile size in meters
     
-    var minLonTile = LonToTile(this.minLon, 18);
-    this.tile_x1 = Math.floor(minLonTile);
-    this.tile_x1_offset = minLonTile - this.tile_x1;
+    var leftLonTile = LonToTile(this.leftLon, 18);
+    this.tile_x1 = Math.floor(leftLonTile);
+    this.tile_x1_offset = leftLonTile - this.tile_x1;
     
-    var maxLonTile = LonToTile(this.maxLon, 18);
-    this.tile_x2 = Math.ceil(maxLonTile);
-    this.tile_x2_offset = 1 - (this.tile_x2 - maxLonTile);
+    var rightLonTile = LonToTile(this.rightLon, 18);
+    this.tile_x2 = Math.ceil(rightLonTile);
+    this.tile_x2_offset = 1 - (this.tile_x2 - rightLonTile);
 
-    var minLatTile = LatToTile(this.minLat, 18);
-    this.tile_y1 = Math.floor(minLatTile);
-    this.tile_y1_offset = minLatTile - this.tile_y1;
+    var topLatTile = LatToTile(this.topLat, 18);
+    this.tile_y1 = Math.floor(topLatTile);
+    this.tile_y1_offset = topLatTile - this.tile_y1;
     
-    var maxLatTile = LatToTile(this.maxLat, 18);
-    this.tile_y2 = Math.ceil(maxLatTile);
-    this.tile_y2_offset = 1 - (this.tile_y2 - maxLatTile);
+    var bottomLatTile = LatToTile(this.bottomLat, 18);
+    this.tile_y2 = Math.ceil(bottomLatTile);
+    this.tile_y2_offset = 1 - (this.tile_y2 - bottomLatTile);
 
     this.tilesX = this.tile_x2 - this.tile_x1;
     this.tilesY = this.tile_y2 - this.tile_y1;
     
-    this.areaWidth = (maxLonTile - minLonTile) * this.tileSizeInMeters;
-    this.areaHeight = (maxLatTile - minLatTile) * this.tileSizeInMeters;
+    this.areaWidth = (rightLonTile - leftLonTile) * this.tileSizeInMeters;
+    this.areaHeight = (bottomLatTile - topLatTile) * this.tileSizeInMeters;
     
     this.buildTiles();
 };
@@ -117,16 +117,16 @@ OSMEX.OsmArea.prototype.buildTiles = function () {
 
 OSMEX.OsmArea.prototype.LonLatHeightToXyz = function (lon, lat, height) {
     
-    var x = ((lon - this.minLon) / (this.maxLon - this.minLon)) * this.areaWidth - this.areaWidth / 2;
-    var z = ((lat - this.minLat) / (this.maxLat - this.minLat)) * this.areaHeight - this.areaHeight / 2;
+    var x = ((lon - this.leftLon) / (this.rightLon - this.leftLon)) * this.areaWidth - this.areaWidth / 2;
+    var z = ((lat - this.topLat) / (this.bottomLat - this.topLat)) * this.areaHeight - this.areaHeight / 2;
     
     return new THREE.Vector3(x, height, z);
 }
 
 OSMEX.OsmArea.prototype.XyzToLonLatHeight = function (pos) {
     
-    var lon = ((pos.x + this.areaWidth / 2) / this.areaWidth) * (this.maxLon - this.minLon) + this.minLon;
-    var lat = ((pos.z + this.areaHeight / 2) / this.areaHeight) * (this.maxLat - this.minLat) + this.minLat;
+    var lon = ((pos.x + this.areaWidth / 2) / this.areaWidth) * (this.rightLon - this.leftLon) + this.leftLon;
+    var lat = ((pos.z + this.areaHeight / 2) / this.areaHeight) * (this.bottomLat - this.topLat) + this.topLat;
     
     return {longitude: lon, latitude: lat, height: pos.y};
 }
