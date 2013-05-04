@@ -495,6 +495,8 @@ HERE;
                 parent.$("#objectEditor").tabs("option", "active", 1); // switching to Area Editor tab
                 
                 // AREA EDITOR FORCE REFRESH HERE
+                var href = "ajax/areaEditor.html";  
+                $("#areaEditor").load(href);
             }
         </script>
     </head>
