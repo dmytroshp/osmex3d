@@ -495,13 +495,15 @@ HERE;
                 parent.$("#objectEditor").tabs("option", "active", 1); // switching to Area Editor tab
                 
                 // AREA EDITOR FORCE REFRESH HERE
+                var href = "ajax/areaEditor.html";  
+                $("#areaEditor").load(href);
             }
         </script>
     </head>
         <body>
             <div id="mainContainer">
                 <div id="sidebar">
-		    <div id="logo"><p align="center"><img src="img/logo_new.png" height="87" width="265"></p></div>
+		    <div id="logo"><p align="center"><img src="img/logo.png" height="87" width="265"></p></div>
                     <div id="searchDivc">
                     <div id="osmSearch">
                         <form id="osmSearchForm">
