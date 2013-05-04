@@ -233,10 +233,12 @@
             var SCREEN_WIDTH = window.innerWidth;
             var SCREEN_HEIGHT = window.innerHeight;
             var SCREEN_FOV = 45;
-            var MIN_LON = 30.774035;
-            var MAX_LAT = 46.574192;
-            var MAX_LON = 30.779641;
-            var MIN_LAT = 46.577573;
+            
+            // temporary solution:
+            var MIN_LON = parent.EDIT_MIN_LON; //30.774035;
+            var MIN_LAT = parent.EDIT_MIN_LAT; //46.577573;
+            var MAX_LON = parent.EDIT_MAX_LON; //30.779641;
+            var MAX_LAT = parent.EDIT_MAX_LAT; //46.574192;
 
             var container;
 
@@ -326,11 +328,11 @@
 
                     $(".save").click(function() {
                         saveScene();
-                        // Here we need to be switched to Landscape
+                        parent.disableMapEditing(); // switching to the Landscape
                     });
                     
                     $(".cancel").click(function() {
-                        // Here we need to be switched to Landscape
+                        parent.disableMapEditing(); // switching to the Landscape
                     });
 
                 });
@@ -720,8 +722,8 @@
 
                             var rotatedDir = SIZING.dir.clone();
 
-                            SIZING.matrixRotationWorld.extractRotation(SIZING.matrixWorld);
-                            var rotatedDir = SIZING.dir.clone().applyMatrix4(SIZING.matrixRotationWorld).normalize();
+                            var matrixRotation = new THREE.Matrix4().extractRotation(SIZING.matrixWorld);
+                            var rotatedDir = SIZING.dir.clone().applyMatrix4(matrixRotation).normalize();
                             var sizingPos = new THREE.Vector3().getPositionFromMatrix(SIZING.matrixWorld);
                             var cameraDir = camera.position.clone().sub(sizingPos).normalize();
                             var rightDir = cameraDir.clone().cross(rotatedDir).normalize();
@@ -764,8 +766,8 @@
 
                             ROTATING = pickRef;
 
-                            ROTATING.matrixRotationWorld.extractRotation(ROTATING.matrixWorld);
-                            var normal = ROTATING.dir.clone().applyMatrix4(ROTATING.matrixRotationWorld).normalize();
+                            var matrixRotation = new THREE.Matrix4().extractRotation(ROTATING.matrixWorld);
+                            var normal = ROTATING.dir.clone().applyMatrix4(matrixRotation).normalize();
                             var rotationPos = new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld);
                             actionPlane.setFromNormalAndCoplanarPoint(normal, rotationPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!

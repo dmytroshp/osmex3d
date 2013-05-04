@@ -18,8 +18,8 @@ OSMEX.SizerArrow.prototype = Object.create( OSMEX.Arrow.prototype );
 
 OSMEX.SizerArrow.prototype.trackSizing = function ( sizingVector ) {
     
-    this.matrixRotationWorld.extractRotation( this.matrixWorld );
-    var rotatedDir = this.dir.clone().applyMatrix4(this.matrixRotationWorld).normalize();
+    var matrixRotation = new THREE.Matrix4().extractRotation( this.matrixWorld );
+    var rotatedDir = this.dir.clone().applyMatrix4(matrixRotation).normalize();
     var newLen = rotatedDir.dot(sizingVector);
     // TODO: workaround should be reimplemented
     if (Math.abs(this.len - newLen) < (this.maxLength - this.minLength)) {

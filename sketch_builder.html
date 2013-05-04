@@ -557,7 +557,7 @@
                         },
                         open: function( event, ui ) {
                             
-                            var material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
+                            var material = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.SmoothShading } );
 
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), material);
                             iconMesh.scale.copy(CLICKED[0].scale);
@@ -1216,8 +1216,8 @@
 
                             var rotatedDir = SIZING.dir.clone();
 
-                            SIZING.matrixRotationWorld.extractRotation(SIZING.matrixWorld);
-                            var rotatedDir = SIZING.dir.clone().applyMatrix4(SIZING.matrixRotationWorld).normalize();
+                            var matrixRotation = new THREE.Matrix4().extractRotation(SIZING.matrixWorld);
+                            var rotatedDir = SIZING.dir.clone().applyMatrix4(matrixRotation).normalize();
                             var sizingPos = new THREE.Vector3().getPositionFromMatrix(SIZING.matrixWorld);
                             var cameraDir = camera.position.clone().sub(sizingPos).normalize();
                             var rightDir = cameraDir.clone().cross(rotatedDir).normalize();
@@ -1260,8 +1260,8 @@
 
                             ROTATING = pickRef;
 
-                            ROTATING.matrixRotationWorld.extractRotation(ROTATING.matrixWorld);
-                            var normal = ROTATING.dir.clone().applyMatrix4(ROTATING.matrixRotationWorld).normalize();
+                            var matrixRotation = new THREE.Matrix4().extractRotation(ROTATING.matrixWorld);
+                            var normal = ROTATING.dir.clone().applyMatrix4(matrixRotation).normalize();
                             var rotationPos = new THREE.Vector3().getPositionFromMatrix(ROTATING.matrixWorld);
                             actionPlane.setFromNormalAndCoplanarPoint(normal, rotationPos);
                             // TODO: situation when user is doing camera rotation while LMK pressed should be considered!
@@ -1356,7 +1356,7 @@
 
             function onCameraChange() {
 
-                boxBuilder.update();
+                boxBuilder.update();  
             }
 
 

@@ -7,8 +7,8 @@ OSMEX.AreaSelector = function ( onFinishSelecting ) {
     this.MIN_LENGTH = 40.0;
     this.MIN_WIDTH = 40.0;
     
-    this.MAX_LENGTH = 600.0;
-    this.MAX_WIDTH = 600.0;
+    this.MAX_LENGTH = 400.0;
+    this.MAX_WIDTH = 400.0;
     
     this.startPos = null;
     this.endPos = null;

@@ -1,3 +1,5 @@
+var OSMEX = OSMEX || { REVISION: '1' };
+
 OSMEX.CameraController = function ( object, domElement ) {
 
 	THREE.EventDispatcher.call( this );
@@ -532,3 +534,5 @@ OSMEX.CameraController = function ( object, domElement ) {
 	this.handleResize();
 
 };
+
+OSMEX.CameraController.prototype = Object.create( THREE.EventDispatcher.prototype ); 

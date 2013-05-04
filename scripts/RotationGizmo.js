@@ -6,7 +6,10 @@ OSMEX.RotationGizmo = function (  ) {
     this.name = "RotationGizmo";
     
     this.target = null;
-	
+    
+    this.overlay = new OSMEX.RotationGizmoOverlay(new THREE.Vector3( 1, 0, 0 ));
+    this.add(this.overlay);
+    
     this.AxisX     = new OSMEX.RotationTorus( 15, 0.5, new THREE.Vector3( 1, 0, 0 ), 0xff0000, true );  
     this.AxisY     = new OSMEX.RotationTorus( 15, 0.5, new THREE.Vector3( 0, 1, 0 ), 0x00ff00, true );
     this.AxisZ     = new OSMEX.RotationTorus( 15, 0.5, new THREE.Vector3( 0, 0, 1 ), 0x0000ff, true );
@@ -19,9 +22,6 @@ OSMEX.RotationGizmo = function (  ) {
     this.add(this.globeContainer);
     
     this.add(this.AxisFront);
-    
-    this.overlay = new OSMEX.RotationGizmoOverlay(new THREE.Vector3( 1, 0, 0 ));
-    this.add(this.overlay);
     
     this.setTarget(null);
 };
@@ -41,9 +41,10 @@ OSMEX.RotationGizmo.prototype.setTarget = function ( target ) {
  
         rotationFunc = function(target) { return function(radians) {
            
-           var matr = new THREE.Matrix4().extractRotation( target.matrix );
-           matr.rotateByAxis(this.dir, radians);
-           target.rotation.setEulerFromRotationMatrix( matr, target.eulerOrder );
+           var deltaQuat = new THREE.Quaternion().setFromAxisAngle( this.dir, radians );
+           var newQuat = new THREE.Quaternion().setFromEuler( target.rotation, target.eulerOrder ).multiply(deltaQuat);
+           
+           target.rotation.setEulerFromQuaternion( newQuat, target.eulerOrder );
  
         } }(this.target);
         
@@ -63,7 +64,8 @@ OSMEX.RotationGizmo.prototype.update = function ( camera ) {
         
         var vector = camera.position.clone().sub(this.position);
         
-        this.overlay.setDirection(vector);
+        //this.overlay.setDirection(vector);
+        this.overlay.lookAt(camera.position);
     
         this.AxisFront.setDirection(vector);
         

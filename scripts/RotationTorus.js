@@ -30,10 +30,8 @@ OSMEX.RotationTorus.prototype.finishRotation = function ( endRotationVec ) {
         
         var up = new THREE.Vector3().crossVectors(this.startRotationVec, endRotationVec).normalize();
         
-        this.matrixRotationWorld.extractRotation( this.matrixWorld );
-         var globalDir = this.dir.clone().applyMatrix4(this.matrixRotationWorld).normalize();
-        
-        //console.log("dot=" + up.dot(globalDir));
+        var matrixRotation = new THREE.Matrix4().extractRotation( this.matrixWorld );
+        var globalDir = this.dir.clone().applyMatrix4(matrixRotation).normalize();
         
         if (up.dot(globalDir) < 0) {
             

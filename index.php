@@ -137,6 +137,14 @@ HERE;
                                 iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&rnd='+Math.random());
                         }//prepareMap();}
                     },
+                    tabArea:{
+                        url:'ajax/areaEditor.html',
+                        activator:function(){
+                            var iframe=this.find('iframe');
+                            iframe.css('width',this.width()-5);
+                            iframe.css('height',this.height());
+                        }
+                    },
                     tabSketch:{
                         url:'ajax/sketchBuilder.html',
                         activator:function(){
@@ -352,7 +360,7 @@ HERE;
                                 if($("#mode :selected").val()!=="View mode")
                                 {
                                     var mydialog=$(dialog_template).attr('title','Switch to search result');
-                                    mydialog.find('p').append('Are you shure you want to switch to the search result?');
+                                    mydialog.find('p').append('Are you sure you want to switch to the search result?');
                                     mydialog.dialog({
                                         resizable: false,
                                           height:140,
@@ -453,6 +461,9 @@ HERE;
                 });    
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
+
+                $("#tabArea").css("display", "none");
+                
                 $("#tabSketch").css("display","block");
                 $("#tabTxt").css("display","block");
                 $(".accordionContainer").css("display", "block");
@@ -466,6 +477,25 @@ HERE;
                 //
                 //$("#objectEditor").tabs({active:0});
             });
+            function disableMapEditing() {
+            
+                parent.$("#tabArea").css("display", "none");
+                parent.$("#tabMap").css("display", "block");
+                
+                parent.$("#objectEditor").tabs("option", "active", 0); // switching to Map tab
+                                
+                // TODO: Area Editor modifications must be shown on the Map tab
+                // MAP FORCE REFRESH HERE (forceRefreshPanel(0) does not help)
+            }
+            function enableMapEditing() {
+                                
+                parent.$("#tabArea").css("display", "block");                
+                parent.$("#tabMap").css("display", "none");
+                
+                parent.$("#objectEditor").tabs("option", "active", 1); // switching to Area Editor tab
+                
+                // AREA EDITOR FORCE REFRESH HERE
+            }
         </script>
     </head>
         <body>
@@ -519,6 +549,7 @@ HERE;
                     <div id="objectEditor">
                         <ul>
                             <li id="tabMap"><a href="#map">Map</a></li>
+                            <li id="tabArea"><a href="#areaEditor">Map(EDIT)</a></li>
                             <li id="tabSketch"><a href="#sketchBuilder">Sketch Builder</a></li>
                             <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
                         </ul>
@@ -531,6 +562,7 @@ HERE;
                             </option>
                         </select>
                         <div id="map"></div>
+                        <div id="areaEditor"></div>
                         <div id="sketchBuilder"></div>
                         <div id="txtBuilder"></div>
                     </div>

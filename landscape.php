@@ -601,6 +601,8 @@ this.loaded = function () {
                                 
                                 areaSelector = new OSMEX.AreaSelector( function(startPoint, endPoint)
                                 {
+                                    // TODO: should be reimplemented with more precise algorithm
+                                    
                                     var halfSize = 20038706.7904;
                                     var tileSize = 152.8832;
                                     var tileLevel = 18;
@@ -611,15 +613,20 @@ this.loaded = function () {
                                     var x2 = (endPoint.x + halfSize) / tileSize;
                                     var y2 = (endPoint.z + halfSize) / tileSize;
                                     
-                                    var min_lon = tile2long(x1, tileLevel);
-                                    var max_lon = tile2long(x2, tileLevel);
+                                    var lon1 = tile2long(x1, tileLevel);
+                                    var lon2 = tile2long(x2, tileLevel);
                                     
-                                    var min_lat = tile2lat(y1, tileLevel);
-                                    var max_lat = tile2lat(y2, tileLevel);
+                                    var lat1 = tile2lat(y1, tileLevel);
+                                    var lat2 = tile2lat(y2, tileLevel);
                                     
-                                    console.log("minlon=", min_lon, "&minlat=", min_lat, "&maxlon=", max_lon, "&maxlat=", max_lat);
+                                    parent.EDIT_MIN_LON = Math.min(lon1, lon2);
+                                    parent.EDIT_MIN_LAT = Math.max(lat1, lat2);  // min_lat should be greater than max_lat
                                     
-                                    /// HERE SWITCHING TO AREA_EDITOR.HTML WITH PARAMETERS min_lon, min_lat, max_lon, max_lat
+                                    parent.EDIT_MAX_LON = Math.max(lon1, lon2);
+                                    parent.EDIT_MAX_LAT = Math.min(lat1, lat2);  // min_lat should be greater than max_lat
+                                    
+                                    parent.enableMapEditing();
+                                    
                                 });
                                 scene.add(areaSelector);
 
