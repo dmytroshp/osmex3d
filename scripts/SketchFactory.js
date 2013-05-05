@@ -137,15 +137,16 @@ OSMEX.SketchFactory.prototype.getSketchType = function( objectTypeId, onSketchTy
 
         var _this = this;
 
-        loadSketchTypeFromServer(objectTypeId, function(json)
+        loadSketchTypeFromServer(objectTypeId, function( _json )
         {            
-            var geometry = getUnpackedGeometry(json['geometryStr']);
+       	    var json = jQuery.parseJSON(_json);
+            var geometry = getUnpackedGeometry(json.geometryStr.);
             geometry.computeCentroids();
             geometry.computeFaceNormals();
             
-            var scale = new THREE.Vector3(parseFloat(json['origScaleX']), parseFloat(json['origScaleY']), parseFloat(json['origScaleZ']));
+            var scale = new THREE.Vector3(parseFloat(json.origScaleX), parseFloat(json.origScaleY), parseFloat(json.origScaleZ));
             
-            var sketchType = new OSMEX.SketchType(json['name'], "", geometry, scale);
+            var sketchType = new OSMEX.SketchType(json.name, "", geometry, scale);
 
             _this.sketchTypeCache[objectTypeId] = sketchType;
 
@@ -174,9 +175,7 @@ OSMEX.SketchFactory.prototype.createObject = function( objectTypeId, onObjectCre
     });
 };
 
-function getUnpackedGeometry( _packedGeometry ) {
-
-	var packedGeometry = jQuery.parseJSON(_packedGeometry);
+function getUnpackedGeometry( packedGeometry ) {
 	
     function isBitSet( value, position ) {
 
