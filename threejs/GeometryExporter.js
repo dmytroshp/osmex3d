@@ -40,8 +40,8 @@ THREE.GeometryExporter.prototype = {
 			var hasMaterial = false; // face.materialIndex !== undefined;
 			var hasFaceUv = false; // geometry.faceUvs[ 0 ][ i ] !== undefined;
 			var hasFaceVertexUv = false; // geometry.faceVertexUvs[ 0 ][ i ] !== undefined;
-			var hasFaceNormal = face.normal.length() > 0;
-			var hasFaceVertexNormal = face.vertexNormals[ 0 ] !== undefined;
+			var hasFaceNormal = false; // face.normal.length() > 0;
+			var hasFaceVertexNormal = false; // face.vertexNormals[ 0 ] !== undefined;
 			var hasFaceColor = false; // face.color;
 			var hasFaceVertexColor = false; // face.vertexColors[ 0 ] !== undefined;
 
