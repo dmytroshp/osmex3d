@@ -90,6 +90,7 @@ HERE;
                 </div>\
              </div>";
             var tabSelected = 1;
+            var showButton = 1;
             $(document).ready(function(){
                 $(document).tooltip({
                     items: ".prev",
@@ -275,6 +276,7 @@ HERE;
                 $("#mode").change(function (){
                     if($("#mode :selected").val()==="Edit mode")
                         {
+                            showButton = 1;
                             $("#tabSketch").css("display","block");
                             $("#tabTxt").css("display","block");
                             $(".accordionContainer").css("display", "block");
@@ -285,9 +287,11 @@ HERE;
                             $("#description").css("display", "none");
                             $('iframe').css('width',$('iframe').parent().width()-5);
                             $('iframe').css('height',$('iframe').parent().height());
+                            window.frames[0].updateButton();
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
+                            showButton = 0;
                             forceRefreshPanel(0);
                             $("#tabSketch").css("display","none");
                             $("#tabTxt").css("display","none");
@@ -299,6 +303,7 @@ HERE;
                             $("#description").css("display", "block");
                             $('iframe').css('width',$('iframe').parent().width()-5);
                             $('iframe').css('height',$('iframe').parent().height());
+                            window.frames[0].updateButton();
                         }
                 });
 //            5. Submit OSM Search Handler
@@ -496,7 +501,11 @@ HERE;
                 
                 // AREA EDITOR FORCE REFRESH HERE
                 var href = "ajax/areaEditor.html";  
-                $("#areaEditor").load(href);
+                $("#areaEditor").load(href, function() {
+                    var iframe=$(this).find('iframe');
+                    iframe.css('width', $(this).width()-5);
+                    iframe.css('height', $(this).height());
+                });
             }
         </script>
     </head>
