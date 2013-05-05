@@ -1346,10 +1346,17 @@ function updateButton(){
                             if (camera.position.y < 2000) {
                                 
                                 $("#edit_button").removeClass("disabled");
-                            }
-                            else {
                                 
+                                $("#edit_button").click(function(event){
+	                                if ($(this).hasClass('selected')) {
+	                                    areaSelector.stopSelecting();
+	                                } else {
+	                                    areaSelector.startSelecting();
+	                                }
+                            	});
+                            } else {
                                 $("#edit_button").addClass("disabled");
+                                $("#edit_button").unbind();
                             }
                         }
 
