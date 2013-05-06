@@ -140,7 +140,7 @@ OSMEX.SketchFactory.prototype.getSketchType = function( objectTypeId, onSketchTy
         loadSketchTypeFromServer(objectTypeId, function( _json )
         {            
        	    var json = jQuery.parseJSON(_json);
-            var geometry = getUnpackedGeometry(json.geometryStr.);
+            var geometry = getUnpackedGeometry(json.geometryStr);
             geometry.computeCentroids();
             geometry.computeFaceNormals();
             
