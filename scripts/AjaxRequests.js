@@ -30,7 +30,7 @@ function getBuildings(_minlon,_minlat,_maxlon,_maxlat, successCallback){
         headers: {
             'Content-Type': 'application/json'
         },
-        data: {tile_id: 0, minlon: _minlon, minlat: _maxlat,maxlon: _maxlon,maxlat: _minlat},
+        data: {tile_id: 0, minlon: _minlon, minlat: _minlat,maxlon: _maxlon,maxlat: _maxlat},
         dataType:'text',
         success: successCallback,
         error:function()
