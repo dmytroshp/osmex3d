@@ -260,6 +260,11 @@ function TileBlds () {
                                     buildingsOpacity=ui.value;
                                 }
                             });
+                            if (parent.showButton == 1){
+                            	$("#edit_button").show();
+                            } else {
+                            	$("#edit_button").hide();
+                            }
                             $("#edit_button").click(function(){
                                 
                                 if ($(this).hasClass('selected')) {
@@ -385,6 +390,14 @@ this.loaded = function () {
     //return this.arTileForAdd.pop();  //delete the tile from the queue
 };
 
+}
+
+function updateButton(){
+	if (parent.showButton == 1){
+        $("#edit_button").show();
+    } else {
+    	$("#edit_button").hide();
+    }
 }
 
 
@@ -1334,10 +1347,17 @@ this.loaded = function () {
                             if (camera.position.y < 2000) {
                                 
                                 $("#edit_button").removeClass("disabled");
-                            }
-                            else {
                                 
+                                $("#edit_button").click(function(event){
+	                                if ($(this).hasClass('selected')) {
+	                                    areaSelector.stopSelecting();
+	                                } else {
+	                                    areaSelector.startSelecting();
+	                                }
+                            	});
+                            } else {
                                 $("#edit_button").addClass("disabled");
+                                $("#edit_button").unbind();
                             }
                         }
 

@@ -285,6 +285,7 @@ HERE;
                 $("#mode").change(function (){
                     if($("#mode :selected").val()==="Edit mode")
                         {
+                            showButton = 1;
                             $("#tabSketch").css("display","block");
                             $("#tabTxt").css("display","block");
                             $(".accordionContainer").css("display", "block");
@@ -295,6 +296,7 @@ HERE;
                             $("#description").css("display", "none");
                             $('iframe').css('width',$('iframe').parent().width()-5);
                             $('iframe').css('height',$('iframe').parent().height());
+                            window.frames[0].updateButton();
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
@@ -310,6 +312,7 @@ HERE;
                             $("#description").css("display", "block");
                             $('iframe').css('width',$('iframe').parent().width()-5);
                             $('iframe').css('height',$('iframe').parent().height());
+                            window.frames[0].updateButton();
                         }
                         
                         activateAndRefreshPanel(0);
