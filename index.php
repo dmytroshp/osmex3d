@@ -79,6 +79,7 @@ HERE;
                 </div>\
              </div>";
             var tabSelected = 1;
+            var showButton = 1;
             
             function activateAndRefreshPanel(index)
             {
@@ -300,6 +301,7 @@ HERE;
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
+                            showButton = 0;
                             $("#tabArea").css("display", "none");
                             $("#tabMap").css("display", "block");
                             $("#tabSketch").css("display","none");
