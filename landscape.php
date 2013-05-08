@@ -26,7 +26,7 @@
 				text-align:center;
 				font-weight: bold;
 
-				background-color: #fff;
+				background-color: white;
 				margin: 0px;
 				overflow: hidden;
 			}
@@ -109,10 +109,10 @@ else
     $landscapeMode='zoom';
     $zoom=intval($_GET['zoom']);
 }
-$minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:'22.1370582580566';//-180;
-$minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:'44.1845970153809';//-90;
-$maxlon=(isset($_GET['maxlon'])&& is_numeric($_GET['maxlon']))?$_GET['maxlon']:'40.2271308898926';//180;
-$maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:'52.379150390625';//90;
+$minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
+$minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
+$maxlon=(isset($_GET['maxlon'])&& is_numeric($_GET['maxlon']))?$_GET['maxlon']:180;
+$maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:90;
 $mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
 $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 echo<<<HERE
@@ -285,15 +285,12 @@ function TileBlds () {
                                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                                 //camera.noRotate=false;
                             });
+                            
+                            init();
+			    animate();
                         });
                         
-                        var div = document.getElementById('cont');
-			//div.style.display="none";
-			div.ongetdata =responseServer;		
 
-			var div_bld = document.getElementById('build');
-			div_bld.ongetdata =responseServerCubes;
-			div_bld.style.display="none";
 
 
 //Object ( dynamically add the necessary tiles)
@@ -389,9 +386,6 @@ this.loaded = function () {
 };
 
 }
-
-			init();
-			animate();
 
 
             function getTanDeg(deg) {
@@ -525,10 +519,8 @@ this.loaded = function () {
 			    //land_func(0);// load 1st tileroots
 				//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 10000000 );
 				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 1, 40000000 , 1, 20000000 );
-                                oldCameraHeight = 0;
 				//camera.position.set(0, 3454245.2736, 0.0);
 				UnitToPixelScale = window.innerHeight /( 2.0 * getTanDeg(camera.fov / 2.0));
-
                                 cameraController = new OSMEX.CameraController( camera );
                                 cameraController.maxPolarAngle = Math.PI / 2.1; // limit vertical rotation to prevent rotating under ground
 				cameraController.ZoomSpeed = 0.43;
@@ -550,6 +542,14 @@ this.loaded = function () {
 				  //setPointZoom(10.86388,48.359621,17,camera,cameraController)
 				  //setMinMax(25.64,44.4,39.95,54.18,camera,cameraController)
 				}
+                                
+                        var div = document.getElementById('cont');
+			//div.style.display="none";
+			div.ongetdata =responseServer;		
+
+			var div_bld = document.getElementById('build');
+			div_bld.ongetdata =responseServerCubes;
+			div_bld.style.display="none";
 
 				//cameraController.rotateSpeed = 0.01;
 
@@ -767,6 +767,7 @@ this.loaded = function () {
 				camera.updateProjectionMatrix();*/
 
 				UnitToPixelScale = window.innerHeight /( 2.0 * getTanDeg(camera.fov / 2.0));
+
 				camera.setSize(window.innerWidth, window.innerHeight);
                 camera.updateProjectionMatrix();
 
@@ -1317,7 +1318,7 @@ this.loaded = function () {
 			}
                         
                         function update() {
-                            
+
                             cameraController.update();
                             
                             var newFar = Math.max(camera.position.y * 10, 2500);

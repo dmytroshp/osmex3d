@@ -80,7 +80,7 @@ body
      font-size:13px;
      text-align:center;
      font-weight: bold;
-    /*background-color: #fff;*/
+    background-color: white;
      margin: 0px;
      overflow: hidden;
      padding: 0px;
@@ -111,7 +111,7 @@ body
      border-radius: 4px;
      border: 1px #aaaaaa solid;
      font-family: Monospace;
-     background-color: #f0f0f0;
+     background-color: white;
      margin: 0px;
      overflow: hidden;
      padding: 0px;
@@ -126,7 +126,22 @@ body
      border-radius: 4px;
      border: 1px #aaaaaa solid;
      font-family: Monospace;
-     background-color: #f0f0f0;
+     background-color: white;
+     margin: 0px;
+     overflow: hidden;
+     padding: 0px;
+ }
+ #loading
+ {
+     display: none;
+     position: absolute;
+     left: 4px;
+     right: 5px;
+     bottom: 5px;
+     top: 30px;
+     border-radius: 4px;
+     border: 1px #aaaaaa solid;
+     background-color: white;
      margin: 0px;
      overflow: hidden;
      padding: 0px;

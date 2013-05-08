@@ -33,38 +33,7 @@
         <script src="scripts/BoxBuilder.js"></script>
         <script src="scripts/SketchType.js"></script>
         <script src="scripts/SketchFactory.js"></script>
-
         <script src="scripts/AjaxRequests.js"></script>
-        <script type="text/javascript">
-    		jQuery(document).ready(function(){
-			 
-				// preload images
-				preload(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
-                        'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
-                        'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
-                        'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
-                        'img/48x48/5.png', 'img/48x48/5_over.png', 'img/48x48/5_pressed.png',
-                        'img/48x48/6.png', 'img/48x48/6_over.png', 'img/48x48/6_pressed.png',
-                        'img/48x48/7.png', 'img/48x48/7_over.png', 'img/48x48/7_pressed.png',
-                        'img/48x48/8.png', 'img/48x48/8_over.png', 'img/48x48/8_pressed.png',
-                        'img/48x48/9.png', 'img/48x48/9_over.png', 'img/48x48/9_pressed.png',
-                        'img/48x48/10.png', 'img/48x48/10_over.png', 'img/48x48/10_pressed.png',
-                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
-                        'img/48x48/12.png', 'img/48x48/12_over.png',
-                        'img/publish.png','img/publish_hovered.png'
-                   ]);
-			 
-			function preload(images) {
-				var div = document.createElement("div");
-				var s = div.style;
-				s.position = "absolute";
-				s.top = s.left = 0;
-				s.visibility = "hidden";
-				document.body.appendChild(div);
-				div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
-			}
-			});
-		</script>
         
         <script type="text/javascript">
             var dialog_template = "<div id='dialog-form' title='New Sketch'>\
@@ -100,7 +69,7 @@
         <style>
             body {
                 font-family: Monospace;
-                background-color: #f0f0f0;
+                background-color: white;
                 margin: 0px;
                 overflow: hidden;
             }
@@ -367,23 +336,10 @@
             var firstObject, secondObject, resultObj;
             
             
-            init();
-            animate();
-            
-
-            function init() {
-
-                container = document.createElement('div');
-                document.body.appendChild(container);
-
                 $(document).ready(function() {
-                    /*$.fn.preload = function() {
-                        this.each(function(){
-                            $('<img/>')[0].src = this;
-                        });
-                    }
-                    
-                    $(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
+			// preload images
+                        
+			preload(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
                         'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
                         'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
                         'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
@@ -396,8 +352,18 @@
                         'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
                         'img/48x48/12.png', 'img/48x48/12_over.png',
                         'img/publish.png','img/publish_hovered.png'
-                   ]).preload();
-                    */
+                   ]);
+			 
+			function preload(images) {
+				var div = document.createElement("div");
+				var s = div.style;
+				s.position = "absolute";
+				s.top = s.left = 0;
+				s.visibility = "hidden";
+				document.body.appendChild(div);
+				div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
+			}
+                        
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
@@ -601,32 +567,14 @@
                         }
                     });
                     
-                    iconRenderer = new THREE.WebGLRenderer({
-                                                            preserveDrawingBuffer: true,   // required to support .toDataURL()
-                                                            antialias: true
-                                                           });
-                    iconRenderer.setSize(235, 235);
-                    iconRenderer.setClearColorHex(0xffffff, 1);
-                    iconRenderer.autoClear = false;
-                    $("#iconCanvas").append(iconRenderer.domElement);
-
-                    iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
-                    
-                    iconCameraController = new OSMEX.CameraController(iconCamera);
-                    iconCameraController.noZoom = true;
-                    iconCameraController.noRotate = false;
-                    iconCameraController.noPan = true;
-                    iconCameraController.enabled = false;
-                    //iconCameraController.addEventListener('change', iconRender);
-
-                    iconScene = new OSMEX.ObjectScene();
-
-                    iconLight = new THREE.DirectionalLight(0xffffff);
-                    iconScene.add(iconLight);
-
+                    init();
+                    animate(); 
                 });
 
-                                
+            function init() {
+
+                container = document.createElement('div');
+                document.body.appendChild(container);          
                 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -688,6 +636,31 @@
                 renderer.autoClear = false;
 
                 container.appendChild(renderer.domElement);
+                
+                
+                iconRenderer = new THREE.WebGLRenderer({
+                                                        preserveDrawingBuffer: true,   // required to support .toDataURL()
+                                                        antialias: true
+                                                       });
+                iconRenderer.setSize(235, 235);
+                iconRenderer.setClearColorHex(0xffffff, 1);
+                iconRenderer.autoClear = false;
+                $("#iconCanvas").append(iconRenderer.domElement);
+
+                iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
+
+                iconCameraController = new OSMEX.CameraController(iconCamera);
+                iconCameraController.noZoom = true;
+                iconCameraController.noRotate = false;
+                iconCameraController.noPan = true;
+                iconCameraController.enabled = false;
+                //iconCameraController.addEventListener('change', iconRender);
+
+                iconScene = new OSMEX.ObjectScene();
+
+                iconLight = new THREE.DirectionalLight(0xffffff);
+                iconScene.add(iconLight);
+                
 
                 attachHandlers();
                 

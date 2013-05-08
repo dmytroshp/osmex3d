@@ -37,18 +37,7 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
         <title>OSMEX3D</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-<!--        <link rel="stylesheet" href="css/jqueryui.css" />-->
-        
-<!--        <script src="threejs/three.js"></script>
-        <script src="scripts/Camera.js"></script>
-        <script src="scripts/CameraController.js"></script>
-        <script src="scripts/TileMesh.js"></script>
-        <script src="scripts/AreaSelector.js"></script>
-        <script src="scripts/Detector.js"></script>
 
-        <script type="text/javascript" src="server_scripts/XMLHttpRequest.js"></script>
-        <script type="text/javascript" src="server_scripts/Functions.js"></script>-->
-        
         <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
         <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
         <script type="text/javascript" src="jquery/jquery.color.js"></script>
@@ -90,6 +79,16 @@ HERE;
                 </div>\
              </div>";
             var tabSelected = 1;
+            
+            function activateAndRefreshPanel(index)
+            {
+                var panel=$('#objectEditor > div:not(#searchbar)').eq(index);
+                panel.empty();
+
+                $("#objectEditor").tabs("option", "active", -1);
+                $("#objectEditor").tabs("option", "active", index);
+            }
+            
             $(document).ready(function(){
                 $(document).tooltip({
                     items: ".prev",
@@ -122,14 +121,14 @@ HERE;
                     });
                 });
 //            2. Event handler for search input (sketches tab)
-                
+             
                 // Work area tabs
                 var initializator={
                     tabMap:{
                         url:'ajax/mapView.html',
                         activator:function(){
                             var iframe=this.find('iframe');
-                            iframe.css('width',this.width()-5);
+                            iframe.css('width',this.width());
                             iframe.css('height',this.height());
                             if(landscapeMode=='zoom') 
                                 iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&rnd='+Math.random());
@@ -141,7 +140,7 @@ HERE;
                         url:'ajax/areaEditor.html',
                         activator:function(){
                             var iframe=this.find('iframe');
-                            iframe.css('width',this.width()-5);
+                            iframe.css('width',this.width());
                             iframe.css('height',this.height());
                         }
                     },
@@ -149,7 +148,7 @@ HERE;
                         url:'ajax/sketchBuilder.html',
                         activator:function(){
                             var iframe=this.find('iframe');
-                            iframe.css('width',this.width()-5);
+                            iframe.css('width',this.width());
                             iframe.css('height',this.height());
                         }
                     },
@@ -168,22 +167,33 @@ HERE;
                         }
                     }
                 };
-                function forceRefreshPanel(index)
-                {
-                    var key=$('#objectEditor ul li:eq('+index+')').attr('id');
-                    var panel=$('#objectEditor > div:not(#searchbar)').eq(index);
-                    panel.load(initializator[key].url,'',function(){
-                                initializator[key].activator.call(panel,index);
-                    });
-                    $("#objectEditor").tabs({active:index});
-                }
                 $("#objectEditor").tabs({
+                    active: -1,   // to trigger beforeActivate for the first tab
                     beforeActivate:function(event, ui){
                         if(ui.newPanel.is(':empty'))
                         {
+                            $('#loading').css('width',ui.newPanel.width());
+                            $('#loading').css('height',ui.newPanel.height());   
+                            $('#loading').show();  
+                            
                             var key=ui.newTab.attr('id');
-                            ui.newPanel.load(initializator[key].url,'',function(){
+                            ui.newPanel.load(initializator[key].url, '', function() {
+                                
                                 initializator[key].activator.call(ui.newPanel,event,ui);
+                                
+                                var iframe = ui.newPanel.find('iframe');
+                                
+                                if (iframe.length) {
+                                    
+                                    iframe.load(function() {
+                                        
+                                        $('#loading').hide();
+                                    });
+                                }
+                                else {
+                                    
+                                    $('#loading').hide();
+                                }
                             });
                         }
                     }
@@ -288,7 +298,8 @@ HERE;
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
-                            forceRefreshPanel(0);
+                            $("#tabArea").css("display", "none");
+                            $("#tabMap").css("display", "block");
                             $("#tabSketch").css("display","none");
                             $("#tabTxt").css("display","none");
                             $(".accordionContainer").css("display", "none");
@@ -300,6 +311,8 @@ HERE;
                             $('iframe').css('width',$('iframe').parent().width()-5);
                             $('iframe').css('height',$('iframe').parent().height());
                         }
+                        
+                        activateAndRefreshPanel(0);
                 });
 //            5. Submit OSM Search Handler
                 $("#osmSearchForm").submit(function(){
@@ -334,51 +347,62 @@ HERE;
                             $("#geonames ul").next().remove();
                             $("#geonames ul").next().remove();
                             $('.set_position').click(function(){
-                                var link=$(this);
-                                if(link.attr('data-zoom'))
+                                
+                                var confirmed = true;
+                                
+                                //if($("#mode :selected").val()!=="View mode")
+                                if ($("#tabArea").is(':visible'))
                                 {
-                                    landscapeMode='zoom';
-                                    minlon=0;
-                                    minlat=0;
-                                    maxlon=0;
-                                    maxlat=0;
-                                    mlon=Number(link.attr('data-lon'));
-                                    mlat=Number(link.attr('data-lat'));
-                                    zoom=Number(link.attr('data-zoom'));
-                                }
-                                else
-                                {
-                                    landscapeMode='boundary';
-                                    minlon=Number(link.attr('data-min-lon'));
-                                    minlat=Number(link.attr('data-min-lat'));
-                                    maxlon=Number(link.attr('data-max-lon'));
-                                    maxlat=Number(link.attr('data-max-lat'));
-                                    mlon=0;
-                                    mlat=0;
-                                    zoom=0;
-                                }
-                                if($("#mode :selected").val()!=="View mode")
-                                {
+                                    confirmed = false;
+                                    
                                     var mydialog=$(dialog_template).attr('title','Switch to search result');
-                                    mydialog.find('p').append('Are you sure you want to switch to the search result?');
+                                    mydialog.find('p').append('Are you sure you want to cancel editing and switch to the search result?');
                                     mydialog.dialog({
-                                        resizable: false,
-                                          height:140,
+                                          resizable: false,
+                                          height:200,
                                           modal: true,
                                           buttons: {
                                             "Yes": function() {
-                                              forceRefreshPanel(0);
                                               $( this ).dialog( "close" );
+                                              confirmed = true;
                                             },
                                             "No": function() {
                                               $( this ).dialog( "close" );
                                             }
                                         }
                                     });
-                                    //forceRefreshPanel(0);  
                                 }
-                                else
-                                    forceRefreshPanel(0);
+                                
+                                if (confirmed) {
+
+                                    var link=$(this);
+
+                                    if(link.attr('data-zoom'))
+                                    {
+                                        landscapeMode='zoom';
+                                        minlon=0;
+                                        minlat=0;
+                                        maxlon=0;
+                                        maxlat=0;
+                                        mlon=Number(link.attr('data-lon'));
+                                        mlat=Number(link.attr('data-lat'));
+                                        zoom=Number(link.attr('data-zoom'));
+                                    }
+                                    else
+                                    {
+                                        landscapeMode='boundary';
+                                        minlon=Number(link.attr('data-min-lon'));
+                                        minlat=Number(link.attr('data-min-lat'));
+                                        maxlon=Number(link.attr('data-max-lon'));
+                                        maxlat=Number(link.attr('data-max-lat'));
+                                        mlon=0;
+                                        mlat=0;
+                                        zoom=0;
+                                    }
+
+                                    activateAndRefreshPanel(0);
+                                }
+                                
                                 return false;
                             });
                             //$(result).appendTo('#nominatium');
@@ -473,7 +497,7 @@ HERE;
                 $("#content").css("width", "64%");
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
-                forceRefreshPanel(0);
+                activateAndRefreshPanel(0);
                 //
                 //$("#objectEditor").tabs({active:0});
             });
@@ -482,21 +506,14 @@ HERE;
                 parent.$("#tabArea").css("display", "none");
                 parent.$("#tabMap").css("display", "block");
                 
-                parent.$("#objectEditor").tabs("option", "active", 0); // switching to Map tab
-                                
-                // TODO: Area Editor modifications must be shown on the Map tab
-                // MAP FORCE REFRESH HERE (forceRefreshPanel(0) does not help)
+                parent.activateAndRefreshPanel(0);
             }
             function enableMapEditing() {
                                 
                 parent.$("#tabArea").css("display", "block");                
                 parent.$("#tabMap").css("display", "none");
                 
-                parent.$("#objectEditor").tabs("option", "active", 1); // switching to Area Editor tab
-                
-                // AREA EDITOR FORCE REFRESH HERE
-                var href = "ajax/areaEditor.html";  
-                $("#areaEditor").load(href);
+                parent.activateAndRefreshPanel(1);
             }
         </script>
     </head>
@@ -567,6 +584,7 @@ HERE;
                         <div id="areaEditor"></div>
                         <div id="sketchBuilder"></div>
                         <div id="txtBuilder"></div>
+                        <div id="loading"><img src="img/loading.gif" style="position:absolute;top:50%;left:50%;margin-left:-16px;margin-top:-16px;width:32px;height:32px;"/></div>
                     </div>
                 </div>
             </div>
