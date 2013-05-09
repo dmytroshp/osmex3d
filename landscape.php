@@ -1364,11 +1364,45 @@ this.loaded = function () {
                             }
                             
                             /// TODO: HERE LONLAT-DATA SHOULD BE UPDATED:
-                            //parent.landscapeMode='boundary';
-                            //parent.minlon='40';
-                            //parent.minlat='30';
-                            //parent.maxlon='60';
-                            //parent.maxlat='40';
+
+                            var num18inRow=Math.pow(2,18)-1
+                            var _k=tileSizeRoot/num18inRow
+			  
+                            var _x = (camera.position.x + 20038706.7904)/_k
+                            var _z = (camera.position.z + 20038706.7904)/_k
+			  
+                            var cenlon = tile2lon(_x,18)
+                            var cenlat = tile2lat(_z,18)
+                            var range = (camera.position.y * 256)/UnitToPixelScale
+                            var num18inRange = range/_k
+                            var offset = parseInt(num18inRange/2)
+
+                            var minlon = tile2lon(_x-offset,18);
+							var maxlon = tile2lon(_x+offset,18);
+							var offsetLat = (maxlon - cenlon)/2
+                            var minlat = cenlat - offsetLat
+                            var maxlat = cenlat + offsetLat
+							
+							if(minlon<(-180))minlon=-180
+							if(minlon>(180))minlon=180
+							
+							if(minlat<(-90))minlat=-90
+							if(minlat>(90))minlat=90
+							
+							if(maxlon>180)maxlon=180
+							if(maxlon<(-180))maxlon=-180
+							
+							if(maxlon>90)maxlon=90
+							if(maxlon<(-90))maxlon=-90
+							
+							parent.landscapeMode='boundary';
+							parent.minlon = minlon
+							parent.maxlon = maxlon
+							parent.minlat = minlat
+							parent.maxlat = maxlat
+							
+							//console.debug(minlon+" "+maxlon+" "+minlat+" "+maxlat)
+			  
                         }
 
 			function render() {
