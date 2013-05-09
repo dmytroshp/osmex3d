@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         
-        <script src="threejs/three.js"></script>
+        <script src="threejs/three.min.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
 
         <script src="scripts/BoundingBox.js"></script>
@@ -30,38 +30,12 @@
         <script src="scripts/BoxBuilder.js"></script>
         <script src="scripts/SketchType.js"></script>
         <script src="scripts/SketchFactory.js"></script>
-
         <script src="scripts/AjaxRequests.js"></script>
         
-        <script type="text/javascript">
-    		jQuery(document).ready(function(){
-			 
-				// preload images
-				preload(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
-                         'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
-                         'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
-                         'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
-                         'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
-                         'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
-                         'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
-                     ]);
-			 
-			function preload(images) {
-				var div = document.createElement("div");
-				var s = div.style;
-				s.position = "absolute";
-				s.top = s.left = 0;
-				s.visibility = "hidden";
-				document.body.appendChild(div);
-				div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
-			}
-			});
-		</script>
-
         <style>
             body {
                 font-family: Monospace;
-                background-color: #f0f0f0;
+                background-color: white;
                 margin: 0px;
                 overflow: hidden;
             }
@@ -161,7 +135,7 @@
     </head>
     <body>
 
-        <div id="topbar" style="visibility:hidden;display:inline;float:right;">
+        <div id="topbar" class="map_controls" style="visibility:hidden;display:inline;float:right;">
             <div id ="default" style="float:left;">
             <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
                 &nbsp;
@@ -189,7 +163,7 @@
         </div>
         </div>
 
-            <div id="righttopbar" style="width:250px;visibility:hidden;display:block;text-align:left;">
+            <div id="righttopbar" class="map_controls" style="width:250px;visibility:hidden;display:block;text-align:left;">
             <div id="save" class="save" style="width:100px;height:40px;float:left;">
                 &nbsp; 
             </div>
@@ -204,7 +178,7 @@
             <label><input type="checkbox" checked id="showShadows" onchange="showShadows();" /> Show shadows</label>
         </div>
 
-        <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
+        <div id="rightbar" class="map_controls" style="visibility:hidden;width:40px;display:block;">
             <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cube.png'>
             </div>
@@ -243,7 +217,7 @@
             var CLICKED = [null, null];
 
             var PICKED, SELECTED, DRAGGING, SIZING, ROTATING, SCALING, MOVING, BUILDING;
-            var ADDED = new Array(), MODIFIED = new Array(), REMOVED = new Array();
+
             var offsetVector = new THREE.Vector3();
 
             var osmArea, groundPlane;
@@ -256,77 +230,95 @@
 
             var arrowMode, objectType;
             
-            init();
-            animate();
+            $(document).ready(function() {
+                
+
+                            // preload images
+                            preload(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
+                     'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
+                     'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
+                     'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
+                     'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
+                     'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
+                     'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
+                            ]);
+
+                    function preload(images) {
+                            var div = document.createElement("div");
+                            var s = div.style;
+                            s.position = "absolute";
+                            s.top = s.left = 0;
+                            s.visibility = "hidden";
+                            document.body.appendChild(div);
+                            div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
+                    }
+
+                $("#topbar").css({
+                    "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
+                    "visibility": "visible"
+                });
+
+                $("#tochange").css({
+                   "margin-left": 5 + "px" 
+                });
+                $("#build").css({
+                   "margin-left": 5 + "px" 
+                });
+
+                $("#rightbar").css({
+                    "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
+                    "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
+                    "visibility": "visible"
+                });
+
+                $("#righttopbar").css({
+                    "left": (window.innerWidth) - ($("#topbar").width()) + "px",
+                    "top": ($("#topbar").height() / 2) + "px",
+                    "visibility": "visible"
+                });
+
+                $(".group1").click(function() {
+                    $(".selected").removeClass("selected");
+                    $(this).addClass("selected");
+                    setArrowsType(this);
+                });
+                $(".group2").click(function() {
+                    $(".selected").removeClass("selected");
+                    $(this).addClass("selected");
+                    //addObject(this);
+                    sketchFactory.startBuild($(this).attr('id'));
+                });
+
+                $(".save").click(function() {
+                    saveScene();
+                    parent.disableMapEditing(); // switching to the Landscape
+                });
+
+                $(".cancel").click(function() {
+                    parent.disableMapEditing(); // switching to the Landscape
+                });
+                
+                $('.map_controls').mouseenter(function(){
+                    cameraController.enabled=false;
+                    document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                    document.removeEventListener('mousedown', onDocumentMouseDown, false);
+                    document.removeEventListener('mouseup', onDocumentMouseUp, false);
+                });
+                $('.map_controls').mouseleave(function(){
+                    cameraController.enabled=true;
+                    document.addEventListener('mousemove', onDocumentMouseMove, false);
+                    document.addEventListener('mousedown', onDocumentMouseDown, false);
+                    document.addEventListener('mouseup', onDocumentMouseUp, false);
+                });
+
+                init();
+                animate();
+            });
 
             function init() {
 
                 container = document.createElement('div');
                 document.body.appendChild(container);
-
-                $(document).ready(function() {
-                    /*$.fn.preload = function() {
-                        this.each(function(){
-                            $('<img/>')[0].src = this;
-                        });
-                    }
-                    
-                    $(['img/48x48/dragging.png','img/48x48/dragging_over.png','img/48x48/dragging_pressed.png',
-                         'img/48x48/moving.png','img/48x48/moving_over.png','img/48x48/moving_pressed.png', 
-                         'img/48x48/scaling.png','img/48x48/scaling_over.png','img/48x48/scaling_pressed.png',
-                         'img/48x48/rotating.png','img/48x48/rotating_over.png','img/48x48/rotating_pressed.png',
-                         'img/48x48/deleting.png','img/48x48/deleting_over.png','img/48x48/deleting_pressed.png',
-                         'img/48x48/build_box.png','img/48x48/build_box_over.png','img/48x48/build_box_pressed.png',
-                         'img/publish.png','img/publish_hovered.png','img/save.png','img/save_hovered.png','img/cancel.png','img/cancel_hovered.png'
-                     ]).preload();
-					
-					*/
-                    $("#topbar").css({
-                        "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
-                        "visibility": "visible"
-                    });
-                    
-                    $("#tochange").css({
-                       "margin-left": 5 + "px" 
-                    });
-                    $("#build").css({
-                       "margin-left": 5 + "px" 
-                    });
-
-                    $("#rightbar").css({
-                        "left": window.innerWidth - ($("#topbar").width() / 2) + "px",
-                        "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
-                        "visibility": "visible"
-                    });
-
-                    $("#righttopbar").css({
-                        "left": (window.innerWidth) - ($("#topbar").width()) + "px",
-                        "top": ($("#topbar").height() / 2) + "px",
-                        "visibility": "visible"
-                    });
-
-                    $(".group1").click(function() {
-                        $(".selected").removeClass("selected");
-                        $(this).addClass("selected");
-                        setArrowsType(this);
-                    });
-                    $(".group2").click(function() {
-                        $(".selected").removeClass("selected");
-                        $(this).addClass("selected");
-                        //addObject(this);
-                        sketchFactory.startBuild($(this).attr('id'));
-                    });
-
-                    $(".save").click(function() {
-                        saveScene();
-                        parent.disableMapEditing(); // switching to the Landscape
-                    });
-                    
-                    $(".cancel").click(function() {
-                        parent.disableMapEditing(); // switching to the Landscape
-                    });
-
-                });
 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 

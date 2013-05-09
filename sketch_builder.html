@@ -4,7 +4,7 @@
         <title>OSMEX3D Sketch builder</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-        <script src="threejs/three.js"></script>
+        <script src="threejs/three.min.js"></script>
         <script src="threejs/GeometryExporter.js"></script>
         <script src="threejs/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
@@ -33,38 +33,7 @@
         <script src="scripts/BoxBuilder.js"></script>
         <script src="scripts/SketchType.js"></script>
         <script src="scripts/SketchFactory.js"></script>
-
         <script src="scripts/AjaxRequests.js"></script>
-        <script type="text/javascript">
-    		jQuery(document).ready(function(){
-			 
-				// preload images
-				preload(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
-                        'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
-                        'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
-                        'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
-                        'img/48x48/5.png', 'img/48x48/5_over.png', 'img/48x48/5_pressed.png',
-                        'img/48x48/6.png', 'img/48x48/6_over.png', 'img/48x48/6_pressed.png',
-                        'img/48x48/7.png', 'img/48x48/7_over.png', 'img/48x48/7_pressed.png',
-                        'img/48x48/8.png', 'img/48x48/8_over.png', 'img/48x48/8_pressed.png',
-                        'img/48x48/9.png', 'img/48x48/9_over.png', 'img/48x48/9_pressed.png',
-                        'img/48x48/10.png', 'img/48x48/10_over.png', 'img/48x48/10_pressed.png',
-                        'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
-                        'img/48x48/12.png', 'img/48x48/12_over.png',
-                        'img/publish.png','img/publish_hovered.png'
-                   ]);
-			 
-			function preload(images) {
-				var div = document.createElement("div");
-				var s = div.style;
-				s.position = "absolute";
-				s.top = s.left = 0;
-				s.visibility = "hidden";
-				document.body.appendChild(div);
-				div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
-			}
-			});
-		</script>
         
         <script type="text/javascript">
             var dialog_template = "<div id='dialog-form' title='New Sketch'>\
@@ -100,7 +69,7 @@
         <style>
             body {
                 font-family: Monospace;
-                background-color: #f0f0f0;
+                background-color: white;
                 margin: 0px;
                 overflow: hidden;
             }
@@ -248,7 +217,7 @@
         </style>
     </head>
     <body>
-        <div id="leftbar" style="visibility:hidden;display:inline;float:left;">
+        <div id="leftbar" class="map_controls" style="visibility:hidden;display:inline;float:left;">
             <div class="list1" style="width:180px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <select id="listOfOperations" size="5" style="width:180px;" >
                 </select>  
@@ -260,7 +229,7 @@
 
         </div>
 
-        <div id="topbar" style="visibility:hidden;display:inline;float:right;">
+        <div id="topbar" class="map_controls" style="visibility:hidden;display:inline;float:right;">
             <div id ="default" style="float:left;">
                 <div id="dragging" class="group1" style="width:48px;height:48px;float:left;">
                     &nbsp;
@@ -288,11 +257,11 @@
             </div>
         </div>
 
-        <div id="righttopbar" style="visibility:hidden;display:block;text-align:left;">
+        <div id="righttopbar" class="map_controls" style="visibility:hidden;display:block;text-align:left;">
             <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Show bounding boxes</label>
         </div>
 
-        <div id="rightbar" style="visibility:hidden;width:40px;display:block;">
+        <div id="rightbar" class="map_controls" style="visibility:hidden;width:40px;display:block;">
             <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
                 <img src='img/cube.png'>
             </div>
@@ -307,7 +276,7 @@
 
         </div>
 
-        <div id="bottombar" title="Double click on an object to select it for geometry operations." style="visibility:hidden;display:inline;float:right;">            
+        <div id="bottombar" class="map_controls" title="Double click on an object to select it for geometry operations." style="visibility:hidden;display:inline;float:right;">            
             <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:48px;height:48px;float:left;">
                 &nbsp;
             </div>
@@ -322,7 +291,7 @@
             </div>
 
         </div>
-        <div id="right-bottombar" style="visibility:hidden;display:inline;float:right;">
+        <div id="right-bottombar" class="map_controls" style="visibility:hidden;display:inline;float:right;">
             <div id="publish" class="group4" style="width:200px;height:50px;float:left;">
                 &nbsp; 
             </div>
@@ -356,7 +325,6 @@
 
             var arrowMode, objectType;
 
-            var selectedObj = [];
             var operationStack = [];
 
             var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh, imageData;
@@ -367,23 +335,10 @@
             var firstObject, secondObject, resultObj;
             
             
-            init();
-            animate();
-            
-
-            function init() {
-
-                container = document.createElement('div');
-                document.body.appendChild(container);
-
                 $(document).ready(function() {
-                    /*$.fn.preload = function() {
-                        this.each(function(){
-                            $('<img/>')[0].src = this;
-                        });
-                    }
-                    
-                    $(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
+			// preload images
+                        
+			preload(['img/48x48/1.png', 'img/48x48/1_over.png', 'img/48x48/1_pressed.png',
                         'img/48x48/2.png', 'img/48x48/2_over.png', 'img/48x48/2_pressed.png',
                         'img/48x48/3.png', 'img/48x48/3_over.png', 'img/48x48/3_pressed.png',
                         'img/48x48/4.png', 'img/48x48/4_over.png', 'img/48x48/4_pressed.png',
@@ -396,8 +351,18 @@
                         'img/48x48/11.png', 'img/48x48/11_over.png', 'img/48x48/11_pressed.png', 
                         'img/48x48/12.png', 'img/48x48/12_over.png',
                         'img/publish.png','img/publish_hovered.png'
-                   ]).preload();
-                    */
+                   ]);
+			 
+			function preload(images) {
+				var div = document.createElement("div");
+				var s = div.style;
+				s.position = "absolute";
+				s.top = s.left = 0;
+				s.visibility = "hidden";
+				document.body.appendChild(div);
+				div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
+			}
+                        
                     $("#topbar").css({
                         "left": (window.innerWidth / 2) - ($("#topbar").width() / 2) + "px",
                         "visibility": "visible"
@@ -526,9 +491,6 @@
                                 //console.debug(data);
                                 window.parent.refreshAccordion();
 
-                                while (selectedObj.length > 0) {
-                                    selectedObj.pop();
-                                }
                                 CLICKED[0].material.color.setHex( CLICKED[0].oldColor ); 
 
                                 if (CLICKED[1] != null) {
@@ -601,32 +563,27 @@
                         }
                     });
                     
-                    iconRenderer = new THREE.WebGLRenderer({
-                                                            preserveDrawingBuffer: true,   // required to support .toDataURL()
-                                                            antialias: true
-                                                           });
-                    iconRenderer.setSize(235, 235);
-                    iconRenderer.setClearColorHex(0xffffff, 1);
-                    iconRenderer.autoClear = false;
-                    $("#iconCanvas").append(iconRenderer.domElement);
-
-                    iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
+                    $('.map_controls').mouseenter(function(){
+                        cameraController.enabled=false;
+                        document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                        document.removeEventListener('mousedown', onDocumentMouseDown, false);
+                        document.removeEventListener('mouseup', onDocumentMouseUp, false);
+                    });
+                    $('.map_controls').mouseleave(function(){
+                        cameraController.enabled=true;
+                        document.addEventListener('mousemove', onDocumentMouseMove, false);
+                        document.addEventListener('mousedown', onDocumentMouseDown, false);
+                        document.addEventListener('mouseup', onDocumentMouseUp, false);
+                    });
                     
-                    iconCameraController = new OSMEX.CameraController(iconCamera);
-                    iconCameraController.noZoom = true;
-                    iconCameraController.noRotate = false;
-                    iconCameraController.noPan = true;
-                    iconCameraController.enabled = false;
-                    //iconCameraController.addEventListener('change', iconRender);
-
-                    iconScene = new OSMEX.ObjectScene();
-
-                    iconLight = new THREE.DirectionalLight(0xffffff);
-                    iconScene.add(iconLight);
-
+                    init();
+                    animate(); 
                 });
 
-                                
+            function init() {
+
+                container = document.createElement('div');
+                document.body.appendChild(container);          
                 
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -641,7 +598,7 @@
                 objectScene = new OSMEX.ObjectScene();
                 interfaceScene = new OSMEX.InterfaceScene(camera);
 
-                objectScene.fog = new THREE.Fog(0xFBFBFB, 1, 3000);
+                objectScene.fog = new THREE.Fog(0xffffff, 1, 3000);
 
                 objectScene.add(new THREE.AmbientLight(0x3f3f3f));
                 interfaceScene.add(new THREE.AmbientLight(0x3f3f3f));
@@ -688,7 +645,31 @@
                 renderer.autoClear = false;
 
                 container.appendChild(renderer.domElement);
+                
+                
+                iconRenderer = new THREE.WebGLRenderer({
+                                                        preserveDrawingBuffer: true,   // required to support .toDataURL()
+                                                        antialias: true
+                                                       });
+                iconRenderer.setSize(235, 235);
+                iconRenderer.setClearColorHex(0xffffff, 1);
+                iconRenderer.autoClear = false;
+                $("#iconCanvas").append(iconRenderer.domElement);
 
+                iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
+
+                iconCameraController = new OSMEX.CameraController(iconCamera);
+                iconCameraController.noZoom = true;
+                iconCameraController.noRotate = false;
+                iconCameraController.noPan = true;
+                iconCameraController.enabled = false;
+                //iconCameraController.addEventListener('change', iconRender);
+
+                iconScene = new OSMEX.ObjectScene();
+
+                iconLight = new THREE.DirectionalLight(0xffffff);
+                iconScene.add(iconLight);
+                
                 attachHandlers();
                 
             }
@@ -758,6 +739,7 @@
                 //alert($(element).attr('id'));
                 if (arrowMode == "building") objectScene.remove(objectScene.children[objectScene.children.length-1]);
                 arrowMode = $(element).attr('id');
+                OPERATED = false;
                 
                 if (arrowMode === "build_box") {
                     
@@ -775,9 +757,6 @@
 
                     if (operationStack.length > 0) {
 
-                        while (selectedObj.length > 0) {
-                            selectedObj.pop();
-                        }
                         var rollbackOperation = operationStack.pop();
                         objectScene.remove(rollbackOperation.output);
 
@@ -804,24 +783,26 @@
                         var nameOfOperation, result_bsp;
                         
                         if (OPERATED) {
-                            
-                            resultObj.visible = false;
-                            objectScene. remove(resultObj);
+
+                            objectScene.remove(resultObj);
                             operationStack.shift();
-                            //resultObj = null;
-                            first_bsp = new ThreeBSP(firstObject);
-                            second_bsp = new ThreeBSP(secondObject);
+
+                            CLICKED[0] = firstObject;
+                            CLICKED[1] = secondObject;
                                  
                             removeFromListOfOperations(); 
                         }
                         else {                      
                         
-                            firstObject = CLICKED[0].clone();
-                            secondObject = CLICKED[1].clone();
-                            first_bsp = new ThreeBSP(CLICKED[0]);
-                            second_bsp = new ThreeBSP(CLICKED[1]);
+                            firstObject = CLICKED[0];
+                            secondObject = CLICKED[1];
+
                             OPERATED = true;                            
                         } 
+                        
+                            first_bsp = new ThreeBSP(CLICKED[0]);
+                            second_bsp = new ThreeBSP(CLICKED[1]);
+                            
                             if ($(element).attr('id') == "union") {
                                 nameOfOperation = "Union";
                                 result_bsp = first_bsp.union(second_bsp);
@@ -836,7 +817,7 @@
                                 result_bsp = first_bsp.subtract(second_bsp);
                             }
 
-                            var material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
+                            var material = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.SmoothShading } );
                             
                             var geometry = result_bsp.toGeometry();
                         
@@ -875,30 +856,23 @@
                             resultObj.name = "undef"; 
                             
                             if ($("#BBox").prop("checked"))  resultObj.bbox.setVisibility(true);
-                            
-                            
+                             
                             objectScene.add(resultObj);
 
                             if (CLICKED[0]) {CLICKED[0].visible = false;CLICKED[0].setVisibility(false);}
                             
                             if (CLICKED[1]) {CLICKED[1].visible = false;CLICKED[1].setVisibility(false);}
 
-                            var newSelected = [];
-                            while (selectedObj.length > 0) {
-                                newSelected.push(selectedObj.pop());
-                            }
-                            //var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
-                            var newOperation = {id: operationStack.length, type: nameOfOperation, input: newSelected, output: resultObj};
+                            var newOperation = {id: operationStack.length, type: nameOfOperation, input: [CLICKED[0], CLICKED[1]], output: resultObj};
                             operationStack.push(newOperation);
                              
                             saveAtListOfOperations(newOperation.id + 1 + ". " + newOperation.type);
 
                             //resultObj.oldColor = pickedObject.material.color.getHex(); 
                             resultObj.material.color.setHex( 0x008000 );
-                            resultObj.oldColor = 0xffffff; 
+                            resultObj.oldColor = 0xeeeeee; 
                             
                             CLICKED[0] = resultObj;
-                            selectedObj.push(resultObj.clone());
                             CLICKED[1] = null;
                             OPERATED = true;
                     }
@@ -995,17 +969,13 @@
                             pickedObject.oldColor = pickedObject.material.color.getHex(); 
                             pickedObject.material.color.setHex( 0x008000 ); 
                             
-                            CLICKED[0] = pickedObject;
-                            selectedObj.push(pickedObject);
-                            
+                            CLICKED[0] = pickedObject; 
                         }
                         else if (CLICKED[0] == pickedObject) {
                             
                             pickedObject.material.color.setHex( pickedObject.oldColor ); 
 
-                            CLICKED[0] = null;
-                            selectedObj.shift();
-                            
+                            CLICKED[0] = null; 
                         }
                         else if (!CLICKED[1]) {
                             
@@ -1013,16 +983,13 @@
                             pickedObject.material.color.setHex( 0x004080 ); 
                             
                             CLICKED[1] = pickedObject;
-                            selectedObj.push(pickedObject);
                             
                         }
                         else if (CLICKED[1] == pickedObject) {
                             
                             pickedObject.material.color.setHex( pickedObject.oldColor ); 
                             
-                            CLICKED[1] = null;
-                            selectedObj.pop();
-                            
+                            CLICKED[1] = null;       
                         }
                         else if (CLICKED[0] && CLICKED[1]) {
                         }
@@ -1032,7 +999,6 @@
                             pickedObject.material.color.setHex( 0x008000 ); 
                             
                             CLICKED[0] = pickedObject;
-                            selectedObj.unshift(pickedObject);
                         }
                         OPERATED = false;
                     }
@@ -1184,7 +1150,6 @@
                             if (CLICKED[1] != null)
                             CLICKED[1].material.emissive.setHex(0x000000);                            
                             CLICKED.length = 0;                             
-                            selectedObj.length = 0;
                             objectScene.remove(PICKED);
                             document.getElementById("dragging").click();
                         }

@@ -6,7 +6,7 @@ OSMEX.SketchFactory = function (  ) {
     
     this.buildMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, shading: THREE.SmoothShading } );
     
-    this.usualMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
+    this.usualMaterial = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.SmoothShading } );
     
     this.currentObject = null;
     

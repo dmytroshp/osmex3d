@@ -69,6 +69,11 @@ body
      right: 5px;
      top: 65px;
  }
+ .panel_body
+ {
+     min-width: 300px;
+     min-height: 300px;
+ }
  #map
  {
      position: absolute;
@@ -83,7 +88,7 @@ body
      font-size:13px;
      text-align:center;
      font-weight: bold;
-    /*background-color: #fff;*/
+     background-color: white;
      margin: 0px;
      overflow: hidden;
      padding: 0px;
@@ -114,7 +119,7 @@ body
      border-radius: 4px;
      border: 1px #aaaaaa solid;
      font-family: Monospace;
-     background-color: #f0f0f0;
+     background-color: white;
      margin: 0px;
      overflow: hidden;
      padding: 0px;
@@ -129,7 +134,7 @@ body
      border-radius: 4px;
      border: 1px #aaaaaa solid;
      font-family: Monospace;
-     background-color: #f0f0f0;
+     background-color: white;
      margin: 0px;
      overflow: hidden;
      padding: 0px;
@@ -265,8 +270,8 @@ ul.results-list li p{
     margin-left:3px;
 }
 .fullPicture{
-    width: 256px;
-    height: 256px;
+    width: 235px;
+    height: 235px;
 }
 #txt{
     font-size: 0.5em;
