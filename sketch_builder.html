@@ -83,9 +83,6 @@
             #bottombar {
                 position:absolute;
             }
-            #rightbar {
-                position:absolute;
-            }
             #leftbar {
                 position:absolute;
             }
@@ -261,21 +258,6 @@
             <label><input type="checkbox" id="BBox" onchange="addBoundingBox();" /> Show bounding boxes</label>
         </div>
 
-        <div id="rightbar" class="map_controls" style="visibility:hidden;width:40px;display:block;">
-            <div id="1" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='img/cube.png'>
-            </div>
-            <br/>
-            <div id="3" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='img/cylinder.png'>
-            </div>
-            <br/>
-            <div id="2" class="group2" style="width:40px;height:40px;border-style:solid;border-width:1px;border-color:black;float:left;">
-                <img src='img/sphere.png'>
-            </div>
-
-        </div>
-
         <div id="bottombar" class="map_controls" title="Double click on an object to select it for geometry operations." style="visibility:hidden;display:inline;float:right;">            
             <div id="union" class="group3" title="Union. Merger of two objects into one." style="width:48px;height:48px;float:left;">
                 &nbsp;
@@ -395,13 +377,7 @@
                         "visibility": "visible"
                     });
 
-                    $("#rightbar").css({                        
-                        //"left": window.innerWidth - ($("#topbar").width() / 2) + "px",
-                        "right":'50px',
-                        "top": (window.innerHeight / 2) - ($("#topbar").height() / 2 * 5) + "px",
-                        "visibility": "visible"
-                    });
-
+                   
                     $("#righttopbar").css({
                         "right": '50px',
                         //"left": (window.innerWidth) - ($("#topbar").width()) + "px",
@@ -421,12 +397,6 @@
                         $(".selected").removeClass("selected");
                         $(this).addClass("selected");
                         setArrowsType(this);
-                    });
-                    $(".group2").click(function() {
-                        $(".selected").removeClass("selected");
-                        $(this).addClass("selected");
-                        //addObject(this);
-                        sketchFactory.startBuild($(this).attr('id'));
                     });
 
                     $(".group3").click(function() {

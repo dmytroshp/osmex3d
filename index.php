@@ -460,7 +460,8 @@ HERE;
                         }
                         return;
                     }
-                    
+                    $('.imgContainer.clicked').css("border", "1px solid white");
+                    $('.imgContainer.clicked').removeClass('clicked');
                     $(this).addClass('clicked');
                     if($("#objectEditor").tabs('option','active')==1)
                     {
@@ -614,9 +615,6 @@ HERE;
                             ?>
                         </div>
                         <div id="txt" class="accordion ui-widget ui-widget-content ui-corner-all">
-                            <?php
-                            
-                            ?>
                         </div>
                     </div>
                 </div>
