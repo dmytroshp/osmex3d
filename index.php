@@ -86,7 +86,7 @@ HERE;
                 var panel=$('#objectEditor > div:not(#searchbar)').eq(index);
                 panel.empty();
 
-                $("#objectEditor").tabs("option", "active", -1);
+                $("#objectEditor").tabs("option", "active", -1); // first switching to dummy tab
                 $("#objectEditor").tabs("option", "active", index);
             }
             
@@ -129,28 +129,21 @@ HERE;
                         url:'ajax/mapView.html',
                         activator:function(){
                             var iframe=this.find('iframe');
-                            iframe.css('width',this.width());
-                            iframe.css('height',this.height());
+
                             if(landscapeMode=='zoom') 
                                 iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&rnd='+Math.random());
                             else
                                 iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&rnd='+Math.random());
-                        }//prepareMap();}
+                        }
                     },
                     tabArea:{
                         url:'ajax/areaEditor.html',
                         activator:function(){
-                            var iframe=this.find('iframe');
-                            iframe.css('width',this.width());
-                            iframe.css('height',this.height());
                         }
                     },
                     tabSketch:{
                         url:'ajax/sketchBuilder.html',
                         activator:function(){
-                            var iframe=this.find('iframe');
-                            iframe.css('width',this.width());
-                            iframe.css('height',this.height());
                         }
                     },
                     tabTxt:{
@@ -173,26 +166,36 @@ HERE;
                     beforeActivate:function(event, ui){
                         if(ui.newPanel.is(':empty'))
                         {
-                            $('#loading').css('width',ui.newPanel.width());
-                            $('#loading').css('height',ui.newPanel.height());   
-                            $('#loading').show();  
-                            
                             var key=ui.newTab.attr('id');
+                            
+                            if (key === "dummy") return;
+                            
+                            $('#loading').show();
+                            
                             ui.newPanel.load(initializator[key].url, '', function() {
-                                
-                                initializator[key].activator.call(ui.newPanel,event,ui);
                                 
                                 var iframe = ui.newPanel.find('iframe');
                                 
                                 if (iframe.length) {
                                     
+                                    iframe.css("visibility", "hidden");
+                                    
+                                    iframe.css('width', ui.newPanel.width());
+                                    iframe.css('height', ui.newPanel.height());
+                                }
+                                
+                                initializator[key].activator.call(ui.newPanel, event, ui);       
+                                
+                                if (iframe.length) {
+
                                     iframe.load(function() {
-                                        
+
+                                        iframe.css("visibility", "visible");
                                         $('#loading').hide();
                                     });
                                 }
                                 else {
-                                    
+ 
                                     $('#loading').hide();
                                 }
                             });
@@ -295,9 +298,8 @@ HERE;
                             $("#sidebar").width(width+150);
                             $("#content").css("width", "64%");
                             $("#description").css("display", "none");
-                            $('iframe').css('width',$('iframe').parent().width()-5);
+                            $('iframe').css('width',$('iframe').parent().width());
                             $('iframe').css('height',$('iframe').parent().height());
-                            window.frames[0].updateButton();
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
@@ -312,9 +314,8 @@ HERE;
                             $("#sidebar").width(width-150);
                             $("#content").css("width", "75%");
                             $("#description").css("display", "block");
-                            $('iframe').css('width',$('iframe').parent().width()-5);
+                            $('iframe').css('width',$('iframe').parent().width());
                             $('iframe').css('height',$('iframe').parent().height());
-                            window.frames[0].updateButton();
                         }
                         
                         activateAndRefreshPanel(0);
@@ -576,6 +577,7 @@ HERE;
                             <li id="tabArea"><a href="#areaEditor">Map(EDIT)</a></li>
                             <li id="tabSketch"><a href="#sketchBuilder">Sketch Builder</a></li>
                             <li id="tabTxt"><a href="#txtBuilder">Texture Builder</a></li>
+                            <li id="dummy" style="display:none;"><a href="#txtBuilder">dummy</a></li>
                         </ul>
                         <select id="mode" size="1">
                             <option value="View mode">
@@ -585,11 +587,11 @@ HERE;
                                 Edit Mode
                             </option>
                         </select>
-                        <div id="map"></div>
-                        <div id="areaEditor"></div>
-                        <div id="sketchBuilder"></div>
-                        <div id="txtBuilder"></div>
-                        <div id="loading"><img src="img/loading.gif" style="position:absolute;top:50%;left:50%;margin-left:-16px;margin-top:-16px;width:32px;height:32px;"/></div>
+                        <div class="panel_body" id="map"></div>
+                        <div class="panel_body" id="areaEditor"></div>
+                        <div class="panel_body" id="sketchBuilder"></div>
+                        <div class="panel_body" id="txtBuilder"></div>
+                        <div id="loading" style="display:none;"><img src="img/loading.gif" style="position:absolute;top:50%;left:50%;margin-left:-16px;margin-top:-16px;width:32px;height:32px;"/></div>
                     </div>
                 </div>
             </div>

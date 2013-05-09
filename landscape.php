@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
                 <script type="text/javascript" src="jquery/jquery-1.9.1.js"></script>
                 <script type="text/javascript" src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
-                <script src="threejs/three.js"></script>
+                <script src="threejs/three.min.js"></script>
                 <script src="scripts/Camera.js"></script>
                 <script src="scripts/CameraController.js"></script>
                 <script src="scripts/AreaSelector.js"></script>
@@ -42,7 +42,7 @@
                         #slider
                         {
                             position:relative;
-                            top:5px;
+                            top:4px;
                             left:15px;
                             width:88px;
                         }
@@ -59,19 +59,6 @@
                             padding: 0;
                             font-size:10px;
                             font-weight: normal;
-                            position: absolute;
-                            left:5px;
-                            bottom:5px;
-                        }
-                        .lbl2
-                        {
-                            margin:0;
-                            padding: 0;
-                            font-size:10px;
-                            font-weight: normal;
-                            position: absolute;
-                            right:5px;
-                            bottom:5px;
                         }
                         #edit_button
                         {
@@ -134,8 +121,8 @@ HERE;
                 <div id="edit_button"></div>
                 <div class="slider_place ui-widget ui-widget-content ui-corner-all">
                     <p class='opc'>Buildings opacity</p>
+                    <p class='lbl1' id="opacity_value">100%</p>
                     <div id="slider">&nbsp;</div>
-                    <p class='lbl1'>0%</p><p class='lbl2'>100%</p>
                 </div>
             </div>
         <div  jstcache="0"  id="cont" ></div>
@@ -144,13 +131,6 @@ HERE;
 
 <script type="text/javascript">
 //Class of tile	
-var edit_button=['img/edit.png','img/edit_disabled.png','img/edit_hovered.png','img/edit_pressed.png'];
-$.each(edit_button,function(value,index){
-    var img=$("<img src='"+value+"'>");
-    img.css('display','none');
-    img.appendTo('body');
-});
-
 function Tile () {
     this.id;
 	this.refcount=-1;
@@ -218,6 +198,7 @@ function TileBlds () {
 			var arrTile = new Array();
 			var arrTileBlds = new Array();
 			var sketchFactory;
+                        var buildingsMaterial;
 
 			var timerid=0;
 			var timer=1;
@@ -249,7 +230,24 @@ function TileBlds () {
 			var bverify=false;
 
                         buildingsOpacity=100;
+                        
                         $(document).ready(function(){
+                            
+                       // preload images
+                        
+			preload(['img/edit.png','img/edit_disabled.png','img/edit_hovered.png','img/edit_pressed.png']);
+			 
+			function preload(images) {
+				var div = document.createElement("div");
+				var s = div.style;
+				s.position = "absolute";
+				s.top = s.left = 0;
+				s.visibility = "hidden";
+				document.body.appendChild(div);
+				div.innerHTML = "<img src=\"" + images.join("\" /><img src=\"") + "\" />";
+			}
+                            
+                            
                             $('#slider').slider({
                                 max:100,
                                 min:0,
@@ -258,6 +256,18 @@ function TileBlds () {
                                 slide:function(event,ui)
                                 {
                                     buildingsOpacity=ui.value;
+                                    $("#opacity_value").text(buildingsOpacity + "%");
+                                    
+                                    buildingsMaterial.opacity = buildingsOpacity / 100.0;
+                                    
+                                    /*scene.traverse( function( object ) {
+                                        
+                                        if (object instanceof OSMEX.Block) {
+                                            
+                                            object.material.transparent = true;
+                                            object.material.opacity = buildingsOpacity / 100.0; 
+                                        }
+                                    });*/
                                 }
                             });
                             if (parent.showButton == 1){
@@ -265,17 +275,6 @@ function TileBlds () {
                             } else {
                             	$("#edit_button").hide();
                             }
-                            $("#edit_button").click(function(){
-                                
-                                if ($(this).hasClass('selected')) {
-
-                                    areaSelector.stopSelecting();
-                                }
-                                else {
-                                    
-                                    areaSelector.startSelecting();
-                                }
-                            });
                             $('#map-controls').mouseenter(function(){
                                 cameraController.enabled=false;
                                 document.removeEventListener('mousemove', onDocumentMouseMove, false);
@@ -290,6 +289,26 @@ function TileBlds () {
                                 document.addEventListener('mouseup', onDocumentMouseUp, false);
                                 //camera.noRotate=false;
                             });
+                            
+                                $("#edit_button").click(function(event){
+                                    
+                                    if ($(this).hasClass('disabled') === false) {
+
+                                        if ($(this).hasClass('selected')) {
+                                            areaSelector.stopSelecting();
+                                        } else {
+                                            areaSelector.startSelecting();
+                                        }
+                                    }
+                            	});
+                                
+                                $('#edit_button').mouseover(function(){
+                                    if ($(this).hasClass('disabled') === false) $(this).addClass('hover');
+                                });
+                                
+                                $('#edit_button').mouseout(function(){
+                                    if ($(this).hasClass('disabled') === false) $(this).removeClass('hover');
+                                });
                             
                             init();
 			    animate();
@@ -391,15 +410,6 @@ this.loaded = function () {
 };
 
 }
-
-function updateButton(){
-	if (parent.showButton == 1){
-        $("#edit_button").show();
-    } else {
-    	$("#edit_button").hide();
-    }
-}
-
 
             function getTanDeg(deg) {
 
@@ -570,23 +580,17 @@ function updateButton(){
                 //timerid=setTimeout(verify, 25);
 
 				//scene
-                scene = new THREE.Scene();
-                scene.fog = new THREE.Fog(0xccf2ff, 1, 40000000);
-				//scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+                                scene = new THREE.Scene();
+                                scene.fog = new THREE.Fog(0xccf2ff, 1, 40000000);
+                                                //scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
+                                scene.add(new THREE.AmbientLight(0x3f3f3f));
 
-				// lights
+                                var objectLight = new THREE.DirectionalLight(0xffffff);
+                                objectLight.position = camera.position;
+                                objectLight.target.position = cameraController.target;
+                                scene.add(objectLight);
 
-				/*light = new THREE.DirectionalLight( 0xffffff );
-				light.position.set( 1, 1, 1 );
-				scene.add( light );
-
-				light = new THREE.DirectionalLight( 0x002288 );
-				light.position.set( -1, -1, -1 );
-				scene.add( light );
-
-				light = new THREE.AmbientLight( 0x222222 );
-				scene.add( light );	*/
 
 				// renderer
 
@@ -671,6 +675,7 @@ function updateButton(){
 			  
 			  //render();
 			  sketchFactory = new OSMEX.SketchFactory();
+                          buildingsMaterial = new THREE.MeshBasicMaterial( { color: 0xeeeeee, shading: THREE.FlatShading, transparent: true } );
 			  timer=setInterval( checkTiles , 15);
 
 			}
@@ -750,17 +755,18 @@ function updateButton(){
                    for(var j=0;j<jstr.builds.length;j++)
 				   {
 				       var b=parseInt(jstr.builds[j].id);
-                       var obj = sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
+                        sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
                         {
                             obj.id = id;
                             obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX), parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ));
                             obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
                             var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
                             var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
-			                obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,jstr.builds[j].positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
-				            obj.TypeID = jstr.builds[j].TypeID;
-				            MeshOfBlds[b]=obj;
-						    scene.add(MeshOfBlds[b]);
+			    obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,jstr.builds[j].positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
+			    obj.TypeID = jstr.builds[j].TypeID;
+                            obj.material = buildingsMaterial;
+			    MeshOfBlds[b]=obj;
+			    scene.add(MeshOfBlds[b]);
                             arrTileBlds[id].arrIndxsBlds[j]=b;            
                         });
 						
@@ -993,11 +999,14 @@ function updateButton(){
 				//render();
 
 			}
-			
+			var serverCount = 0;
 			function loadTexture(id){
+                            
+                            var chr = String.fromCharCode(97 + serverCount); // fetching a, b, c
+                            if (++serverCount > 2) serverCount = 0;
 			
 			    var tex=''+arrTile[id].lvl+'/'+arrTile[id].tex_x+'/'+arrTile[id].tex_z;
-				arrTex[id]=THREE.ImageUtils.loadTexture('http://c.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
+				arrTex[id]=THREE.ImageUtils.loadTexture('http://' + chr + '.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
 				  {
 				     arrTile[id].texExist=true;
 				  });
@@ -1089,7 +1098,11 @@ function updateButton(){
 				if(initReady)
 				{
 			    initReady=false;
-				arrTex[initTiles[initTilesIndx]]=THREE.ImageUtils.loadTexture('http://c.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
+                            
+                            var chr = String.fromCharCode(97 + serverCount); // fetching a, b, c
+                            if (++serverCount > 2) serverCount = 0;
+                            
+				arrTex[initTiles[initTilesIndx]]=THREE.ImageUtils.loadTexture('http://' + chr + '.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
 				  {
 				     //alert("o "+initTiles[initTilesIndx]);
 				     arrTile[initTiles[initTilesIndx]].texExist=true;
@@ -1345,20 +1358,17 @@ function updateButton(){
                             }
                             
                             if (camera.position.y < 2000) {
-                                
                                 $("#edit_button").removeClass("disabled");
-                                
-                                $("#edit_button").click(function(event){
-	                                if ($(this).hasClass('selected')) {
-	                                    areaSelector.stopSelecting();
-	                                } else {
-	                                    areaSelector.startSelecting();
-	                                }
-                            	});
                             } else {
                                 $("#edit_button").addClass("disabled");
-                                $("#edit_button").unbind();
                             }
+                            
+                            /// TODO: HERE LONLAT-DATA SHOULD BE UPDATED:
+                            //parent.landscapeMode='boundary';
+                            //parent.minlon='40';
+                            //parent.minlat='30';
+                            //parent.maxlon='60';
+                            //parent.maxlat='40';
                         }
 
 			function render() {

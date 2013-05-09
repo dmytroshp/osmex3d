@@ -61,11 +61,7 @@ OSMEX.AreaSelector.prototype.onLeftMouseButtonDown = function ( mouse ) {
     
     if (intersectPoint !== undefined) {
     
-        if (this.endPos) {
-            
-            this.finishSelecting();
-        }
-        else {
+        if (this.startPos === null) {
             
             this.startPos = intersectPoint.clone();
         }
@@ -74,6 +70,18 @@ OSMEX.AreaSelector.prototype.onLeftMouseButtonDown = function ( mouse ) {
 
 OSMEX.AreaSelector.prototype.onLeftMouseButtonUp = function ( mouse ) {
     
+    if (this.enabled === false)
+        return;
+
+    var intersectPoint = this.getObjectInfoOverMouse(mouse);
+    
+    if (intersectPoint !== undefined) {
+    
+        if (this.endPos) {
+            
+            this.finishSelecting();
+        }
+    }
 }
 
 OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
@@ -95,6 +103,9 @@ OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
 
         var newLen = Math.abs(diag.x);
         var newWidth = Math.abs(diag.z);
+        
+        newLen = Math.min(newLen, this.MAX_LENGTH);
+        newWidth = Math.min(newWidth, this.MAX_WIDTH);
 
         if (newLen < this.MIN_LENGTH || newWidth < this.MIN_WIDTH) {
 
@@ -102,25 +113,16 @@ OSMEX.AreaSelector.prototype.onMouseMove = function ( mouse ) {
             this.box.material.color = new THREE.Color( 0xff0000 );
         }
         else {
-
-            newLen = Math.min(newLen, this.MAX_LENGTH);
-            newWidth = Math.min(newWidth, this.MAX_WIDTH);
-
+            
             this.areaAllowed = true;
             this.box.material.color = new THREE.Color( 0xffff00 );
         }
 
-        if (newLen !== this.MAX_LENGTH ) {
+        var halfLen = newLen / 2.0;
+        this.box.position.x = this.startPos.x + (diag.x < 0 ? -halfLen : halfLen);
 
-            var halfLen = newLen / 2.0;
-            this.box.position.x = this.startPos.x + (diag.x < 0 ? -halfLen : halfLen);
-
-        }
-        if (newWidth !== this.MAX_WIDTH) {
-
-            var halfWidth = newWidth / 2.0;
-            this.box.position.z = this.startPos.z + (diag.z < 0 ? -halfWidth : halfWidth);
-        }
+        var halfWidth = newWidth / 2.0;
+        this.box.position.z = this.startPos.z + (diag.z < 0 ? -halfWidth : halfWidth);
 
         this.box.scale.x = newLen;
         this.box.scale.z = newWidth;

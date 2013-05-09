@@ -118,8 +118,8 @@ function getMouseXY(e)
 {
   //if (ie) 
   //{
-	  mouseX = event.clientX; /*+ document.body.parentElement.scrollLeft;*/
-	  mouseY = event.clientY; /*+ document.body.parentElement.scrollTop;*/
+	  mouseX = e.clientX; /*+ document.body.parentElement.scrollLeft;*/
+	  mouseY = e.clientY; /*+ document.body.parentElement.scrollTop;*/
   /*} else { 
     mouseX = e.pageX
     mouseY = e.pageY
