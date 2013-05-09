@@ -35,7 +35,10 @@ body
 .desc{
     text-align: center;
 }
-
+.clicked
+{
+    border:1px solid red !important;
+}
  #content
  {
       width:60%;

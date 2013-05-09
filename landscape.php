@@ -150,7 +150,10 @@ $.each(edit_button,function(value,index){
     img.css('display','none');
     img.appendTo('body');
 });
-
+window.triggerMouseup=function()
+{
+    $(document).trigger('mouseup');
+}
 function Tile () {
     this.id;
 	this.refcount=-1;
