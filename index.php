@@ -444,8 +444,23 @@ HERE;
                 $(".imgContainer").click(function(){
                     //$('.imgContainer.clicked').unbind("mouseleave");
                     //$('.imgContainer.clicked').unbind("mouseenter");
-                    $('.imgContainer.clicked').css("border", "1px solid white");
-                    $('.imgContainer.clicked').removeClass('clicked');
+                    if($(this).hasClass('clicked'))
+                    {
+                        $('.imgContainer.clicked').css("border", "1px solid white");
+                        $('.imgContainer.clicked').removeClass('clicked');
+                        if($("#objectEditor").tabs('option','active')==1)
+                        {
+                            var frame=$("#areaEditorFrame")[0].contentWindow;
+                            frame.sketchFactory.stopBuild();
+                        }
+                        if($("#objectEditor").tabs('option','active')==2)
+                        {
+                            var frame=$("#sketchBuilderFrame")[0].contentWindow;
+                            frame.sketchFactory.stopBuild();
+                        }
+                        return;
+                    }
+                    
                     $(this).addClass('clicked');
                     if($("#objectEditor").tabs('option','active')==1)
                     {
