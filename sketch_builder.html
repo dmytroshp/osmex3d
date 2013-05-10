@@ -327,7 +327,7 @@
 
             var operationStack = [];
 
-            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh, imageData;
+            var myDialog, iconRenderer, iconCamera, iconCameraController, iconScene, iconLight, iconMesh;
             
             var objectLight, interfaceLight
             
@@ -484,7 +484,7 @@
                                 var geometryExporter = new THREE.GeometryExporter();
                                 var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
 
-                                imageData = iconRenderer.domElement.toDataURL("image/png");
+                                var imageData = iconRenderer.domElement.toDataURL("image/png");
 
                                 var result=ajaxNewSketch(name, category, serializedGeometry, CLICKED[0].scale, imageData);
                                 showStartMessage(result);

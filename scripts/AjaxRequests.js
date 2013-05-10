@@ -1,7 +1,7 @@
 function loadSketchTypeFromServer(_id, successCallback){
 
     $.ajax({
-        async:false,
+        async:true,
         type:'GET',
         url:'server_scripts/getCustomGeometry.php',
         cache: false,
@@ -60,14 +60,14 @@ function ajaxPostScene(array, osmArea) {
     }
 }
 
-function ajaxNewSketch(name, category, serializedGeometry, scale, imageData) {
+function ajaxNewSketch(name, category, serializedGeometry, scale, image) {
     var result;
     $.ajax({
         type: "POST",
-        async:false,
+        async:true,
         url: "server_scripts/NewSketch.php",
         cache: false,
-        data: {name: name.val(), category: category.val(), geometry: serializedGeometry, origScaleX: scale.x, origScaleY: scale.y, origScaleZ: scale.z, imageData:imageData},
+        data: {name: name.val(), category: category.val(), geometry: serializedGeometry, origScaleX: scale.x, origScaleY: scale.y, origScaleZ: scale.z, imageData: image},
         dataType:'text',
         success: function(data) {
             result=data;
