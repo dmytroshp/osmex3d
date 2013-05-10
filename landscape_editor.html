@@ -150,7 +150,7 @@ var TLoad = new function () {
 	//set 1st coordinates for 1st tileRoots
 	this.startX=-20038706.7904;
 	this.startZ=-20038706.7904;
-	this.stepGrid=(Math.abs(this.startX)*2)/8;
+	this.stepGrid=(Math.abs(this.startX)*2)/4;
 	this.idforloadroot=-1;
 	this.ReadyForRoot=true;
     this.indx=0;
@@ -288,9 +288,9 @@ this.loaded = function () {
 				   var i_=0;
 				   var j_=0;
 				   //Creation of a grid
-				   for(;i_<9;i_+=8){
+				   for(;i_<5;i_+=4){
 				   	z_=startZ+(scale)*i_;
-				   	for(;j_<9;j_+=8){
+				   	for(;j_<5;j_+=4){
 				   		x_=startX+(scale)*j_;
 				           c.push(new THREE.Vector3(x_,0.0,z_));
 						   //alert(x_+" "+z_+" "+startX+" "+scale)
@@ -505,15 +505,15 @@ this.loaded = function () {
 
 			function initFaceTex(tile) {
 					//Faces
-                	for(ix=0;ix<8;ix++){//collumn
-                	   for(iy=0;iy<8;iy++){//row of quads
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+1,9*ix+iy));
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+10,9*ix+iy+1));
+                	for(ix=0;ix<4;ix++){//collumn
+                	   for(iy=0;iy<4;iy++){//row of quads
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(5*ix+iy+5,5*ix+iy+1,5*ix+iy));
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(5*ix+iy+5,5*ix+iy+6,5*ix+iy+1));
 	                	                }
                 					}
 
                     //UV
-                	step=1.0/8.0
+                	step=1.0/4.0
                 	for(v=1.0;v>0;v-=step){
                 	  for(u=0.0;u<1;u+=step){
                 	tile.triangleGeometry.faceVertexUvs[0].push( [
@@ -808,9 +808,9 @@ this.loaded = function () {
 				var i_=0;
 				var j_=0;
 				//Creation of a grid
-                    for(;i_<9;i_++){
+                    for(;i_<5;i_++){
 					    z_=startZ+(scale)*i_;
-					   for(;j_<9;j_++){
+					   for(;j_<5;j_++){
 					      x_=startX+(scale)*j_;
 		                  arrTile[id].triangleGeometry.vertices.push(new THREE.Vector3( x_,0.0,z_));
 						  //console.debug("flg_empty "+flg_empty);

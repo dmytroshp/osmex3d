@@ -9,6 +9,7 @@ $query = mysql_query($sql, $connection);
 while ($row = mysql_fetch_array($query)) {
     $test['name'] = $row['nameType'];
     $test['previewFileName'] = $row['idType'].'_'.$row['nameType'];
+    $test['id']=$row['idType'];
     $array[$row['nameCat']][]=$test;
 }
 mysql_close($connection);
@@ -139,11 +140,13 @@ HERE;
                     tabArea:{
                         url:'ajax/areaEditor.html',
                         activator:function(){
+                            //$(iframe[0].contentWindow.document).trigger('mouseup');
                         }
                     },
                     tabSketch:{
                         url:'ajax/sketchBuilder.html',
                         activator:function(){
+                            //iframe[0].contentWindow.triggerMouseup();
                         }
                     },
                     tabTxt:{
@@ -164,6 +167,10 @@ HERE;
                 $("#objectEditor").tabs({
                     active: -1,   // to trigger beforeActivate for the first tab
                     beforeActivate:function(event, ui){
+                        /*$('iframe').each(function(index,element){
+                            $(this.contentWindow.document).trigger('mouseup');
+                        });*/
+                        //$(iframe[0].contentWindow.document).trigger('mouseup');
                         if(ui.newPanel.is(':empty'))
                         {
                             var key=ui.newTab.attr('id');
@@ -248,6 +255,13 @@ HERE;
                             }
                         });
                         $("#txt").children(".imgContainer").click(function(){
+                            /*$('.imgContainer.clicked').unbind("mouseleave");
+                            $('.imgContainer.clicked').unbind("mouseenter");
+                            $('.imgContainer.clicked').removeClass('clicked');
+                            $(this).addClass('clicked');
+                            $('.clicked').bind("mouseleave");
+                            $('.clicked').bind("mouseenter");*/
+                           
                             if(!$(this).hasClass("clicked"))
                             {
                                 $(this).css("border", "1px solid red");
@@ -418,15 +432,52 @@ HERE;
                 });
 //           6. Image Container handlers                
                 $(".imgContainer").mouseenter(function(){
+                    if($(this).hasClass('clicked')) return;
                     $(this).css("cursor", "pointer");
                     $(this).css("border", "1px solid red");
                 });
                 $(".imgContainer").mouseleave(function(){
+                    if($(this).hasClass('clicked')) return;
                     $(this).css("cursor", "default");
                     $(this).css("border", "1px solid white");
                 });
                 $(".imgContainer").click(function(){
-                    if(!$(this).hasClass("clicked"))
+                    //$('.imgContainer.clicked').unbind("mouseleave");
+                    //$('.imgContainer.clicked').unbind("mouseenter");
+                    if($(this).hasClass('clicked'))
+                    {
+                        $('.imgContainer.clicked').css("border", "1px solid white");
+                        $('.imgContainer.clicked').removeClass('clicked');
+                        if($("#objectEditor").tabs('option','active')==1)
+                        {
+                            var frame=$("#areaEditorFrame")[0].contentWindow;
+                            frame.sketchFactory.stopBuild();
+                        }
+                        if($("#objectEditor").tabs('option','active')==2)
+                        {
+                            var frame=$("#sketchBuilderFrame")[0].contentWindow;
+                            frame.sketchFactory.stopBuild();
+                        }
+                        return;
+                    }
+                    $('.imgContainer.clicked').css("border", "1px solid white");
+                    $('.imgContainer.clicked').removeClass('clicked');
+                    $(this).addClass('clicked');
+                    if($("#objectEditor").tabs('option','active')==1)
+                    {
+                        var frame=$("#areaEditorFrame")[0].contentWindow;
+                        frame.sketchFactory.startBuild($(this).attr('id'));
+                    }
+                    if($("#objectEditor").tabs('option','active')==2)
+                    {
+                        var frame=$("#sketchBuilderFrame")[0].contentWindow;
+                        frame.sketchFactory.startBuild($(this).attr('id'));
+                    }
+                    //$('.clicked').bind("mouseleave");
+                    //$('.clicked').bind("mouseenter");
+                    //var frame=$("#areaEditorFrame")[0].contentWindow;
+                    //frame.sketchFactory.startBuild($(this).attr('id'));
+                    /*if(!$(this).hasClass("clicked"))
                     {
                         $(this).css("border", "1px solid red");
                         $(this).unbind("mouseleave");
@@ -438,7 +489,7 @@ HERE;
                         $(this).bind("mouseleave");
                         $(this).bind("mouseenter");
                     }
-                    $(this).toggleClass("clicked");
+                    $(this).toggleClass("clicked");*/
                 });
 //           7. Search handler
                 $("#sketchTab").click(function (){
@@ -547,12 +598,12 @@ HERE;
                             <?php
                             global $array;
                             foreach ($array as $nameFigureType => $instances) {
-                                echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
+                                echo '<div objectcategory="'.$nameFigureType.'" class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
                                 echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all">';
                                 
                                 for($i=0;$i<sizeof($instances);$i++)
                                 {
-                                    echo '<div class="imgContainer">';
+                                    echo '<div class="imgContainer" id="'.$instances[$i]['id'].'">';
                                     echo '<img class="prev" src="previews/'.$instances[$i]['previewFileName'].'_mini.png">';
                                     echo '<div class="desc">';
                                     echo $instances[$i]['name'];
@@ -564,9 +615,6 @@ HERE;
                             ?>
                         </div>
                         <div id="txt" class="accordion ui-widget ui-widget-content ui-corner-all">
-                            <?php
-                            
-                            ?>
                         </div>
                     </div>
                 </div>
