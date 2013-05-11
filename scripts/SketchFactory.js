@@ -16,7 +16,7 @@ OSMEX.SketchFactory = function (  ) {
     this.sketchTypeCache[2] = new OSMEX.SketchType("sphere", "", new THREE.SphereGeometry( 0.5, 15, 15 ), origScale);
     this.sketchTypeCache[3] = new OSMEX.SketchType("cylinder", "", new THREE.CylinderGeometry( 0.5, 0.5, 1, 15, 15 ), origScale);
     this.sketchTypeCache[4] = new OSMEX.SketchType("cone", "", new THREE.CylinderGeometry( 0, 0.5, 1, 15, 15 ), origScale);
-    this.sketchTypeCache[5] = new OSMEX.SketchType("torus", "", new THREE.TorusGeometry( 0.5, 0.2, 30, 30), origScale);
+    this.sketchTypeCache[5] = new OSMEX.SketchType("torus", "", new THREE.TorusGeometry( 0.5, 0.2, 15, 15), origScale);
     this.sketchTypeCache[6] = new OSMEX.SketchType("tetrahedron", "", new THREE.TetrahedronGeometry (0.5), origScale);
 };
 

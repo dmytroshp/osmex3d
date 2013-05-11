@@ -46,7 +46,7 @@
                     <input type='text' name='category' id='category' value='' class='text ui-widget-content ui-corner-all' />\
                 </form>\
             </div>";
-            var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 230)/ 2 + "px; z-index: 999; width:230px; display:none;' id='message' class='ui-widget'>\
+            var red_alert_template = "<div style='position:absolute;top:" + (window.innerHeight - 100)/ 2 + "px; left:" + (window.innerWidth - 380)/ 2 + "px; z-index: 999; width:380px; display:none;' id='message' class='ui-widget'>\
                     <div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
                         <p>\
                         <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
@@ -752,6 +752,21 @@
                         
                         var nameOfOperation, result_bsp;
                         
+                        var vertexCount;
+                        
+                        if (OPERATED) {
+                            vertexCount = firstObject.geometry.vertices.length + secondObject.geometry.vertices.length;
+                        }
+                        else {
+                            vertexCount = CLICKED[0].geometry.vertices.length + CLICKED[1].geometry.vertices.length;
+                        }
+                          
+                        if (vertexCount > 1024) {
+
+                            showErrorMessage("Geometry of selected objects is too complex. Please try to pick simpler objects.");
+                            return;
+                        }
+                        
                         if (OPERATED) {
 
                             objectScene.remove(resultObj);
@@ -769,7 +784,7 @@
 
                             OPERATED = true;                            
                         } 
-                        
+                                       
                             first_bsp = new ThreeBSP(CLICKED[0]);
                             second_bsp = new ThreeBSP(CLICKED[1]);
                             
