@@ -324,7 +324,7 @@ var TLoad = new function () {
 	//set 1st coordinates for 1st tileRoots
 	this.startX=-20038706.7904;
 	this.startZ=-20038706.7904;
-	this.stepGrid=(Math.abs(this.startX)*2)/8;
+	this.stepGrid=(Math.abs(this.startX)*2)/4;
 	this.idforloadroot=-1;
 	this.ReadyForRoot=true;
     this.indx=0;
@@ -457,9 +457,9 @@ this.loaded = function () {
 				   var i_=0;
 				   var j_=0;
 				   //Creation of a grid
-				   for(;i_<9;i_+=8){
+				   for(;i_<5;i_+=4){
 				   	z_=startZ+(scale)*i_;
-				   	for(;j_<9;j_+=8){
+				   	for(;j_<5;j_+=4){
 				   		x_=startX+(scale)*j_;
 				           c.push(new THREE.Vector3(x_,0.0,z_));
 						   //alert(x_+" "+z_+" "+startX+" "+scale)
@@ -684,15 +684,15 @@ this.loaded = function () {
 
 			function initFaceTex(tile) {
 					//Faces
-                	for(ix=0;ix<8;ix++){//collumn
-                	   for(iy=0;iy<8;iy++){//row of quads
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+1,9*ix+iy));
-                	       tile.triangleGeometry.faces.push(new THREE.Face3(9*ix+iy+9,9*ix+iy+10,9*ix+iy+1));
+                	for(ix=0;ix<4;ix++){//collumn
+                	   for(iy=0;iy<4;iy++){//row of quads
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(5*ix+iy+5,5*ix+iy+1,5*ix+iy));
+                	       tile.triangleGeometry.faces.push(new THREE.Face3(5*ix+iy+5,5*ix+iy+6,5*ix+iy+1));
 	                	                }
                 					}
 
                     //UV
-                	step=1.0/8.0
+                	step=1.0/4.0
                 	for(v=1.0;v>0;v-=step){
                 	  for(u=0.0;u<1;u+=step){
                 	tile.triangleGeometry.faceVertexUvs[0].push( [
@@ -811,14 +811,14 @@ this.loaded = function () {
 				var vec1X=TLoad.startX+offset*tosmX;
 				var vec1Z=TLoad.startZ+offset*tosmZ;
 
-				var vec2X=TLoad.startX+offset*tosmX+(scale)*8;
+				var vec2X=TLoad.startX+offset*tosmX+(scale)*4;
 				var vec2Z=TLoad.startZ+offset*tosmZ;
 
 				var vec3X=TLoad.startX+offset*tosmX;
-				var vec3Z=TLoad.startZ+offset*tosmZ+(scale)*8;
+				var vec3Z=TLoad.startZ+offset*tosmZ+(scale)*4;
 
-				var vec4X=TLoad.startX+offset*tosmX+(scale)*8;
-				var vec4Z=TLoad.startZ+offset*tosmZ+(scale)*8;
+				var vec4X=TLoad.startX+offset*tosmX+(scale)*4;
+				var vec4Z=TLoad.startZ+offset*tosmZ+(scale)*4;
 
                 var cenx=(vec2X+vec1X)/2.0;
                 var cenz=(vec2Z+vec3Z)/2.0;
@@ -901,7 +901,7 @@ this.loaded = function () {
 		                  scene.remove(MeshOfBlds[b]);
                           //renderer.deallocateObject(MeshOfBlds[b]);
 						  MeshOfBlds[b].geometry.dispose();
-						  MeshOfBlds[b].material.dispose();
+						  //MeshOfBlds[b].material.dispose();
 			              //renderer.deallocateTexture(arrTex[id]);
 			              //delete arrTex[id];
 			              //arrTex[id]=null;
@@ -935,9 +935,9 @@ this.loaded = function () {
 				var i_=0;
 				var j_=0;
 				//Creation of a grid
-                    for(;i_<9;i_++){
+                    for(;i_<5;i_++){
 					    z_=startZ+(scale)*i_;
-					   for(;j_<9;j_++){
+					   for(;j_<5;j_++){
 					      x_=startX+(scale)*j_;
 		                  arrTile[id].triangleGeometry.vertices.push(new THREE.Vector3( x_,0.0,z_));
 
@@ -1029,14 +1029,14 @@ this.loaded = function () {
 				var vec1X=TLoad.startX+offset*tosmX;
 				var vec1Z=TLoad.startZ+offset*tosmZ;
 
-				var vec2X=TLoad.startX+offset*tosmX+(scale)*8;
+				var vec2X=TLoad.startX+offset*tosmX+(scale)*4;
 				var vec2Z=TLoad.startZ+offset*tosmZ;
 
 				var vec3X=TLoad.startX+offset*tosmX;
-				var vec3Z=TLoad.startZ+offset*tosmZ+(scale)*8;
+				var vec3Z=TLoad.startZ+offset*tosmZ+(scale)*4;
 
-				var vec4X=TLoad.startX+offset*tosmX+(scale)*8;
-				var vec4Z=TLoad.startZ+offset*tosmZ+(scale)*8;
+				var vec4X=TLoad.startX+offset*tosmX+(scale)*4;
+				var vec4Z=TLoad.startZ+offset*tosmZ+(scale)*4;
 
                 var cenx=(vec2X+vec1X)/2.0;
                 var cenz=(vec2Z+vec3Z)/2.0;
@@ -1165,9 +1165,9 @@ this.loaded = function () {
 			     var range_lon=maxlon-minlon;
 			     var range_lat=maxlat-minlat;
 			     var c0=triangleMesh[cur_ID].geometry.vertices[0];
-			     var c1=triangleMesh[cur_ID].geometry.vertices[8];
-			     var c2=triangleMesh[cur_ID].geometry.vertices[72];
-			     var c3=triangleMesh[cur_ID].geometry.vertices[80];
+			     var c1=triangleMesh[cur_ID].geometry.vertices[4];
+			     var c2=triangleMesh[cur_ID].geometry.vertices[20];
+			     var c3=triangleMesh[cur_ID].geometry.vertices[24];
 			     var range_x=Math.max(c1.x,c0.x)-Math.min(c1.x,c0.x);
 			     var range_z=Math.max(c0.z,c2.z)-Math.min(c0.z,c2.z);
 				 arrTileBlds[cur_ID].scale_x=range_x/range_lon;
@@ -1474,3 +1474,4 @@ this.loaded = function () {
 
 	</body>
 </html>
+8

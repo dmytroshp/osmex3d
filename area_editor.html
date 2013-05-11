@@ -254,6 +254,9 @@
                 });
 
                 $(".group1").click(function() {
+                    sizerGizmo.setTarget(null);
+                    movingGizmo.setTarget(null);
+                    rotationGizmo.setTarget(null);
                     $(".selected").removeClass("selected");
                     $(this).addClass("selected");
                     setArrowsType(this);
