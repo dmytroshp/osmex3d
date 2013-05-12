@@ -38,8 +38,8 @@ THREE.GeometryExporter.prototype = {
 
 			var isTriangle = face instanceof THREE.Face3;
 			var hasMaterial = false; // face.materialIndex !== undefined;
-			var hasFaceUv = false; // geometry.faceUvs[ 0 ][ i ] !== undefined;
-			var hasFaceVertexUv = false; // geometry.faceVertexUvs[ 0 ][ i ] !== undefined;
+			var hasFaceUv = geometry.faceUvs[ 0 ][ i ] !== undefined;
+			var hasFaceVertexUv = geometry.faceVertexUvs[ 0 ][ i ] !== undefined;
 			var hasFaceNormal = false; // face.normal.length() > 0;
 			var hasFaceVertexNormal = false; // face.vertexNormals[ 0 ] !== undefined;
 			var hasFaceColor = false; // face.color;
@@ -74,41 +74,36 @@ THREE.GeometryExporter.prototype = {
 
 			}
 
-			/*
 			if ( hasFaceUv ) {
 
 				var uv = geometry.faceUvs[ 0 ][ i ];
 				uvs[ 0 ].push( uv.u, uv.v );
-
 			}
-			*/
-
-			/*
+			
 			if ( hasFaceVertexUv ) {
 
-				var uvs = geometry.faceVertexUvs[ 0 ][ i ];
+				var vertexUvs = geometry.faceVertexUvs[ 0 ][ i ];
 
 				if ( isTriangle ) {
 
 					faces.push(
-						uvs[ 0 ].u, uvs[ 0 ].v,
-						uvs[ 1 ].u, uvs[ 1 ].v,
-						uvs[ 2 ].u, uvs[ 2 ].v
+						vertexUvs[ 0 ].u, vertexUvs[ 0 ].v,
+						vertexUvs[ 1 ].u, vertexUvs[ 1 ].v,
+						vertexUvs[ 2 ].u, vertexUvs[ 2 ].v
 					);
 
 				} else {
 
 					faces.push(
-						uvs[ 0 ].u, uvs[ 0 ].v,
-						uvs[ 1 ].u, uvs[ 1 ].v,
-						uvs[ 2 ].u, uvs[ 2 ].v,
-						uvs[ 3 ].u, uvs[ 3 ].v
+						vertexUvs[ 0 ].u, vertexUvs[ 0 ].v,
+						vertexUvs[ 1 ].u, vertexUvs[ 1 ].v,
+						vertexUvs[ 2 ].u, vertexUvs[ 2 ].v,
+						vertexUvs[ 3 ].u, vertexUvs[ 3 ].v
 					);
 
 				}
 
 			}
-			*/
 
 			if ( hasFaceNormal ) {
 

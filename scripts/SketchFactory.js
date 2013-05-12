@@ -143,6 +143,7 @@ OSMEX.SketchFactory.prototype.getSketchType = function( objectTypeId, onSketchTy
             var geometry = getUnpackedGeometry(json.geometryStr);
             geometry.computeCentroids();
             geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
             
             var scale = new THREE.Vector3(parseFloat(json.origScaleX), parseFloat(json.origScaleY), parseFloat(json.origScaleZ));
             
@@ -210,8 +211,7 @@ function getUnpackedGeometry( packedGeometry ) {
     nUvLayers = 0;
 
     // disregard empty arrays
-
-   /* for ( i = 0; i < packedGeometry.uvs.length; i++ ) {
+    for ( i = 0; i < packedGeometry.uvs.length; i++ ) {
 
             if ( packedGeometry.uvs[ i ].length ) nUvLayers ++;
 
@@ -222,7 +222,7 @@ function getUnpackedGeometry( packedGeometry ) {
             geometry.faceUvs[ i ] = [];
             geometry.faceVertexUvs[ i ] = [];
 
-    }*/
+    }
 
     offset = 0;
     zLength = vertices.length;
@@ -253,7 +253,7 @@ function getUnpackedGeometry( packedGeometry ) {
             hasFaceVertexUv     = isBitSet( type, 3 );
             hasFaceNormal       = isBitSet( type, 4 );
             hasFaceVertexNormal = isBitSet( type, 5 );
-            hasFaceColor	    = isBitSet( type, 6 );
+            hasFaceColor	= isBitSet( type, 6 );
             hasFaceVertexColor  = isBitSet( type, 7 );
 
             //console.log("type", type, "bits", isQuad, hasMaterial, hasFaceUv, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
