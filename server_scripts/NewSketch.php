@@ -3,7 +3,7 @@ require_once 'config.php';
 require_once 'imageThumbnail.php';
 $name = $_POST['name'];
 $category = $_POST['category'];
-$serializedGeometry = $_POST['geometry'];
+$serializedGeometry = json_decode($_POST['geometry']);
 $origScaleX = $_POST['origScaleX'];
 $origScaleY = $_POST['origScaleY'];
 $origScaleZ = $_POST['origScaleZ'];
