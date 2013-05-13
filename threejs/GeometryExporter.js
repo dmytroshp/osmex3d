@@ -77,29 +77,25 @@ THREE.GeometryExporter.prototype = {
 			if ( hasFaceUv ) {
 
 				var uv = geometry.faceUvs[ 0 ][ i ];
-				uvs[ 0 ].push( uv.u, uv.v );
+				uvs[ 0 ].push( uv.u, uv.v );   
 			}
 			
 			if ( hasFaceVertexUv ) {
-
+                                
 				var vertexUvs = geometry.faceVertexUvs[ 0 ][ i ];
 
 				if ( isTriangle ) {
 
-					faces.push(
-						vertexUvs[ 0 ].u, vertexUvs[ 0 ].v,
-						vertexUvs[ 1 ].u, vertexUvs[ 1 ].v,
-						vertexUvs[ 2 ].u, vertexUvs[ 2 ].v
-					);
+					uvs[ 0 ].push(vertexUvs[ 0 ].u, vertexUvs[ 0 ].v);
+					uvs[ 0 ].push(vertexUvs[ 1 ].u, vertexUvs[ 1 ].v);
+					uvs[ 0 ].push(vertexUvs[ 2 ].u, vertexUvs[ 2 ].v);
 
 				} else {
 
-					faces.push(
-						vertexUvs[ 0 ].u, vertexUvs[ 0 ].v,
-						vertexUvs[ 1 ].u, vertexUvs[ 1 ].v,
-						vertexUvs[ 2 ].u, vertexUvs[ 2 ].v,
-						vertexUvs[ 3 ].u, vertexUvs[ 3 ].v
-					);
+					uvs[ 0 ].push(vertexUvs[ 0 ].u, vertexUvs[ 0 ].v);
+					uvs[ 0 ].push(vertexUvs[ 1 ].u, vertexUvs[ 1 ].v);
+					uvs[ 0 ].push(vertexUvs[ 2 ].u, vertexUvs[ 2 ].v);
+                                        uvs[ 0 ].push(vertexUvs[ 3 ].u, vertexUvs[ 3 ].v);
 
 				}
 

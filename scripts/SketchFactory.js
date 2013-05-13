@@ -4,9 +4,9 @@ OSMEX.SketchFactory = function (  ) {
     
     THREE.Object3D.call( this );
     
-    this.buildMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, shading: THREE.SmoothShading } );
+    this.buildMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, shading: THREE.FlatShading } );
     
-    this.usualMaterial = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.SmoothShading } );
+    this.usualMaterial = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.FlatShading } );
     
     this.currentObject = null;
     
@@ -190,7 +190,7 @@ function getUnpackedGeometry( packedGeometry ) {
 
     offset, zLength, nVertices,
 
-    colorIndex, normalIndex, uvIndex, materialIndex,
+    colorIndex, normalIndex, materialIndex,
 
     type,
     isQuad,
@@ -233,12 +233,12 @@ function getUnpackedGeometry( packedGeometry ) {
     }
 
     offset = 0;
+    var uvIndex = 0;
     zLength = faces.length;
 
     while ( offset < zLength ) {
 
             type = faces[ offset ++ ];
-
 
             isQuad              = isBitSet( type, 0 );
             hasMaterial         = isBitSet( type, 1 );
@@ -291,10 +291,9 @@ function getUnpackedGeometry( packedGeometry ) {
 
                             uvLayer = packedGeometry.uvs[ i ];
 
-                            uvIndex = faces[ offset ++ ];
-
                             u = uvLayer[ uvIndex * 2 ];
                             v = uvLayer[ uvIndex * 2 + 1 ];
+                            uvIndex++;
 
                             geometry.faceUvs[ i ][ fi ] = new THREE.Vector2( u, v );
 
@@ -312,10 +311,9 @@ function getUnpackedGeometry( packedGeometry ) {
 
                             for ( j = 0; j < nVertices; j ++ ) {
 
-                                    uvIndex = faces[ offset ++ ];
-
                                     u = uvLayer[ uvIndex * 2 ];
                                     v = uvLayer[ uvIndex * 2 + 1 ];
+                                    uvIndex++;
 
                                     uvs[ j ] = new THREE.Vector2( u, v );
 

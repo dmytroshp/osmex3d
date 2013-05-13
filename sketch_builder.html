@@ -483,7 +483,7 @@
                         },
                         open: function( event, ui ) {
                             
-                            var material = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.SmoothShading } );
+                            var material = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.FlatShading } );
 
                             iconMesh = new THREE.Mesh(CLICKED[0].geometry.clone(), material);
                             iconMesh.scale.copy(CLICKED[0].scale);
@@ -805,14 +805,14 @@
                                 result_bsp = first_bsp.subtract(second_bsp);
                             }
 
-                            var material = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.SmoothShading } );
+                            var material = new THREE.MeshPhongMaterial( { color: 0xeeeeee, shading: THREE.FlatShading } );
                             
                             var geometry = result_bsp.toGeometry();
                         
                             geometry.computeBoundingBox();
-                            var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x) / 2;
-                            var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y) / 2;
-                            var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z) / 2;
+                            var scaleX = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                            var scaleY = Math.abs(geometry.boundingBox.max.y - geometry.boundingBox.min.y);
+                            var scaleZ = Math.abs(geometry.boundingBox.max.z - geometry.boundingBox.min.z);
 
                             var resultScale = new THREE.Vector3(scaleX, scaleY, scaleZ);
                             var resultPosition = geometry.boundingBox.center();
