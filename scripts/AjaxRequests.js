@@ -75,3 +75,18 @@ function ajaxNewSketch(name, category, serializedGeometry, scale, image) {
     });
     return result;
 }
+
+function ajaxCheckUniqueName (name) {
+    var result;
+    $.ajax({
+        type: "POST",
+        async:true,
+        url: "server_scripts/checkUniqueName.php",
+        cache: false,
+        data: {name: name.val()},
+        success: function(data) {
+            result = data;
+        }
+    });
+    return result;
+}

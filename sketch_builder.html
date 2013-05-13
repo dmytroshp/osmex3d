@@ -439,38 +439,16 @@
                         resizable: false,
                         modal: true,
                         buttons: {
-                            /*"Test": function() {
-                                // TEST ONLY
-                                var name = $("#name");
-                                $.ajax({
-                                    type: "POST",
-                                    url: "server_scripts/checkUniqueName.php",
-                                    cache: false,
-                                    data: {name: name.val()}, 
-                                    success: function(data) {
-                                        console.log(data);
-                                    }
-                                });
-                            },*/
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
                                 if (name.val() == "") {
                                     showErrorMessage("Error. 'Name' is empty.");
                                 } else  if (category.val() == "") {
                                     showErrorMessage("Error. 'Category' is empty.");
-                                } else {
-                                    
-                                    var validate;
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "server_scripts/checkUniqueName.php",
-                                        cache: false,
-                                        data: {name: name.val()}, 
-                                        success: function(data) {
-                                            validate = data;                                           
-                                        }                                        
-                                    }); 
-                                    
+                                } else {                                    
+                                                                      
+                                    var validate = ajaxCheckUniqueName(name);
+                                                                        
                                     if (validate != "0") {
                                             showErrorMessage("Error. Name '" + name.val() + "' exists.");
                                     } else {
@@ -488,7 +466,6 @@
                                         CLICKED[0].material.color.setHex( CLICKED[0].oldColor ); 
 
                                         if (CLICKED[1] != null) {
-
                                             CLICKED[1].material.color.setHex( CLICKED[1].oldColor ); 
                                         }
 
