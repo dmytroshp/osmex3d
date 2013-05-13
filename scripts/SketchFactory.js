@@ -208,14 +208,7 @@ function getUnpackedGeometry( packedGeometry ) {
     normals = packedGeometry.normals,
     colors = packedGeometry.colors,
 
-    nUvLayers = 0;
-
-    // disregard empty arrays
-    for ( i = 0; i < packedGeometry.uvs.length; i++ ) {
-
-            if ( packedGeometry.uvs[ i ].length ) nUvLayers ++;
-
-    }
+    nUvLayers = 1;
 
     for ( i = 0; i < nUvLayers; i++ ) {
 
