@@ -412,8 +412,8 @@
                     
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
-                    // мышка
-                    myDialog.keyup(function () {
+                    
+                    /*myDialog.keyup(function () {
                          var name = $("#name");
                         $.ajax({
                                     type: "POST",
@@ -429,7 +429,7 @@
                                     }
                                         
                         });
-                    });
+                    });*/
   
                     myDialog.dialog({
                         zIndex: 999,
@@ -454,27 +454,50 @@
                             },*/
                             "Create": function() {
                                 var name = $("#name"), category = $("#category");
-                                var geometryExporter = new THREE.GeometryExporter();
-                                var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
-
-                                var imageData = iconRenderer.domElement.toDataURL("image/png");
-
-                                var result=ajaxNewSketch(name, category, serializedGeometry, CLICKED[0].scale, imageData);
-                                showStartMessage(result);
-                                //console.debug(data);
-                                window.parent.refreshAccordion();
-
-                                CLICKED[0].material.color.setHex( CLICKED[0].oldColor ); 
-
-                                if (CLICKED[1] != null) {
+                                if (name.val() == "") {
+                                    showErrorMessage("Error. 'Name' is empty.");
+                                } else  if (category.val() == "") {
+                                    showErrorMessage("Error. 'Category' is empty.");
+                                } else {
                                     
-                                    CLICKED[1].material.color.setHex( CLICKED[1].oldColor ); 
-                                }
-                                
-                                CLICKED[0] = null;
-                                CLICKED[1] = null;
+                                    var validate;
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "server_scripts/checkUniqueName.php",
+                                        cache: false,
+                                        data: {name: name.val()}, 
+                                        success: function(data) {
+                                            validate = data;                                           
+                                        }                                        
+                                    }); 
+                                    
+                                    if (validate != "0") {
+                                            showErrorMessage("Error. Name '" + name.val() + "' exists.");
+                                    } else {
+                                    
+                                        var geometryExporter = new THREE.GeometryExporter();
+                                        var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
 
-                                $(this).dialog("close");
+                                        var imageData = iconRenderer.domElement.toDataURL("image/png");
+
+                                        var result=ajaxNewSketch(name, category, serializedGeometry, CLICKED[0].scale, imageData);
+                                        showNormalMessage(result);
+                                        //console.debug(data);
+                                        window.parent.refreshAccordion();
+
+                                        CLICKED[0].material.color.setHex( CLICKED[0].oldColor ); 
+
+                                        if (CLICKED[1] != null) {
+
+                                            CLICKED[1].material.color.setHex( CLICKED[1].oldColor ); 
+                                        }
+
+                                        CLICKED[0] = null;
+                                        CLICKED[1] = null;
+
+                                        $(this).dialog("close");
+                                    }
+                                }
                             },
                             Cancel: function() {
                                 
@@ -670,7 +693,7 @@
                     });
             }
             
-            function showStartMessage(text) {
+            function showNormalMessage(text) {
                 clearTimeout(timeout_id);
                 if (alert.remove)
                     alert.remove();
@@ -1089,7 +1112,7 @@
  
                          if ( PICKED ) {
                              
-                             //showStartMessage("Double click on an object to select it for geometry operations.");
+                             //showNormalMessage("Double click on an object to select it for geometry operations.");
                              
                              if ( PICKED.material.emissive ) {
                                  
