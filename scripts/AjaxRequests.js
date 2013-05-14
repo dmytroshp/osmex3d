@@ -64,7 +64,7 @@ function ajaxNewSketch(name, category, serializedGeometry, scale, image) {
     var result;
     $.ajax({
         type: "POST",
-        async:true,
+        async:false,
         url: "server_scripts/NewSketch.php",
         cache: false,
         data: {name: name.val(), category: category.val(), geometry: JSON.stringify(serializedGeometry), origScaleX: scale.x, origScaleY: scale.y, origScaleZ: scale.z, imageData: image},
