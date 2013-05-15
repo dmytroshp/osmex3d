@@ -58,14 +58,14 @@ OSMEX.OsmArea.prototype.buildTiles = function () {
     
     for ( var y = 0, ty = this.tile_y1; y < this.areaHeight; ty++) {
         
-        var endY = (this.areaHeight - y < this.tileSizeInMeters) ? this.tile_y2_offset : 1;
+        var endY = ((ty === this.tile_y2 - 1) && (this.areaHeight - y < this.tileSizeInMeters)) ? this.tile_y2_offset : 1;
         var height = this.tileSizeInMeters * (endY - startY);
         
         var startX = this.tile_x1_offset;
         
         for ( var x = 0, tx = this.tile_x1; x < this.areaWidth; tx++ ) {
             
-            var endX = (this.areaWidth - x < this.tileSizeInMeters) ? this.tile_x2_offset : 1;
+            var endX = ((tx === this.tile_x2 - 1) && (this.areaWidth - x < this.tileSizeInMeters)) ? this.tile_x2_offset : 1;
             var width = this.tileSizeInMeters * (endX - startX);
             
             var quadGeometry = new THREE.Geometry();
