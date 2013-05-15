@@ -434,7 +434,12 @@ HERE;
                      });
                      return false;
                 });
-//           6. Image Container handlers                
+//           6. Image Container handlers
+                window.releaseSelection=function ()
+                {
+                    $(".imgContainer").removeClass('clicked');
+                    $('.imgContainer').css("border", "1px solid white");
+                }
                 $(".imgContainer").mouseenter(function(){
                     if($(this).hasClass('clicked')) return;
                     $(this).css("cursor", "pointer");
