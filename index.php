@@ -14,23 +14,21 @@ while ($row = mysql_fetch_array($query)) {
 }
 mysql_close($connection);
 
-global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
-if(!isset($_GET['zoom']))
-{
-    $landscapeMode='boundary';
-    $zoom=0;
-}
-else
-{
-    $landscapeMode='zoom';
-    $zoom=intval($_GET['zoom']);
-}
+global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz;
+if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
+if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
+if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+
 $minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
 $minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
 $maxlon=(isset($_GET['maxlon'])&& is_numeric($_GET['maxlon']))?$_GET['maxlon']:180;
 $maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:90;
 $mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
 $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
+$camy=(isset($_GET['camy'])&& is_numeric($_GET['camy']))?$_GET['camy']:0;
+$camx=(isset($_GET['camx'])&& is_numeric($_GET['camx']))?$_GET['camx']:0;
+$camz=(isset($_GET['camz'])&& is_numeric($_GET['camz']))?$_GET['camz']:0;
+$zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,7 +52,7 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
         
         <script type="text/javascript">
             <?php
-                global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom;
+                global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz;
                 echo<<<HERE
                     landscapeMode='$landscapeMode';
                     minlon=$minlon;
@@ -64,6 +62,9 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
                     mlon=$mlon;
                     mlat=$mlat;
                     zoom=$zoom;
+					camx=$camx;
+					camz=$camz;
+					camy=$camy;
 HERE;
             ?>
             var searchbar_template="<div id='searchbar'>\
@@ -131,10 +132,13 @@ HERE;
                         activator:function(){
                             var iframe=this.find('iframe');
 
-                            if(landscapeMode=='zoom') 
-                                iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&rnd='+Math.random());
+                            if(landscapeMode=='camera') 
+                                iframe.attr('src','landscape.php?camx='+camx+'&camy='+camy+'&camz='+camz+'&mode='+'camera'+'&rnd='+Math.random());
+							else if(landscapeMode=='zoom') 
+                                    iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&mode='+'zoom'+'&rnd='+Math.random());
                             else
-                                iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&rnd='+Math.random());
+                                    iframe.attr('src','landscape.php?minlon='+minlon+'&minlat='+minlat+'&maxlon='+maxlon+'&maxlat='+maxlat+'&mode='+'boundary'+'&rnd='+Math.random());
+									
                         }
                     },
                     tabArea:{

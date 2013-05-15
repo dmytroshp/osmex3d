@@ -86,22 +86,21 @@
 
 	<body>
         <?php
-    if(!isset($_GET['zoom']))
-{
-    $landscapeMode='boundary';
-    $zoom=0;
-}
-else
-{
-    $landscapeMode='zoom';
-    $zoom=intval($_GET['zoom']);
-}
+		
+if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
+if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
+if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+
 $minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
 $minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
 $maxlon=(isset($_GET['maxlon'])&& is_numeric($_GET['maxlon']))?$_GET['maxlon']:180;
 $maxlat=(isset($_GET['maxlat'])&& is_numeric($_GET['maxlat']))?$_GET['maxlat']:90;
 $mlat=(isset($_GET['mlat'])&& is_numeric($_GET['mlat']))?$_GET['mlat']:0;
 $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
+$camy=(isset($_GET['camy'])&& is_numeric($_GET['camy']))?$_GET['camy']:0;
+$camx=(isset($_GET['camx'])&& is_numeric($_GET['camx']))?$_GET['camx']:0;
+$camz=(isset($_GET['camz'])&& is_numeric($_GET['camz']))?$_GET['camz']:0;
+$zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
 echo<<<HERE
 <script type="text/javascript">
     
@@ -113,6 +112,9 @@ echo<<<HERE
                     mlon=$mlon;
                     mlat=$mlat;
                     zoom=$zoom;
+					camx=$camx;
+					camz=$camz;
+					camy=$camy;
     
 </script>
 HERE;
@@ -483,7 +485,7 @@ this.loaded = function () {
 
 			     }
 
-				  if(lvl<=18&&pixelTileSize>=384)
+				  if(lvl<18&&pixelTileSize>=384)
 				  {
 
 					/*timeoutId = setTimeout(*/verdrop(id*4+1,2*x,2*z,lvl+1)//, 5);
@@ -497,7 +499,7 @@ this.loaded = function () {
 				}
 
             function setMinMax(minlon,minlat,maxlon,maxlat,Camera,CameraController)
-            {	
+            {		
               var minlon = minlon;
               var minlat = minlat;
               var maxlon = maxlon;
@@ -512,7 +514,7 @@ this.loaded = function () {
               var coordx=_x*_k-20038706.7904
               var coordz=_z*_k-20038706.7904
               var tilesize=(lon2tile(maxlon,18)-lon2tile(minlon,18))*152.8832
-              var coordy=tilesize*UnitToPixelScale/256  ; //256-na lvl nige512	
+			  var coordy=tilesize*UnitToPixelScale/256; //256-na lvl nige512
               Camera.position.set(coordx, coordy, coordz);
               CameraController.target.x+=coordx
               CameraController.target.z+=coordz
@@ -559,6 +561,49 @@ this.loaded = function () {
 	               {
 	                 setPointZoom(mlon,mlat,zoom,camera,cameraController)
 	               }
+				   else if(landscapeMode=='camera')
+				   {
+                            /*var num18inRow=Math.pow(2,18)-1;
+                            var _k=tileSizeRoot/num18inRow;
+			  
+                            var _x = (camx + 20038706.7904)/_k;
+                            var _z = (camz + 20038706.7904)/_k;
+			  
+                            var cenlon = tile2lon(_x,18);
+                            var cenlat = tile2lat(_z,18);
+                            var range = (camy * 256)/UnitToPixelScale;
+                            var num18inRange = range/_k;
+                            var offset = parseInt(num18inRange/2);
+
+                            var _minlon = tile2lon(_x-offset,18);
+							var _maxlon = tile2lon(_x+offset,18);
+							var offsetLat = (_maxlon - cenlon)/2;
+                            var _minlat = cenlat - offsetLat;
+                            var _maxlat = cenlat + offsetLat;
+							
+							if(_minlon<(-180))_minlon=-180;
+							if(_minlon>(180))_minlon=180;
+							
+							if(_minlat<(-90))_minlat=-90;
+							if(_minlat>(90))_minlat=90;
+							
+							if(_maxlon>180)_maxlon=180;
+							if(_maxlon<(-180))_maxlon=-180;
+							
+							if(_maxlon>90)_maxlon=90;
+							if(_maxlon<(-90))_maxlon=-90;
+							
+							parent.landscapeMode='boundary';
+							parent.minlon = _minlon;
+							parent.maxlon = _maxlon;
+							parent.minlat = _minlat;
+							parent.maxlat = _maxlat;
+							setMinMax(_minlon,_minlat,_maxlon,_maxlat,camera,cameraController);*/
+							camera.position.set(camx, Math.max(camy,500), camz);
+                            cameraController.target.x+=camx
+                            cameraController.target.z+=camz
+							
+				   }
 				}else
 				{
 				  setPointZoom(0,0,0,camera,cameraController)
@@ -631,18 +676,23 @@ this.loaded = function () {
                                     var y2 = (endPoint.z + halfSize) / tileSize;
                                     
                                     var lon1 = tile2long(x1, tileLevel);
+									lon1 = lon1.toFixed(6);
                                     var lon2 = tile2long(x2, tileLevel);
+									lon2 = lon2.toFixed(6);
                                     
                                     var lat1 = tile2lat(y1, tileLevel);
+									lat1 = lat1.toFixed(6);
                                     var lat2 = tile2lat(y2, tileLevel);
+									lat2 = lat2.toFixed(6);
                                     
                                     parent.EDIT_MIN_LON = Math.min(lon1, lon2);  // LEFT
                                     parent.EDIT_MIN_LAT = Math.min(lat1, lat2);  // BOTTOM
                                     
                                     parent.EDIT_MAX_LON = Math.max(lon1, lon2);  // RIGHT
                                     parent.EDIT_MAX_LAT = Math.max(lat1, lat2);  // TOP
-                                    
-                                    parent.enableMapEditing();
+                                    //alert(parent.EDIT_MIN_LON+" "+parent.EDIT_MIN_LAT+" "+parent.EDIT_MAX_LON +" "+parent.EDIT_MAX_LAT);	
+                                    //alert(camera.position.x+" "+camera.position.y+" "+camera.position.z)
+									parent.enableMapEditing();
                                     
                                 });
                                 scene.add(areaSelector);
@@ -1363,45 +1413,11 @@ this.loaded = function () {
                                 $("#edit_button").addClass("disabled");
                             }
                             
-                            /// TODO: HERE LONLAT-DATA SHOULD BE UPDATED:
-
-                            var num18inRow=Math.pow(2,18)-1
-                            var _k=tileSizeRoot/num18inRow
-			  
-                            var _x = (camera.position.x + 20038706.7904)/_k
-                            var _z = (camera.position.z + 20038706.7904)/_k
-			  
-                            var cenlon = tile2lon(_x,18)
-                            var cenlat = tile2lat(_z,18)
-                            var range = (camera.position.y * 256)/UnitToPixelScale
-                            var num18inRange = range/_k
-                            var offset = parseInt(num18inRange/2)
-
-                            var minlon = tile2lon(_x-offset,18);
-							var maxlon = tile2lon(_x+offset,18);
-							var offsetLat = (maxlon - cenlon)/2
-                            var minlat = cenlat - offsetLat
-                            var maxlat = cenlat + offsetLat
-							
-							if(minlon<(-180))minlon=-180
-							if(minlon>(180))minlon=180
-							
-							if(minlat<(-90))minlat=-90
-							if(minlat>(90))minlat=90
-							
-							if(maxlon>180)maxlon=180
-							if(maxlon<(-180))maxlon=-180
-							
-							if(maxlon>90)maxlon=90
-							if(maxlon<(-90))maxlon=-90
-							
-							parent.landscapeMode='boundary';
-							parent.minlon = minlon
-							parent.maxlon = maxlon
-							parent.minlat = minlat
-							parent.maxlat = maxlat
-							
-							//console.debug(minlon+" "+maxlon+" "+minlat+" "+maxlat)
+                            /// TODO: HERE POS of CAMERA:
+							parent.landscapeMode='camera';
+							parent.camx=camera.position.x;
+							parent.camy=camera.position.y;
+							parent.camz=camera.position.z;
 			  
                         }
 
