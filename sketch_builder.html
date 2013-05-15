@@ -429,10 +429,10 @@
                                 } else  if (category.val() == "") {
                                     showErrorMessage("Error. 'Category' is empty.");
                                 } else {                                    
-                                                                      
+                                    var validate;                                  
                                     $.ajax({
                                         type: "POST",
-
+                                        async:false,
                                         url: "server_scripts/checkUniqueName.php",
                                         cache: false,
                                         data: {name: name.val()}, 

@@ -20,6 +20,7 @@ $query = mysql_query($sql, $connection);
 while ($row = mysql_fetch_array($query)) {
     $test['name'] = $row['nameType'];
     $test['previewFileName'] = $row['idType'].'_'.$row['nameType'];
+    $test['id']=$row['idType'];
     $array[$row['nameCat']][]=$test;
 }
 mysql_close($connection);
@@ -29,11 +30,11 @@ if(sizeof($array)<=0)
     return;
 }
 foreach ($array as $nameFigureType => $instances) {
-echo '<div class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
+echo '<div objectcategory="'.$nameFigureType.'" class="flip ui-widget ui-widget-header ui-corner-all">'.$nameFigureType.'('.sizeof($instances).')</div>';                           
 echo '<div class="slidingPanel ui-widget ui-widget-content ui-corner-all" style="display:none;">';
     for($i=0;$i<sizeof($instances);$i++)
     {
-        echo '<div class=imgContainer>';
+        echo '<div class=imgContainer id="'.$instances[$i]['id'].'">';
         echo '<img class="prev" src="previews/'.$instances[$i]['previewFileName'].'_mini.png">';
         echo '<div class=desc>';
         echo $instances[$i]['name'];

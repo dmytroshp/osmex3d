@@ -223,10 +223,12 @@ HERE;
                         {
                             $(".accordion").empty();
                             $(".accordion").html(result);
+                            
                   //    !  Handlers don't work after clearing the accordion, we need to assign it again
                             $(".flip").click(function(){
                                 $(this).next(".slidingPanel").slideToggle(500);
                             });   
+                            attachImgContainerHandlers();
                         }
                     }); //end of ajax 
                 };
@@ -440,66 +442,52 @@ HERE;
                     $(".imgContainer").removeClass('clicked');
                     $('.imgContainer').css("border", "1px solid white");
                 }
-                $(".imgContainer").mouseenter(function(){
-                    if($(this).hasClass('clicked')) return;
-                    $(this).css("cursor", "pointer");
-                    $(this).css("border", "1px solid red");
-                });
-                $(".imgContainer").mouseleave(function(){
-                    if($(this).hasClass('clicked')) return;
-                    $(this).css("cursor", "default");
-                    $(this).css("border", "1px solid white");
-                });
-                $(".imgContainer").click(function(){
-                    //$('.imgContainer.clicked').unbind("mouseleave");
-                    //$('.imgContainer.clicked').unbind("mouseenter");
-                    if($(this).hasClass('clicked'))
-                    {
+                function attachImgContainerHandlers()
+                {
+                    $(".imgContainer").mouseenter(function(){
+                        if($(this).hasClass('clicked')) return;
+                        $(this).css("cursor", "pointer");
+                        $(this).css("border", "1px solid red");
+                    });
+                    $(".imgContainer").mouseleave(function(){
+                        if($(this).hasClass('clicked')) return;
+                        $(this).css("cursor", "default");
+                        $(this).css("border", "1px solid white");
+                    });
+                    $(".imgContainer").click(function(){
+                        if($(this).hasClass('clicked'))
+                        {
+                            $('.imgContainer.clicked').css("border", "1px solid white");
+                            $('.imgContainer.clicked').removeClass('clicked');
+                            if($("#objectEditor").tabs('option','active')==1)
+                            {
+                                var frame=$("#areaEditorFrame")[0].contentWindow;
+                                frame.sketchFactory.stopBuild();
+                            }
+                            if($("#objectEditor").tabs('option','active')==2)
+                            {
+                                var frame=$("#sketchBuilderFrame")[0].contentWindow;
+                                frame.sketchFactory.stopBuild();
+                            }
+                            return;
+                        }
                         $('.imgContainer.clicked').css("border", "1px solid white");
                         $('.imgContainer.clicked').removeClass('clicked');
+                        $(this).addClass('clicked');
                         if($("#objectEditor").tabs('option','active')==1)
                         {
                             var frame=$("#areaEditorFrame")[0].contentWindow;
-                            frame.sketchFactory.stopBuild();
+                            frame.sketchFactory.startBuild($(this).attr('id'));
                         }
                         if($("#objectEditor").tabs('option','active')==2)
                         {
                             var frame=$("#sketchBuilderFrame")[0].contentWindow;
-                            frame.sketchFactory.stopBuild();
+                            frame.sketchFactory.startBuild($(this).attr('id'));
                         }
-                        return;
-                    }
-                    $('.imgContainer.clicked').css("border", "1px solid white");
-                    $('.imgContainer.clicked').removeClass('clicked');
-                    $(this).addClass('clicked');
-                    if($("#objectEditor").tabs('option','active')==1)
-                    {
-                        var frame=$("#areaEditorFrame")[0].contentWindow;
-                        frame.sketchFactory.startBuild($(this).attr('id'));
-                    }
-                    if($("#objectEditor").tabs('option','active')==2)
-                    {
-                        var frame=$("#sketchBuilderFrame")[0].contentWindow;
-                        frame.sketchFactory.startBuild($(this).attr('id'));
-                    }
-                    //$('.clicked').bind("mouseleave");
-                    //$('.clicked').bind("mouseenter");
-                    //var frame=$("#areaEditorFrame")[0].contentWindow;
-                    //frame.sketchFactory.startBuild($(this).attr('id'));
-                    /*if(!$(this).hasClass("clicked"))
-                    {
-                        $(this).css("border", "1px solid red");
-                        $(this).unbind("mouseleave");
-                        $(this).unbind("mouseenter");
-                    }
-                    else
-                    {
-                        $(this).css("border", "1px solid white");
-                        $(this).bind("mouseleave");
-                        $(this).bind("mouseenter");
-                    }
-                    $(this).toggleClass("clicked");*/
-                });
+                    });
+                }
+                attachImgContainerHandlers();
+                
 //           7. Search handler
                 $("#sketchTab").click(function (){
                     tabSelected = 1;
