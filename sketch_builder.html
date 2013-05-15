@@ -413,29 +413,12 @@
                     myDialog = $(dialog_template);
                     myDialog.prependTo('body');
                     
-                    /*myDialog.keyup(function () {
-                         var name = $("#name");
-                        $.ajax({
-                                    type: "POST",
-                                    
-                                    url: "server_scripts/checkUniqueName.php",
-                                    cache: false,
-                                    data: {name: name.val()}, 
-                                    success: function(data) {
-                                        if (data != "0") {
-                                            showErrorMessage("Error. Name '" + name.val() + "' exists.");
-                                        }
-                                       console.log(data);
-                                    }
-                                        
-                        });
-                    });*/
-  
+                    
                     myDialog.dialog({
                         zIndex: 999,
                         autoOpen: false,
                         width: 450,
-                        height: 600,
+                        height: 500,
                         resizable: false,
                         modal: true,
                         buttons: {
@@ -447,11 +430,21 @@
                                     showErrorMessage("Error. 'Category' is empty.");
                                 } else {                                    
                                                                       
-                                    var validate = ajaxCheckUniqueName(name);
-                                                                        
-                                    if (validate != "0") {
-                                            showErrorMessage("Error. Name '" + name.val() + "' exists.");
-                                    } else {
+                                    $.ajax({
+                                        type: "POST",
+
+                                        url: "server_scripts/checkUniqueName.php",
+                                        cache: false,
+                                        data: {name: name.val()}, 
+                                        success: function(data) {
+                                            if (data != "0") {
+                                                showErrorMessage("Error. Name '" + name.val() + "' exists.");
+                                            }
+                                            validate = data;
+                                        }                                        
+                                    }); 
+                                    
+                                    if (validate == "0") { 
                                     
                                         var geometryExporter = new THREE.GeometryExporter();
                                         var serializedGeometry = geometryExporter.parse(CLICKED[0].geometry);
@@ -471,7 +464,8 @@
 
                                         CLICKED[0] = null;
                                         CLICKED[1] = null;
-
+                                        $("#name").val("");
+                                        $("#category").val("");
                                         $(this).dialog("close");
                                     }
                                 }
@@ -508,6 +502,8 @@
                             iconCameraController.enabled = false;
                             cameraController.enabled = true;
                             attachHandlers();
+                            $("#name").val("");
+                            $("#category").val("");
                         }
                         
                     });
