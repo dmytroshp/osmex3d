@@ -634,8 +634,8 @@ this.loaded = function () {
                                 scene.add(new THREE.AmbientLight(0x3f3f3f));
 
                                 objectLight = new THREE.DirectionalLight(0xffffff);
-                                objectLight.target.position = cameraController.target;
-								objectLight.position.set(camera.position.x, 1500, camera.position.z);
+                                objectLight.target.position.copy(cameraController.target);
+                                objectLight.position.copy(camera.position);
                                 scene.add(objectLight);
 
 
