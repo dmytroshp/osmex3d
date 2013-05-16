@@ -218,6 +218,7 @@ function TileBlds () {
 			var timer=1;
 			var initTiles = new Array();
 			var initTilesIndx=0;
+			var initTileslvl=18;
 			var initReady=true;
 			var Exist1stTl=false;
 			var UnitToPixelScale;
@@ -506,7 +507,19 @@ this.loaded = function () {
 					/*timeoutId = setTimeout(*/verdrop(id*4+4,2*x+1,2*z+1,lvl+1)//, 5);
 
 				  }
-				  else{var tileId=id;arrTile[tileId]=new Tile();arrTile[tileId].id=tileId;/*alert(tileId+" "+arrTile[tileId].id);*/arrTile[tileId].tex_x=x;arrTile[tileId].tex_z=z;arrTile[tileId].lvl=lvl;arrTile[tileId].prnt=tileId==0?-1:((tileId-1)-((tileId-1)%4))/4;if(maxidinque<id){maxidinque=id;initTiles.unshift(id);}else{initTiles.push(id);}/*TLoad.pushTile(id);*//*arrCurRoot.push((id));*/ return 0;}
+				  else{
+				    var tileId=id;
+					arrTile[tileId]=new Tile();
+					arrTile[tileId].id=tileId;
+					/*alert(tileId+" "+arrTile[tileId].id);*/
+					arrTile[tileId].tex_x=x;
+					arrTile[tileId].tex_z=z;
+					arrTile[tileId].lvl=lvl;
+					arrTile[tileId].prnt=tileId==0?-1:((tileId-1)-((tileId-1)%4))/4;
+					initTiles[lvl].push(id);
+					/*TLoad.pushTile(id);*//*arrCurRoot.push((id));*/ 
+					return 0;
+					}
 
 				}
 
@@ -553,6 +566,7 @@ this.loaded = function () {
             }			
 
 			function init() {
+			    for(var i=0;i<19;i++)initTiles[i]=new Array();
 			    //land_func(0);// load 1st tileroots
 				//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 10000000 );
 				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 1, 40000000 , 1, 20000000 );
@@ -732,6 +746,10 @@ this.loaded = function () {
 			   //land_func(300)
 
 			  verdrop(0,0,0,0);
+			  /*initTiles = initTiles.concat(initTiles[0],initTiles[1],initTiles[2],initTiles[3],initTiles[4],initTiles[5],
+			  initTiles[6],initTiles[7],initTiles[8],initTiles[9],initTiles[10],initTiles[11],initTiles[12],initTiles[13],
+			  initTiles[14],initTiles[15],initTiles[16],initTiles[17],initTiles[18])*/
+			  
 			  //for (var beg=initTiles.length -1;beg>=0;beg--)TLoad.pushTile(initTiles[beg]);//TLoad.pushTile(initTiles[beg]);
 			  //document.addEventListener('keydown',onDocumentKeyDown,false);
 			  
@@ -1154,9 +1172,16 @@ this.loaded = function () {
 
 				
 				
-			if(initTilesIndx<initTiles.length)
+			if(initTileslvl>=0)
 			  {
-			    var tex=''+arrTile[initTiles[initTilesIndx]].lvl+'/'+arrTile[initTiles[initTilesIndx]].tex_x+'/'+arrTile[initTiles[initTilesIndx]].tex_z;
+			   while(1)
+			   {
+			    if(initTiles[initTileslvl].length>0)break;
+			    else{initTileslvl--;if(initTileslvl<0)break;}
+			   }
+			   if(initTileslvl>=0&&initTilesIndx<initTiles[initTileslvl].length)
+			   {
+			    var tex=''+arrTile[initTiles[initTileslvl][initTilesIndx]].lvl+'/'+arrTile[initTiles[initTileslvl][initTilesIndx]].tex_x+'/'+arrTile[initTiles[initTileslvl][initTilesIndx]].tex_z;
 				if(initReady)
 				{
 			    initReady=false;
@@ -1164,18 +1189,23 @@ this.loaded = function () {
                             var chr = String.fromCharCode(97 + serverCount); // fetching a, b, c
                             if (++serverCount > 2) serverCount = 0;
                             
-				arrTex[initTiles[initTilesIndx]]=THREE.ImageUtils.loadTexture('http://' + chr + '.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
+				arrTex[initTiles[initTileslvl][initTilesIndx]]=THREE.ImageUtils.loadTexture('http://' + chr + '.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
 				  {
 				     //alert("o "+initTiles[initTilesIndx]);
-				     arrTile[initTiles[initTilesIndx]].texExist=true;
-					 crtMesh(initTiles[initTilesIndx]);
-					 arrCurRoot.push(initTiles[initTilesIndx]);
+				     arrTile[initTiles[initTileslvl][initTilesIndx]].texExist=true;
+					 crtMesh(initTiles[initTileslvl][initTilesIndx]);
+					 arrCurRoot.push(initTiles[initTileslvl][initTilesIndx]);
 					 initTilesIndx++;
+					 if(initTilesIndx>=initTiles[initTileslvl].length)
+					 {
+					 initTilesIndx=0;
+					 initTileslvl--;
+					 }
 					 initReady=true;
 				  });
                 };
-                				
-			   }
+               }				
+			 }
 			else{
 
 			/*	
