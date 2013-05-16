@@ -193,6 +193,8 @@ function TileBlds () {
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 			var container;
+			
+			var objectLight;
 
 			var arrCurRoot = new Array();
 			var arrCurBld = new Array();
@@ -631,9 +633,9 @@ this.loaded = function () {
 
                                 scene.add(new THREE.AmbientLight(0x3f3f3f));
 
-                                var objectLight = new THREE.DirectionalLight(0xffffff);
-                                objectLight.position = camera.position;
-                                objectLight.target.position = cameraController.target;
+                                objectLight = new THREE.DirectionalLight(0xffffff);
+                                objectLight.target.position.copy(cameraController.target);
+                                objectLight.position.copy(camera.position);
                                 scene.add(objectLight);
 
 
@@ -725,7 +727,7 @@ this.loaded = function () {
 			  
 			  //render();
 			  sketchFactory = new OSMEX.SketchFactory();
-                          buildingsMaterial = new THREE.MeshBasicMaterial( { color: 0xeeeeee, shading: THREE.FlatShading, transparent: true } );
+              buildingsMaterial = new THREE.MeshLambertMaterial( { color: 0xeeeeee, shading: THREE.FlatShading, transparent: true } );
 			  timer=setInterval( checkTiles , 15);
 
 			}
@@ -808,7 +810,7 @@ this.loaded = function () {
                         sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
                         {
                             obj.id = id;
-                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX)*1.5, parseFloat(jstr.builds[j].scaleY)*1.5,parseFloat(jstr.builds[j].scaleZ)*1.5);
+                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX)*1.5, parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ)*1.5);
                             obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
                             var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
                             var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
@@ -1418,6 +1420,9 @@ this.loaded = function () {
 							parent.camx=camera.position.x;
 							parent.camy=camera.position.y;
 							parent.camz=camera.position.z;
+							
+							objectLight.target.position = cameraController.target;
+							objectLight.position.set(camera.position.x, 1500, camera.position.z);
 			  
                         }
 
