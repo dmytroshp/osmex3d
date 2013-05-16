@@ -9,6 +9,7 @@
         <script src="threejs/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
         <script src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+        <script src="scripts/Detector.js"></script>
         <link rel="stylesheet" href="jquery/smoothness/jquery-ui-1.10.2.custom.min.css">
 
         <script src="scripts/BoundingBox.js"></script>
@@ -550,6 +551,8 @@
                 });
 
             function init() {
+                
+                if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
                 container = document.createElement('div');
                 document.body.appendChild(container);          
