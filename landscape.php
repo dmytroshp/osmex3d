@@ -810,7 +810,7 @@ this.loaded = function () {
                         sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
                         {
                             obj.id = id;
-                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX)*1.5, parseFloat(jstr.builds[j].scaleY)*1.5,parseFloat(jstr.builds[j].scaleZ)*1.5);
+                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX)*1.5, parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ)*1.5);
                             obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
                             var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
                             var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
