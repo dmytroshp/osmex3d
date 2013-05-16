@@ -15,9 +15,15 @@ while ($row = mysql_fetch_array($query)) {
 mysql_close($connection);
 
 global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz;
-if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
-if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
-if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+if(isset($_GET['mode']))
+{
+    if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
+    if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
+    if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+}
+else {
+    $landscapeMode='boundary';
+}
 
 $minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
 $minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
