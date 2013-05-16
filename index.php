@@ -91,6 +91,19 @@ HERE;
                 $("#objectEditor").tabs("option", "active", -1); // first switching to dummy tab
                 $("#objectEditor").tabs("option", "active", index);
             }
+            function setSlidingHeight(panel)
+            {
+                    var pictureCount = panel.children(".imgContainer").length;
+                    if(pictureCount<4 && pictureCount>0)
+                        {panel.css("height", "120");panel.css("overflow-y", "hidden");}
+                    else if(pictureCount<7 && pictureCount >=4)
+                        {
+                            panel.css("height","250");
+                            panel.css("overflow-y", "hidden");
+                        }
+                    else 
+                        panel.css("height", "360");
+            }
             
             $(document).ready(function(){
                 $(document).tooltip({
@@ -119,9 +132,12 @@ HERE;
 //         EVENT HANDLERS
 //            1. Event handler for flip
                 $(".flip").click(function(){
+                    var panel = $(this).next(".slidingPanel");
                     $(this).next(".slidingPanel").slideToggle(500, function(){
+                        setSlidingHeight(panel);
                         $(this).next().toggleClass("closed");
                     });
+                    
                 });
 //            2. Event handler for search input (sketches tab)
              

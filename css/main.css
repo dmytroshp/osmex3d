@@ -170,7 +170,7 @@ body
      
  }
  .accordionContainer{
-     top: 30px;
+     top: 40px;
      position: relative;
  }
  .scrollHelper{
@@ -278,9 +278,9 @@ ul.results-list li p{
     padding-left: 20px; 
 }
 #description{
-    height: 80px;
+    height: 180px;
     margin-bottom: 0px;
-    margin-top: 26px;
+    margin-top: 50px;
     font-size: 0.6em;
     display: none;
 }
