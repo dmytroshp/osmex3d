@@ -87,9 +87,15 @@
 	<body>
         <?php
 		
-if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
-if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
-if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+if(isset($_GET['mode']))
+{
+    if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
+    if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
+    if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+}
+else {
+    $landscapeMode='boundary';
+}
 
 $minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
 $minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
@@ -100,6 +106,8 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 $camy=(isset($_GET['camy'])&& is_numeric($_GET['camy']))?$_GET['camy']:0;
 $camx=(isset($_GET['camx'])&& is_numeric($_GET['camx']))?$_GET['camx']:0;
 $camz=(isset($_GET['camz'])&& is_numeric($_GET['camz']))?$_GET['camz']:0;
+$tarx=(isset($_GET['tarx'])&& is_numeric($_GET['tarx']))?$_GET['tarx']:0;
+$tarz=(isset($_GET['tarz'])&& is_numeric($_GET['tarz']))?$_GET['tarz']:0;
 $zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
 echo<<<HERE
 <script type="text/javascript">
@@ -115,6 +123,8 @@ echo<<<HERE
 					camx=$camx;
 					camz=$camz;
 					camy=$camy;
+					tarx=$tarx;
+					tarz=$tarz;
     
 </script>
 HERE;
@@ -601,9 +611,9 @@ this.loaded = function () {
 							parent.minlat = _minlat;
 							parent.maxlat = _maxlat;
 							setMinMax(_minlon,_minlat,_maxlon,_maxlat,camera,cameraController);*/
-							camera.position.set(camx, Math.max(camy,500), camz);
-                            cameraController.target.x+=camx
-                            cameraController.target.z+=camz
+							camera.position.set(camx, camy, camz);
+                            cameraController.target.x=tarx
+                            cameraController.target.z=tarz
 							
 				   }
 				}else
@@ -1421,8 +1431,11 @@ this.loaded = function () {
 							parent.camy=camera.position.y;
 							parent.camz=camera.position.z;
 							
-							objectLight.target.position = cameraController.target;
-							objectLight.position.set(camera.position.x, 1500, camera.position.z);
+							parent.tarx=cameraController.target.x;
+							parent.tarz=cameraController.target.z;
+							
+							objectLight.target.position.copy(cameraController.target);
+                            objectLight.position.copy(camera.position);
 			  
                         }
 
