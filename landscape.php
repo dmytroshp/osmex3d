@@ -12,6 +12,7 @@
                 <script src="scripts/AreaSelector.js"></script>
                 <script src="scripts/Detector.js"></script>
                 <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
+                <script src="scripts/AjaxRequests.js"></script> 
                 <script src="scripts/BoundingBox.js"></script>		
                 <script src="scripts/Block.js"></script>
                 <script src="scripts/SketchType.js"></script>
@@ -87,9 +88,15 @@
 	<body>
         <?php
 		
-if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
-if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
-if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+if(isset($_GET['mode']))
+{
+    if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
+    if(!strcmp($_GET['mode'], 'zoom'))$landscapeMode='zoom';
+    if(!strcmp($_GET['mode'], 'camera'))$landscapeMode='camera';
+}
+else {
+    $landscapeMode='boundary';
+}
 
 $minlon=(isset($_GET['minlon'])&& is_numeric($_GET['minlon']))?$_GET['minlon']:-180;
 $minlat=(isset($_GET['minlat'])&& is_numeric($_GET['minlat']))?$_GET['minlat']:-90;
@@ -100,6 +107,8 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 $camy=(isset($_GET['camy'])&& is_numeric($_GET['camy']))?$_GET['camy']:0;
 $camx=(isset($_GET['camx'])&& is_numeric($_GET['camx']))?$_GET['camx']:0;
 $camz=(isset($_GET['camz'])&& is_numeric($_GET['camz']))?$_GET['camz']:0;
+$tarx=(isset($_GET['tarx'])&& is_numeric($_GET['tarx']))?$_GET['tarx']:0;
+$tarz=(isset($_GET['tarz'])&& is_numeric($_GET['tarz']))?$_GET['tarz']:0;
 $zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
 echo<<<HERE
 <script type="text/javascript">
@@ -115,6 +124,8 @@ echo<<<HERE
 					camx=$camx;
 					camz=$camz;
 					camy=$camy;
+					tarx=$tarx;
+					tarz=$tarz;
     
 </script>
 HERE;
@@ -208,6 +219,7 @@ function TileBlds () {
 			var timer=1;
 			var initTiles = new Array();
 			var initTilesIndx=0;
+			var initTileslvl=18;
 			var initReady=true;
 			var Exist1stTl=false;
 			var UnitToPixelScale;
@@ -496,7 +508,19 @@ this.loaded = function () {
 					/*timeoutId = setTimeout(*/verdrop(id*4+4,2*x+1,2*z+1,lvl+1)//, 5);
 
 				  }
-				  else{var tileId=id;arrTile[tileId]=new Tile();arrTile[tileId].id=tileId;/*alert(tileId+" "+arrTile[tileId].id);*/arrTile[tileId].tex_x=x;arrTile[tileId].tex_z=z;arrTile[tileId].lvl=lvl;arrTile[tileId].prnt=tileId==0?-1:((tileId-1)-((tileId-1)%4))/4;if(maxidinque<id){maxidinque=id;initTiles.unshift(id);}else{initTiles.push(id);}/*TLoad.pushTile(id);*//*arrCurRoot.push((id));*/ return 0;}
+				  else{
+				    var tileId=id;
+					arrTile[tileId]=new Tile();
+					arrTile[tileId].id=tileId;
+					/*alert(tileId+" "+arrTile[tileId].id);*/
+					arrTile[tileId].tex_x=x;
+					arrTile[tileId].tex_z=z;
+					arrTile[tileId].lvl=lvl;
+					arrTile[tileId].prnt=tileId==0?-1:((tileId-1)-((tileId-1)%4))/4;
+					initTiles[lvl].push(id);
+					/*TLoad.pushTile(id);*//*arrCurRoot.push((id));*/ 
+					return 0;
+					}
 
 				}
 
@@ -543,6 +567,7 @@ this.loaded = function () {
             }			
 
 			function init() {
+			    for(var i=0;i<19;i++)initTiles[i]=new Array();
 			    //land_func(0);// load 1st tileroots
 				//camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 10000000 );
 				camera = new OSMEX.Camera( window.innerWidth,window.innerHeight,45, 1, 40000000 , 1, 20000000 );
@@ -601,9 +626,9 @@ this.loaded = function () {
 							parent.minlat = _minlat;
 							parent.maxlat = _maxlat;
 							setMinMax(_minlon,_minlat,_maxlon,_maxlat,camera,cameraController);*/
-							camera.position.set(camx, Math.max(camy,500), camz);
-                            cameraController.target.x+=camx
-                            cameraController.target.z+=camz
+							camera.position.set(camx, camy, camz);
+                            cameraController.target.x=tarx
+                            cameraController.target.z=tarz
 							
 				   }
 				}else
@@ -722,6 +747,10 @@ this.loaded = function () {
 			   //land_func(300)
 
 			  verdrop(0,0,0,0);
+			  /*initTiles = initTiles.concat(initTiles[0],initTiles[1],initTiles[2],initTiles[3],initTiles[4],initTiles[5],
+			  initTiles[6],initTiles[7],initTiles[8],initTiles[9],initTiles[10],initTiles[11],initTiles[12],initTiles[13],
+			  initTiles[14],initTiles[15],initTiles[16],initTiles[17],initTiles[18])*/
+			  
 			  //for (var beg=initTiles.length -1;beg>=0;beg--)TLoad.pushTile(initTiles[beg]);//TLoad.pushTile(initTiles[beg]);
 			  //document.addEventListener('keydown',onDocumentKeyDown,false);
 			  
@@ -1144,9 +1173,16 @@ this.loaded = function () {
 
 				
 				
-			if(initTilesIndx<initTiles.length)
+			if(initTileslvl>=0)
 			  {
-			    var tex=''+arrTile[initTiles[initTilesIndx]].lvl+'/'+arrTile[initTiles[initTilesIndx]].tex_x+'/'+arrTile[initTiles[initTilesIndx]].tex_z;
+			   while(1)
+			   {
+			    if(initTiles[initTileslvl].length>0)break;
+			    else{initTileslvl--;if(initTileslvl<0)break;}
+			   }
+			   if(initTileslvl>=0&&initTilesIndx<initTiles[initTileslvl].length)
+			   {
+			    var tex=''+arrTile[initTiles[initTileslvl][initTilesIndx]].lvl+'/'+arrTile[initTiles[initTileslvl][initTilesIndx]].tex_x+'/'+arrTile[initTiles[initTileslvl][initTilesIndx]].tex_z;
 				if(initReady)
 				{
 			    initReady=false;
@@ -1154,18 +1190,23 @@ this.loaded = function () {
                             var chr = String.fromCharCode(97 + serverCount); // fetching a, b, c
                             if (++serverCount > 2) serverCount = 0;
                             
-				arrTex[initTiles[initTilesIndx]]=THREE.ImageUtils.loadTexture('http://' + chr + '.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
+				arrTex[initTiles[initTileslvl][initTilesIndx]]=THREE.ImageUtils.loadTexture('http://' + chr + '.tile.openstreetmap.org/'+tex+".png",new THREE.UVMapping(),function()
 				  {
 				     //alert("o "+initTiles[initTilesIndx]);
-				     arrTile[initTiles[initTilesIndx]].texExist=true;
-					 crtMesh(initTiles[initTilesIndx]);
-					 arrCurRoot.push(initTiles[initTilesIndx]);
+				     arrTile[initTiles[initTileslvl][initTilesIndx]].texExist=true;
+					 crtMesh(initTiles[initTileslvl][initTilesIndx]);
+					 arrCurRoot.push(initTiles[initTileslvl][initTilesIndx]);
 					 initTilesIndx++;
+					 if(initTilesIndx>=initTiles[initTileslvl].length)
+					 {
+					 initTilesIndx=0;
+					 initTileslvl--;
+					 }
 					 initReady=true;
 				  });
                 };
-                				
-			   }
+               }				
+			 }
 			else{
 
 			/*	
@@ -1421,8 +1462,11 @@ this.loaded = function () {
 							parent.camy=camera.position.y;
 							parent.camz=camera.position.z;
 							
-							objectLight.target.position = cameraController.target;
-							objectLight.position.set(camera.position.x, 1500, camera.position.z);
+							parent.tarx=cameraController.target.x;
+							parent.tarz=cameraController.target.z;
+							
+							objectLight.target.position.copy(cameraController.target);
+                            objectLight.position.copy(camera.position);
 			  
                         }
 

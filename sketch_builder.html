@@ -9,6 +9,7 @@
         <script src="threejs/ThreeCSG.js"></script>
         <script src="jquery/jquery-1.9.1.js"></script>
         <script src="jquery/jquery-ui-1.10.2.custom.min.js"></script>
+        <script src="scripts/Detector.js"></script>
         <link rel="stylesheet" href="jquery/smoothness/jquery-ui-1.10.2.custom.min.css">
 
         <script src="scripts/BoundingBox.js"></script>
@@ -211,7 +212,7 @@
                 background-image: url('img/48x48/12_over.png');  
             }           
             
-            
+            .ui-dialog{font-size: 13px}
         </style>
     </head>
     <body>
@@ -418,6 +419,7 @@
                     
                     myDialog.dialog({
                         zIndex: 999,
+
                         autoOpen: false,
                         width: 450,
                         height: 600,
@@ -552,6 +554,8 @@
                 });
 
             function init() {
+                
+                if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
                 container = document.createElement('div');
                 document.body.appendChild(container);          

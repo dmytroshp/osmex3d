@@ -14,7 +14,7 @@ while ($row = mysql_fetch_array($query)) {
 }
 mysql_close($connection);
 
-global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz;
+global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz,$tarx,$tarz;
 if(isset($_GET['mode']))
 {
     if(!strcmp($_GET['mode'], 'boundary'))$landscapeMode='boundary';
@@ -34,6 +34,8 @@ $mlon=(isset($_GET['mlon'])&& is_numeric($_GET['mlon']))?$_GET['mlon']:0;
 $camy=(isset($_GET['camy'])&& is_numeric($_GET['camy']))?$_GET['camy']:0;
 $camx=(isset($_GET['camx'])&& is_numeric($_GET['camx']))?$_GET['camx']:0;
 $camz=(isset($_GET['camz'])&& is_numeric($_GET['camz']))?$_GET['camz']:0;
+$tarx=(isset($_GET['tarx'])&& is_numeric($_GET['tarx']))?$_GET['tarx']:0;
+$tarz=(isset($_GET['tarz'])&& is_numeric($_GET['tarz']))?$_GET['tarz']:0;
 $zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
 ?>
 <!DOCTYPE html>
@@ -58,7 +60,7 @@ $zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
         
         <script type="text/javascript">
             <?php
-                global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz;
+                global $landscapeMode,$minlon,$minlat,$maxlon,$maxlat,$mlat,$mlon,$zoom,$camx,$camy,$camz,$tarx,$tarz;
                 echo<<<HERE
                     landscapeMode='$landscapeMode';
                     minlon=$minlon;
@@ -71,6 +73,8 @@ $zoom=(isset($_GET['zoom'])&& is_numeric($_GET['zoom']))?$_GET['zoom']:0;
 					camx=$camx;
 					camz=$camz;
 					camy=$camy;
+		        	tarx=$tarx;
+					tarz=$tarz;
 HERE;
             ?>
             var searchbar_template="<div id='searchbar'>\
@@ -155,7 +159,7 @@ HERE;
                             var iframe=this.find('iframe');
 
                             if(landscapeMode=='camera') 
-                                iframe.attr('src','landscape.php?camx='+camx+'&camy='+camy+'&camz='+camz+'&mode='+'camera'+'&rnd='+Math.random());
+                                iframe.attr('src','landscape.php?camx='+camx+'&camy='+camy+'&camz='+camz+'&mode='+'camera'+'&tarz='+tarz+'&tarx='+tarx+'&rnd='+Math.random());
 							else if(landscapeMode=='zoom') 
                                     iframe.attr('src','landscape.php?zoom='+zoom+'&mlon='+mlon+'&mlat='+mlat+'&mode='+'zoom'+'&rnd='+Math.random());
                             else
