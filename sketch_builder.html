@@ -35,12 +35,13 @@
         <script src="scripts/SketchType.js"></script>
         <script src="scripts/SketchFactory.js"></script>
         <script src="scripts/AjaxRequests.js"></script>
+        <script src="scripts/Detector.js"></script>
         
         <script type="text/javascript">
             var dialog_template = "<div id='dialog-form' title='New Sketch'>\
                 <form style='z-index:999;'>\
                     <p>Icon (use mouse with right button pressed to rotate):</p>\
-                    <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:235px;height:235px;'></div></div>\
+                    <div align='center'><div id='iconCanvas' style='border:1px solid #000000;width:236px;height:236px;'></div></div>\
                     <label for='name'>Name:</label>\
                     <input type='text' name='name' id='name' value='' class='text ui-widget-content ui-corner-all' />\
                     <label for='category'>Category:</label>\
@@ -51,7 +52,7 @@
                     <div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>\
                         <p>\
                         <span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>\
-                        <p id='msgtext'></p>\
+                        <p id='msgtext' style=' font-size: 13px;'></p>\
                         </p>\
                     </div>\
                 </div>";
@@ -59,7 +60,7 @@
                     <div class='ui-state-default ui-corner-all' style='padding: 0 .7em;'>\
                         <p>\
                         \
-                        <p id='msgtext'></p>\
+                        <p id='msgtext' style=' font-size: 13px;'></p>\
                         </p>\
                     </div>\
                 </div>";
@@ -212,6 +213,7 @@
             }           
             
             .ui-dialog{font-size: 13px}
+            .ui-tooltip{font-size: 13px}
         </style>
     </head>
     <body>
@@ -317,6 +319,7 @@
             var OPERATED = false;
             var firstObject, secondObject, resultObj;
             
+            if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
             
                 $(document).ready(function() {
 			// preload images
@@ -491,10 +494,6 @@
                             var cameraOffset = iconMesh.geometry.boundingSphere.radius * maxMeshScale * 2.8;
                             iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
                             iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
-                            
-                            iconCameraController.enabled = true;
-                            cameraController.enabled = false;
-                            detachHandlers();
                         },
                         close: function( event, ui ) {
                             
@@ -524,7 +523,21 @@
                                 
                                 CLICKED[0] = publishObject;
                                 CLICKED[1] = null;
-                                
+                                iconCameraController.enabled = true;
+                                cameraController.enabled = false;
+                                detachHandlers();
+                                //detachHandlers();
+                                $('#iconCanvas').mouseleave(function(){
+                                    //cameraController.enabled=false;
+                                    iconCameraController.enabled=false;
+                                    //detachHandlers();
+                                });
+                                $('#iconCanvas').mouseenter(function(){
+                                    //cameraController.enabled=false;
+                                    iconCameraController.resetState();
+                                    iconCameraController.enabled=true;
+                                    //attachHandlers();
+                                });
                                 myDialog.dialog("open");
                             }
                             else {
@@ -536,17 +549,12 @@
                     
                     $('.map_controls').mouseenter(function(){
                         cameraController.enabled=false;
-                        document.removeEventListener('mousemove', onDocumentMouseMove, false);
-                        document.removeEventListener('mousedown', onDocumentMouseDown, false);
-                        document.removeEventListener('mouseup', onDocumentMouseUp, false);
+                        detachHandlers();
                     });
                     $('.map_controls').mouseleave(function(){
                         cameraController.enabled=true;
-                        document.addEventListener('mousemove', onDocumentMouseMove, false);
-                        document.addEventListener('mousedown', onDocumentMouseDown, false);
-                        document.addEventListener('mouseup', onDocumentMouseUp, false);
+                        attachHandlers();
                     });
-                    
                     init();
                     animate(); 
                 });
@@ -554,7 +562,10 @@
             function init() {
                 
                 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
+                
+                // instead of stop propagation and prevent default
+                document.onselectstart=function(){return false;};
+                
                 container = document.createElement('div');
                 document.body.appendChild(container);          
                 
@@ -631,7 +642,7 @@
 
                 iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
 
-                iconCameraController = new OSMEX.CameraController(iconCamera);
+                iconCameraController = new OSMEX.CameraController(iconCamera,$('#iconCanvas')[0],true);
                 iconCameraController.noZoom = true;
                 iconCameraController.noRotate = false;
                 iconCameraController.noPan = true;
@@ -648,18 +659,26 @@
             }
             function attachHandlers()
             {
-                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                /*document.addEventListener('mousemove', onDocumentMouseMove, false);
                 document.addEventListener('mousedown', onDocumentMouseDown, false);
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
-                document.addEventListener('dblclick', onDocumentDoubleClick, false);
+                document.addEventListener('dblclick', onDocumentDoubleClick, false);*/
+                $(document).mousemove(onDocumentMouseMove);
+                $(document).mousedown(onDocumentMouseDown);
+                $(document).mouseup(onDocumentMouseUp);
+                $(document).dblclick(onDocumentDoubleClick);
                 window.addEventListener('resize', onWindowResize, false);
             }
             function detachHandlers()
             {
-                document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                /*document.removeEventListener('mousemove', onDocumentMouseMove, false);
                 document.removeEventListener('mousedown', onDocumentMouseDown, false);
                 document.removeEventListener('mouseup', onDocumentMouseUp, false);
-                document.removeEventListener('dblclick', onDocumentDoubleClick, false);
+                document.removeEventListener('dblclick', onDocumentDoubleClick, false);*/
+                $(document).unbind('mousemove');
+                $(document).unbind('mousedown');
+                $(document).unbind('mouseup');
+                $(document).unbind('dblclick');
                 window.removeEventListener('resize', onWindowResize, false);
             }
             
@@ -1110,7 +1129,7 @@
 
             function onDocumentMouseDown(event) {
 
-                event.preventDefault();
+                //event.preventDefault();
 
                 if (event.button == 0) {
 
@@ -1246,7 +1265,7 @@
 
             function onDocumentMouseUp(event) {
 
-                event.preventDefault();
+                //event.preventDefault();
                 if (event.button == 0) {
 
                     if (!SELECTED && boxBuilder.currentState ==  BoxBuilderState.NOT_STARTED) document.getElementById("dragging").click();

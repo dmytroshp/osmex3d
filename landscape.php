@@ -202,7 +202,10 @@ function TileBlds () {
 
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
+                        
+                        // instead of stop propagation and prevent default
+                        document.onselectstart=function(){return false;};
+                        
 			var container;
 			
 			var objectLight;
