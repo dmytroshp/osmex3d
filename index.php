@@ -105,7 +105,7 @@ HERE;
             {
                     var pictureCount = panel.children(".imgContainer").length;
                     if(pictureCount<4 && pictureCount>0)
-                        {panel.css("height", "120");panel.css("overflow-y", "hidden");}
+                        {panel.css("height", "130");panel.css("overflow-y", "hidden");}
                     else if(pictureCount<7 && pictureCount >=4)
                         {
                             panel.css("height","250");
@@ -159,7 +159,7 @@ HERE;
                     var panel = $(this).next(".slidingPanel");
                     $(this).next(".slidingPanel").slideToggle(500, function(){
                         //setSlidingHeight(panel);
-                        $(this).next().toggleClass("closed");
+                        $(this).toggleClass("closed");
                     });
                     
                 });
@@ -255,18 +255,34 @@ HERE;
                 });
                 window.refreshAccordion=function()
                 {
+//                    var mass = [];
                     $.ajax({
                         url:"server_scripts/objSearch.php?q="+$("#accSearch").val(),
                         async: true,
                         cache: false,
                         success:function(result)
                         {
+//                            $(".accordion").children(".slidingPanel").each(function(index){
+//                                if($(this).hasClass("closed"))
+//                                {
+//                                    mass[index]=$(this).index();
+//                                }   
+//                            });
                             $(".accordion").empty();
                             $(".accordion").html(result);
-                            
+                            maximizeFlips();
+                            $(".slidingPanel").slideDown("fast");
+//                            $(".slidingPanel").each(function(){
+//                                if($(this).index())
+//                                    $(this).css("display", "none");
+//                            });
                   //    !  Handlers don't work after clearing the accordion, we need to assign it again
                             $(".flip").click(function(){
-                                $(this).next(".slidingPanel").slideToggle(500);
+                                var panel = $(this).next(".slidingPanel");
+                                $(this).next(".slidingPanel").slideToggle(500, function (){
+                                    setSlidingHeight(panel);
+                                    $(this).toggleClass("closed");
+                                });
                             });   
                             attachImgContainerHandlers();
                         }
@@ -599,6 +615,7 @@ HERE;
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
                 activateAndRefreshPanel(0);
+                maximizeFlips();
                 //
                 //$("#objectEditor").tabs({active:0});
             });
