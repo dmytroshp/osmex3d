@@ -12,6 +12,7 @@
                 <script src="scripts/AreaSelector.js"></script>
                 <script src="scripts/Detector.js"></script>
                 <script type="text/javascript" src="scripts/AjaxReqForLandscape.js"></script> 
+                <script src="scripts/AjaxRequests.js"></script> 
                 <script src="scripts/BoundingBox.js"></script>		
                 <script src="scripts/Block.js"></script>
                 <script src="scripts/SketchType.js"></script>
