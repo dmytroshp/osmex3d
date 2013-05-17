@@ -133,12 +133,26 @@ HERE;
 //         Making tabs from containers                                              
                 $(".accordionContainer").tabs();
                 //$("#objectEditor").tabs();
-//         Calculating height for containers                         
-                var heightObj = $(window).height()*0.97;
-                $("#sidebar").css("height", heightObj);
-                $("#content").css("height", heightObj);
-                $(".accordionContainer").css("height", heightObj-180);
-                $("#objectEditor").height($("#content").height() - 8);
+
+             function resize()
+                {
+                    //         Calculating height for containers                         
+                    var heightObj = $(window).height()*0.97;
+                    var widthObj = $(window).width()*0.97;
+                    $("#sidebar").css("height", heightObj);
+                    $("#content").css("height", heightObj);
+                    $(".accordionContainer").css("height", heightObj-180);
+                    $("#objectEditor").height($("#content").height() - 8);
+                    if(widthObj<=$('#mainContainer').css('min-width').replace('px','')) return;
+                    $("#content").css("width", widthObj-$("#sidebar").width()-40);
+                    $('iframe').css('width',$('iframe').parent().width()-2);
+                    $('iframe').css('height',$('iframe').parent().height());
+                }
+                resize();
+                $(window).resize(function(){
+                    resize();
+                });
+                
 //         EVENT HANDLERS
 //            1. Event handler for flip
                 $(".flip").click(function(){
@@ -342,10 +356,11 @@ HERE;
                             width=$("#searchDivc").width();
                             $("#searchDivc").width(width+150);
                             $("#sidebar").width(width+150);
-                            $("#content").css("width", "64%");
+                            //$("#content").css("width", "64%");
                             $("#description").css("display", "none");
-                            $('iframe').css('width',$('iframe').parent().width());
-                            $('iframe').css('height',$('iframe').parent().height());
+                            resize();
+                            //$('iframe').css('width',$('iframe').parent().width());
+                            //$('iframe').css('height',$('iframe').parent().height());
                         }
                     if($("#mode :selected").val()==="View mode")
                         {
@@ -358,10 +373,11 @@ HERE;
                             width=$("#searchDivc").width();
                             $("#searchDivc").width(width-150);
                             $("#sidebar").width(width-150);
-                            $("#content").css("width", "75%");
+                            //$("#content").css("width", "75%");
                             $("#description").css("display", "block");
-                            $('iframe').css('width',$('iframe').parent().width());
-                            $('iframe').css('height',$('iframe').parent().height());
+                            //$('iframe').css('width',$('iframe').parent().width());
+                            //$('iframe').css('height',$('iframe').parent().height());
+                            resize();
                         }
                         
                         activateAndRefreshPanel(0);
@@ -373,7 +389,9 @@ HERE;
                         $("#objectEditor").children('div').css({'margin-left':'250px'});
                         var searchbar=$(searchbar_template);
                         searchbar.insertAfter('#objectEditor ul');
-                        $('iframe')[0].contentWindow.onWindowResize();
+                        $('iframe').css('width',$('iframe').parent().width());
+                        $('iframe').css('height',$('iframe').parent().height());
+                        //$('iframe')[0].contentWindow.onWindowResize();
                         //$('#searchbar').next().css({'margin-left':'250px'});
                         $(".close_link").click(function(){
                             //$('#searchbar').next().css({'margin-left':'0px'});
@@ -398,6 +416,7 @@ HERE;
                             $("#geonames").html(result['geonames']);
                             $("#geonames ul").next().remove();
                             $("#geonames ul").next().remove();
+                            $('.search_details').remove();
                             $('.set_position').click(function(){
                                 
                                 var confirmed = true;
@@ -562,10 +581,12 @@ HERE;
                             $(this).css("cursor", "default");
                             $(this).css("border", "1px solid white");
                         });
-                });    
+                });                
 //               END OF EVENT HANDLERS   
 //            Setting default mode to view mode 
-
+                
+                
+                
                 $("#tabArea").css("display", "none");
                 
                 $("#tabSketch").css("display","block");
@@ -574,7 +595,7 @@ HERE;
                 //width=$("#searchDivc").width();
                 //$("#searchDivc").width(width+150);
                 //$("#sidebar").width(width+150);
-                $("#content").css("width", "64%");
+                //$("#content").css("width", "64%");
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
                 activateAndRefreshPanel(0);
