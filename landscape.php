@@ -839,20 +839,26 @@ this.loaded = function () {
                    for(var j=0;j<jstr.builds.length;j++)
 				   {
 				       var b=parseInt(jstr.builds[j].id);
-                        sketchFactory.createObject(jstr.builds[j].TypeID, function(obj)
-                        {
+                                       
+                                       
+                                       
+                       var loadBuildingFunc = function(building) { return function(obj) {
+
                             obj.id = id;
-                            obj.scale = new THREE.Vector3 (parseFloat(jstr.builds[j].scaleX)*1.5, parseFloat(jstr.builds[j].scaleY),parseFloat(jstr.builds[j].scaleZ)*1.5);
-                            obj.rotation = new THREE.Vector3 (parseFloat(jstr.builds[j].rotationX), parseFloat(jstr.builds[j].rotationY),parseFloat(jstr.builds[j].rotationZ));
-                            var lon=parseFloat(jstr.builds[j].positionLon);///OSM_w;
-                            var lat=parseFloat(jstr.builds[j].positionLat);///OSM_h;
-			    obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,jstr.builds[j].positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
-			    obj.TypeID = jstr.builds[j].TypeID;
+                            obj.scale = new THREE.Vector3 (parseFloat(building.scaleX)*1.5, parseFloat(building.scaleY),parseFloat(building.scaleZ)*1.5);
+                            obj.rotation = new THREE.Vector3 (parseFloat(building.rotationX), parseFloat(building.rotationY),parseFloat(building.rotationZ));
+                            var lon=parseFloat(building.positionLon);///OSM_w;
+                            var lat=parseFloat(building.positionLat);///OSM_h;
+			    obj.position.set(arrTileBlds[id].x+(lon-arrTileBlds[id].minlon)*arrTileBlds[id].scale_x,building.positionHeight,arrTileBlds[id].z-(lat-arrTileBlds[id].minlat)*arrTileBlds[id].scale_z);
+			    obj.TypeID = building.TypeID;
                             obj.material = buildingsMaterial;
 			    MeshOfBlds[b]=obj;
 			    scene.add(MeshOfBlds[b]);
-                            arrTileBlds[id].arrIndxsBlds[j]=b;            
-                        });
+                            arrTileBlds[id].arrIndxsBlds[j]=b;   
+                            
+                        } }(jstr.builds[j]);
+
+                        sketchFactory.createObject(jstr.builds[j].TypeID, loadBuildingFunc);        
 						
 					}
 				//render();

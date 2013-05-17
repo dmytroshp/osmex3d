@@ -782,7 +782,7 @@
                             vertexCount = CLICKED[0].geometry.vertices.length + CLICKED[1].geometry.vertices.length;
                         }
                           
-                        if (vertexCount > 1024) {
+                        if (vertexCount > 4096) {
 
                             showErrorMessage("Geometry of selected objects is too complex. Please try to pick simpler objects.");
                             return;
