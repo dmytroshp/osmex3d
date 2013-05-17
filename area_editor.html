@@ -381,17 +381,20 @@
                     var ob = jQuery.parseJSON(json);
 
                     for (var i = 0; i < ob.builds.length; i++) {
+                        
+                        var loadBuildingFunc = function(building) { return function(obj) {
 
-                        var obj = sketchFactory.createObject(ob.builds[i].TypeID, function(obj)
-                        {
-                            obj.id = ob.builds[i].id;
-                            obj.scale = new THREE.Vector3 (parseFloat(ob.builds[i].scaleX)*1.5, parseFloat(ob.builds[i].scaleY),parseFloat(ob.builds[i].scaleZ)*1.5);
-                            obj.rotation = new THREE.Vector3 (parseFloat(ob.builds[i].rotationX), parseFloat(ob.builds[i].rotationY),parseFloat(ob.builds[i].rotationZ));
-                            obj.position = osmArea.LonLatHeightToXyz(parseFloat(ob.builds[i].positionLon), parseFloat(ob.builds[i].positionLat), parseFloat(ob.builds[i].positionHeight));
-                            obj.TypeID = parseFloat(ob.builds[i].TypeID);
+                            obj.id = building.id;
+                            obj.scale = new THREE.Vector3 (parseFloat(building.scaleX)*1.5, parseFloat(building.scaleY),parseFloat(building.scaleZ)*1.5);
+                            obj.rotation = new THREE.Vector3 (parseFloat(building.rotationX), parseFloat(building.rotationY),parseFloat(building.rotationZ));
+                            obj.position = osmArea.LonLatHeightToXyz(parseFloat(building.positionLon), parseFloat(building.positionLat), parseFloat(building.positionHeight));
+                            obj.TypeID = parseFloat(building.TypeID);
                             obj.isCreated = 0;
                             objectScene.add(obj);
-                        });
+                            
+                        } }(ob.builds[i]);
+
+                        sketchFactory.createObject(ob.builds[i].TypeID, loadBuildingFunc);
                     }
                 });
             }

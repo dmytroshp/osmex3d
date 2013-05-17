@@ -1,7 +1,7 @@
 function loadSketchTypeFromServer(_id, successCallback){
 
     $.ajax({
-        async:false,
+        async:true,
         type:'GET',
         url:'server_scripts/getCustomGeometry.php',
         cache: false,

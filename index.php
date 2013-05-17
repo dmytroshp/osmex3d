@@ -609,7 +609,7 @@ HERE;
                         </form>
                     </div>
                     </div>
-                        <p id="description">Here is some description...You can add here what you want (height of this text - 80px maximum)</p>
+                        <p id="description">This open source project is created to extend OpenStreetMap to 3D.</p>
                     <div class="accordionContainer">
                         <ul>
                         <li><a id="sketchTab" href="#acc">Sketches</a></li>
