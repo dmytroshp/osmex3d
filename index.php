@@ -101,7 +101,7 @@ HERE;
                 $("#objectEditor").tabs("option", "active", -1); // first switching to dummy tab
                 $("#objectEditor").tabs("option", "active", index);
             }
-            function setSlidingHeight(panel)
+            /*function setSlidingHeight(panel)
             {
                     var pictureCount = panel.children(".imgContainer").length;
                     if(pictureCount<4 && pictureCount>0)
@@ -113,7 +113,7 @@ HERE;
                         }
                     else 
                         panel.css("height", "360");
-            }
+            }*/
             
             $(document).ready(function(){
                 $(document).tooltip({
@@ -158,7 +158,7 @@ HERE;
                 $(".flip").click(function(){
                     var panel = $(this).next(".slidingPanel");
                     $(this).next(".slidingPanel").slideToggle(500, function(){
-                        setSlidingHeight(panel);
+                        //setSlidingHeight(panel);
                         $(this).next().toggleClass("closed");
                     });
                     

@@ -55,11 +55,12 @@ body
  }
  .slidingPanel
  {
-     height: 360px;
+     max-height: 360px;
      font-size: 0.5em !important;
      overflow-y: auto;
      direction: rtl;
      padding-left: 13px;
+     padding-bottom: 5px;
  }
  .accordion
  {
