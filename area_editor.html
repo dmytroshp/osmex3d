@@ -292,7 +292,10 @@
 
                 container = document.createElement('div');
                 document.body.appendChild(container);
-
+                
+                // instead of stop propagation and prevent default
+                document.onselectstart=function(){return false;};
+                
                 renderer = new THREE.WebGLRenderer({antialias: true});
 
                 camera = new OSMEX.Camera(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_FOV, 1, 4000, 1, 4000);

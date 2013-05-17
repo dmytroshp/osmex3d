@@ -1,6 +1,6 @@
 var OSMEX = OSMEX || { REVISION: '1' };
 
-OSMEX.CameraController = function ( object, domElement ) {
+OSMEX.CameraController = function ( object, domElement, isIconCameraController) {
 
 	THREE.EventDispatcher.call( this );
 
@@ -29,10 +29,18 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 	this.screen = { width: 0, height: 0, offsetLeft: 0, offsetTop: 0 };
 	this.radius = ( this.screen.width + this.screen.height ) / 4;
-
-	this.rotateSpeed = 1.0;
-	this.zoomSpeed = 1.2;
-	this.panSpeed = 0.3;
+        if(isIconCameraController)
+        {
+                this.rotateSpeed = 3.5;
+                this.zoomSpeed = 1.2;
+                this.panSpeed = 0.3;
+        }
+        else
+        {
+            this.rotateSpeed = 1.0;
+            this.zoomSpeed = 1.2;
+            this.panSpeed = 0.3;
+        }
 
 	this.noRotate = false;
 	this.noZoom = false;
@@ -183,8 +191,14 @@ OSMEX.CameraController = function ( object, domElement ) {
 		return projection;
 
 	};
-
-
+        
+        this.resetState=function()
+        {
+            _this.startPoint = null;
+                _this.endPoint = null;
+                    
+		_state = STATE.NONE;
+        }
 	this.zoomCamera = function () {
 
 		var factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
@@ -376,8 +390,8 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		if ( ! _this.enabled ) return;
 
-		event.preventDefault();
-		event.stopPropagation();
+		//event.preventDefault();
+		//event.stopPropagation();
                 
                 _this.startPoint = new THREE.Vector3();
                 _this.endPoint = new THREE.Vector3();
@@ -402,8 +416,10 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		}
 
-		document.addEventListener( 'mousemove', mousemove, false );
-		document.addEventListener( 'mouseup', mouseup, false );
+                _this.domElement.addEventListener( 'mousemove', mousemove, false );
+                _this.domElement.addEventListener( 'mouseup', mouseup, false );
+		//document.addEventListener( 'mousemove', mousemove, false );
+		//document.addEventListener( 'mouseup', mouseup, false );
 
 	}
 
@@ -437,16 +453,16 @@ OSMEX.CameraController = function ( object, domElement ) {
 
 		if ( ! _this.enabled ) return;
 
-		event.preventDefault();
-		event.stopPropagation();
+		//event.preventDefault();
+		//event.stopPropagation();
                 
                 _this.startPoint = null;
                 _this.endPoint = null;
                     
 		_state = STATE.NONE;
 
-		document.removeEventListener( 'mousemove', mousemove );
-		document.removeEventListener( 'mouseup', mouseup );
+		_this.domElement.removeEventListener( 'mousemove', mousemove );
+		_this.domElement.removeEventListener( 'mouseup', mouseup );
 
 	}
 
