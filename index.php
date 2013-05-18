@@ -270,7 +270,7 @@ HERE;
 //                            });
                             $(".accordion").empty();
                             $(".accordion").html(result);
-                            maximizeFlips();
+                            //maximizeFlips();
                             $(".slidingPanel").slideDown("fast");
 //                            $(".slidingPanel").each(function(){
 //                                if($(this).index())
@@ -615,7 +615,7 @@ HERE;
                 //var searchbar=$(searchbar_template);
                 //searchbar.insertAfter('#objectEditor ul');
                 activateAndRefreshPanel(0);
-                maximizeFlips();
+                //maximizeFlips();
                 //
                 //$("#objectEditor").tabs({active:0});
             });
