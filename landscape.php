@@ -543,7 +543,7 @@ this.loaded = function () {
               var coordx=_x*_k-20038706.7904
               var coordz=_z*_k-20038706.7904
               var tilesize=(lon2tile(maxlon,18)-lon2tile(minlon,18))*152.8832
-			  var coordy=tilesize*UnitToPixelScale/256; //256-na lvl nige512
+			  var coordy=Math.max(500,tilesize*UnitToPixelScale/256); //256-na lvl nige512
               Camera.position.set(coordx, coordy, coordz);
               CameraController.target.x+=coordx
               CameraController.target.z+=coordz
@@ -563,7 +563,7 @@ this.loaded = function () {
               var coordx=_x*_k-20038706.7904
               var coordz=_z*_k-20038706.7904
               var tilesize=(lon2tile(Math.max(lon2,lon1),zoom)-lon2tile(Math.min(lon2,lon1),zoom))*Math.pow(2,18-zoom)*152.8832
-              var coordy=tilesize*UnitToPixelScale/256  ; //256-na lvl nige	
+              var coordy=Math.max(500,tilesize*UnitToPixelScale/256)  ; //256-na lvl nige	
               Camera.position.set(coordx, coordy, coordz);
               CameraController.target.x+=coordx
               CameraController.target.z+=coordz
@@ -760,7 +760,9 @@ this.loaded = function () {
 			  //render();
 			  sketchFactory = new OSMEX.SketchFactory();
               buildingsMaterial = new THREE.MeshLambertMaterial( { color: 0xeeeeee, shading: THREE.FlatShading, transparent: true } );
-			  timer=setInterval( checkTiles , 15);
+			  //timer=setInterval( checkTiles , 15);
+			  
+			  timerid=setTimeout(checkTiles, 20);
 
 			}
 
@@ -1343,10 +1345,14 @@ this.loaded = function () {
 					ch_id3=4*prntId+3;
 					ch_id4=4*prntId+4;
 					allchexist=true;
-					if(!arrTile[ch_id1]){allchexist=false;}
-					if(!arrTile[ch_id2]){allchexist=false;}
-					if(!arrTile[ch_id3]){allchexist=false;}
-					if(!arrTile[ch_id4]){allchexist=false;}
+					if(typeof(arrTile[ch_id1]) == "undefined" || arrTile[ch_id1] == null)allchexist=false;
+					else{if(!arrTile[ch_id1].texExist)allchexist=false;}
+					if(typeof(arrTile[ch_id2]) == "undefined" || arrTile[ch_id2] == null)allchexist=false;
+					else{if(!arrTile[ch_id2].texExist)allchexist=false;}
+					if(typeof(arrTile[ch_id3]) == "undefined" || arrTile[ch_id3] == null)allchexist=false;
+					else{if(!arrTile[ch_id3].texExist)allchexist=false;}
+					if(typeof(arrTile[ch_id4]) == "undefined" || arrTile[ch_id4] == null)allchexist=false;
+					else{if(!arrTile[ch_id4].texExist)allchexist=false;}
 					if(allchexist){				
 
 					var distFromCh1=getDistance(camera,arrTile[ch_id1].lvl,arrTile[ch_id1].tex_x,arrTile[ch_id1].tex_z);
@@ -1434,6 +1440,8 @@ this.loaded = function () {
 				if(TLoad){
 			     if(TLoad.needforload())TLoad.loadTile();
 				}
+				
+				timerid=setTimeout(checkTiles, 20);
               
 			}
 
