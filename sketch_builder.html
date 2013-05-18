@@ -423,7 +423,7 @@
 
                         autoOpen: false,
                         width: 450,
-                        height: 600,
+                        height: 550,
                         resizable: false,
                         modal: true,
                         buttons: {
@@ -491,9 +491,11 @@
                             iconMesh.geometry.computeBoundingSphere();
                             
                             var maxMeshScale = Math.max(Math.max(iconMesh.scale.x, iconMesh.scale.y), iconMesh.scale.z);
-                            var cameraOffset = iconMesh.geometry.boundingSphere.radius * maxMeshScale * 2.8;
+                            var cameraOffset = maxMeshScale + 16;
                             iconCamera.position = new THREE.Vector3(1, 1, 1).normalize().multiplyScalar(cameraOffset);
                             iconCamera.lookAt(iconMesh.geometry.boundingSphere.center);
+                            
+                            detachHandlers();
                         },
                         close: function( event, ui ) {
                             
@@ -523,21 +525,7 @@
                                 
                                 CLICKED[0] = publishObject;
                                 CLICKED[1] = null;
-                                iconCameraController.enabled = true;
-                                cameraController.enabled = false;
-                                detachHandlers();
-                                //detachHandlers();
-                                $('#iconCanvas').mouseleave(function(){
-                                    //cameraController.enabled=false;
-                                    iconCameraController.enabled=false;
-                                    //detachHandlers();
-                                });
-                                $('#iconCanvas').mouseenter(function(){
-                                    //cameraController.enabled=false;
-                                    iconCameraController.resetState();
-                                    iconCameraController.enabled=true;
-                                    //attachHandlers();
-                                });
+
                                 myDialog.dialog("open");
                             }
                             else {
@@ -555,6 +543,15 @@
                         cameraController.enabled=true;
                         attachHandlers();
                     });
+                    
+                    $('#iconCanvas').mouseleave(function(){
+                        iconCameraController.enabled=false;
+                    });
+                    $('#iconCanvas').mouseenter(function(){
+                        iconCameraController.resetState();
+                        iconCameraController.enabled=true;
+                    });
+                
                     init();
                     animate(); 
                 });
@@ -640,10 +637,10 @@
                 iconRenderer.autoClear = false;
                 $("#iconCanvas").append(iconRenderer.domElement);
 
-                iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 300);
+                iconCamera = new THREE.PerspectiveCamera(SCREEN_FOV, 1, 1, 3000);
 
                 iconCameraController = new OSMEX.CameraController(iconCamera,$('#iconCanvas')[0],true);
-                iconCameraController.noZoom = true;
+                iconCameraController.noZoom = false;
                 iconCameraController.noRotate = false;
                 iconCameraController.noPan = true;
                 iconCameraController.enabled = false;
@@ -654,32 +651,22 @@
                 iconLight = new THREE.DirectionalLight(0xffffff);
                 iconScene.add(iconLight);
                 
+                window.addEventListener('resize', onWindowResize, false);
                 attachHandlers();
-                
             }
             function attachHandlers()
             {
-                /*document.addEventListener('mousemove', onDocumentMouseMove, false);
+                document.addEventListener('mousemove', onDocumentMouseMove, false);
                 document.addEventListener('mousedown', onDocumentMouseDown, false);
                 document.addEventListener('mouseup', onDocumentMouseUp, false);
-                document.addEventListener('dblclick', onDocumentDoubleClick, false);*/
-                $(document).mousemove(onDocumentMouseMove);
-                $(document).mousedown(onDocumentMouseDown);
-                $(document).mouseup(onDocumentMouseUp);
-                $(document).dblclick(onDocumentDoubleClick);
-                window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener('dblclick', onDocumentDoubleClick, false);
             }
             function detachHandlers()
             {
-                /*document.removeEventListener('mousemove', onDocumentMouseMove, false);
+                document.removeEventListener('mousemove', onDocumentMouseMove, false);
                 document.removeEventListener('mousedown', onDocumentMouseDown, false);
                 document.removeEventListener('mouseup', onDocumentMouseUp, false);
-                document.removeEventListener('dblclick', onDocumentDoubleClick, false);*/
-                $(document).unbind('mousemove');
-                $(document).unbind('mousedown');
-                $(document).unbind('mouseup');
-                $(document).unbind('dblclick');
-                window.removeEventListener('resize', onWindowResize, false);
+                document.removeEventListener('dblclick', onDocumentDoubleClick, false);
             }
             
             function hideMessage()
