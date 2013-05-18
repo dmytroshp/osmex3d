@@ -280,7 +280,7 @@ HERE;
                             $(".flip").click(function(){
                                 var panel = $(this).next(".slidingPanel");
                                 $(this).next(".slidingPanel").slideToggle(500, function (){
-                                    setSlidingHeight(panel);
+                                    //setSlidingHeight(panel);
                                     $(this).toggleClass("closed");
                                 });
                             });   
