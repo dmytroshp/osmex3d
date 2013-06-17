@@ -1218,8 +1218,8 @@ this.loaded = function () {
                 };
                }				
 			 }
-			else{
-
+			//else{
+                   //console.debug("arrCurRoot.length "+arrCurRoot.length);
 			/*	
 
 			  curBldId++;
@@ -1240,6 +1240,7 @@ this.loaded = function () {
 				
 				for(j=0;j<arrCurRoot.length;j++){ 
 				  cur_ID=arrCurRoot[j];
+				  //console.debug("cur_ID "+cur_ID)
 				  if(typeof(arrTile[cur_ID]) != "undefined" && arrTile[cur_ID] != null)
 				  {
 
@@ -1293,30 +1294,40 @@ this.loaded = function () {
 				  var ch2=cur_ID*4+2;
 				  var ch3=cur_ID*4+3;
 				  var ch4=cur_ID*4+4;
-				  var flg=false;
-				  var exstCh1=false;
-				  if(typeof(arrTile[ch1]) != "undefined" && arrTile[ch1] != null)exstCh1=true;
-				  var exstCh2=false;
-				  if(typeof(arrTile[ch2]) != "undefined" && arrTile[ch2] != null)exstCh2=true;
-				  var exstCh3=false;
-				  if(typeof(arrTile[ch3]) != "undefined" && arrTile[ch3] != null)exstCh3=true;
-				  var exstCh4=false;
-				  if(typeof(arrTile[ch4]) != "undefined" && arrTile[ch4] != null)exstCh4=true;
-				  if(!exstCh1||!exstCh2||!exstCh3||!exstCh4)
+				  var flg=true;
+				  if(typeof(arrTile[ch1]) == "undefined" || arrTile[ch1] == null)
 				  {
-				    arrTile[ch1]=new Tile();arrTile[ch1].id=ch1;arrTile[ch1].tex_x=2*arrTile[cur_ID].tex_x;arrTile[ch1].tex_z=2*arrTile[cur_ID].tex_z;arrTile[ch1].lvl=arrTile[cur_ID].lvl+1;arrTile[ch1].prnt=cur_ID;
-				    arrTile[ch2]=new Tile();arrTile[ch2].id=ch2;arrTile[ch2].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[ch2].tex_z=2*arrTile[cur_ID].tex_z;arrTile[ch2].lvl=arrTile[cur_ID].lvl+1;arrTile[ch2].prnt=cur_ID;
-				    arrTile[ch3]=new Tile();arrTile[ch3].id=ch3;arrTile[ch3].tex_x=2*arrTile[cur_ID].tex_x;arrTile[ch3].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[ch3].lvl=arrTile[cur_ID].lvl+1;arrTile[ch3].prnt=cur_ID;
-				    arrTile[ch4]=new Tile();arrTile[ch4].id=ch4;arrTile[ch4].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[ch4].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[ch4].lvl=arrTile[cur_ID].lvl+1;arrTile[ch4].prnt=cur_ID;
-				    loadTexture(ch1);
-				    loadTexture(ch2);
-				    loadTexture(ch3);
-				    loadTexture(ch4);
+				    flg=false;
+					arrTile[ch1]=new Tile();arrTile[ch1].id=ch1;arrTile[ch1].tex_x=2*arrTile[cur_ID].tex_x;arrTile[ch1].tex_z=2*arrTile[cur_ID].tex_z;arrTile[ch1].lvl=arrTile[cur_ID].lvl+1;arrTile[ch1].prnt=cur_ID;
+					loadTexture(ch1);
 				  }
-				  else
+				  else{if(!arrTile[ch1].texExist)flg=false;}
+				  
+				  if(typeof(arrTile[ch2]) == "undefined" || arrTile[ch2] == null)
 				  {
-				    flg=arrTile[ch1].texExist&&arrTile[ch2].texExist&&arrTile[ch3].texExist&&arrTile[ch4].texExist;
-				    if(flg)
+				    flg=false;
+					arrTile[ch2]=new Tile();arrTile[ch2].id=ch2;arrTile[ch2].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[ch2].tex_z=2*arrTile[cur_ID].tex_z;arrTile[ch2].lvl=arrTile[cur_ID].lvl+1;arrTile[ch2].prnt=cur_ID;
+					loadTexture(ch2);
+				  }
+				  else{if(!arrTile[ch2].texExist)flg=false;}
+				  
+				  if(typeof(arrTile[ch3]) == "undefined" || arrTile[ch3] == null)
+				  {
+				    flg=false;
+					arrTile[ch3]=new Tile();arrTile[ch3].id=ch3;arrTile[ch3].tex_x=2*arrTile[cur_ID].tex_x;arrTile[ch3].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[ch3].lvl=arrTile[cur_ID].lvl+1;arrTile[ch3].prnt=cur_ID;
+				    loadTexture(ch3);
+				  }
+				  else{if(!arrTile[ch3].texExist)flg=false;}
+				  
+				  if(typeof(arrTile[ch4]) == "undefined" || arrTile[ch4] == null)
+				  {
+				    flg=false;
+					arrTile[ch4]=new Tile();arrTile[ch4].id=ch4;arrTile[ch4].tex_x=2*arrTile[cur_ID].tex_x+1;arrTile[ch4].tex_z=2*arrTile[cur_ID].tex_z+1;arrTile[ch4].lvl=arrTile[cur_ID].lvl+1;arrTile[ch4].prnt=cur_ID;
+					loadTexture(ch4);
+				  }
+				  else{if(!arrTile[ch4].texExist)flg=false;}
+				  
+				  if(flg)
 					{
 				       arrCurRoot.splice(j,1);
 				       var delprntid=ch1==0?-1:((ch1-1)-((ch1-1)%4))/4;
@@ -1331,7 +1342,6 @@ this.loaded = function () {
 					   arrCurRoot.push(ch3);
 					   arrCurRoot.push(ch4);
 				    }
-				  }
 				
 				break;
 				}
@@ -1372,17 +1382,17 @@ this.loaded = function () {
 					  {
 					    if(arrTile[prntId].texExist)
 						{
-							var count=0;
-							for(i=0 ;i< arrCurRoot.length;i++)
+
+						  for(var d=0;d<4;d++)
+							for(var i=0 ;i< arrCurRoot.length;i++)
 							{
 							    if(typeof(arrTile[arrCurRoot[i]]) != "undefined" && arrTile[arrCurRoot[i]] != null)
 								{
-					              if(arrTile[arrCurRoot[i]].prnt==prntId){arrCurRoot[i]=0;count++;}
+								
+					              if(arrTile[arrCurRoot[i]].prnt==prntId){arrCurRoot.splice(i,1);break;}
 								}
 					        }
-					      arrCurRoot.sort();
-					  
-					      for(i=0 ;i<count;i++)arrCurRoot.shift();
+
 						   deltilemesh((prntId*4+1));
 						   deltilemesh((prntId*4+2));
 						   deltilemesh((prntId*4+3));
@@ -1419,7 +1429,7 @@ this.loaded = function () {
 
                         }
 						
-						}
+						//}
 						
 						
 				if(InitArray.length)		
