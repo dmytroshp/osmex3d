@@ -15,8 +15,7 @@ $id=mysql_real_escape_string($_GET["id"]);
 }
 
 $query= <<<EOD
-SELECT ar_verts.verts FROM ar_verts,
-tile WHERE tile.id='$id' and ar_verts.id=tile.id_av
+SELECT tile.verts FROM tile WHERE tile.ID='$id'
 EOD;
 
 
@@ -29,7 +28,7 @@ $verts_y=array();
 if(isset($user['verts'])){
 $verts=explode(" ",trim($user['verts']));
 
- for ($i = 1; $i < count($verts); $i+=3) 
+ for ($i = 0; $i < count($verts); $i++) 
   { 
     array_push($verts_y,$verts[$i]);
   } 

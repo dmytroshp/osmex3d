@@ -641,8 +641,8 @@ this.loaded = function () {
 				  //setMinMax(25.64,44.4,39.95,54.18,camera,cameraController)
 				}
                                 
-                        var div = document.getElementById('cont');
-			//div.style.display="none";
+            var div = document.getElementById('cont');
+			div.style.display="none";
 			div.ongetdata =responseServer;		
 
 			var div_bld = document.getElementById('build');
@@ -801,28 +801,41 @@ this.loaded = function () {
 			function responseServer(s) {
 
 				var tileId=-1;
-				var flagroot=false;
-				var findtile=false;
-				var jstr;
-				var flg_empty=false;
 				jstr=JSON.parse(''+s);
-				if(jstr.id<0){
-				var lvl=-1;
-				var id =Math.abs(jstr.id);
-				for(t=0;/*t<=TLoad.maxid*/;t=(t*4+4)){lvl++;if(id<=t)break}
-				if(lvl<=18)jstr.id=id;
+				if(jstr.id>0&&typeof(arrTile[jstr.id]) != "undefined" && arrTile[jstr.id] != null){
+				var id =jstr.id;
+				var var1=Math.pow(2,arrTile[id].lvl);//number of tiles in row (specific lvl) 
+				scale=id==0?TLoad.stepGrid:TLoad.stepGrid/(var1);//determine a width and a height of cell
+
+				var offset=id==0?0:Math.abs(2*TLoad.startX)/(var1);  // determine an offset for 1st tile of specific lvl 
+				//count 1st coordinates for concrete tile
+				var startX=TLoad.startX+offset*arrTile[id].tex_x;
+				var startZ=TLoad.startZ+offset*arrTile[id].tex_z;
+				
+				arrTile[id].triangleGeometry.dynamic = true;
+
+				var x_=-1;
+				var z_=-1;
+				var i_=0;
+				var j_=0;
+				//Creation of a grid
+                    for(;i_<5;i_++){
+					    z_=startZ+(scale)*i_;
+					   for(;j_<5;j_++){
+					      x_=startX+(scale)*j_;
+		                  arrTile[id].triangleGeometry.vertices[i_*5+j_].y=parseFloat(jstr.verts[i_*5+j_]);
+                          //console.debug(parseFloat(jstr.verts[i_*5+j_]));
+
+						             }
+									 j_=0;
+											};
+											
+				arrTile[id].triangleGeometry.verticesNeedUpdate = true;
+				
 				}
-				if(jstr.verts[0]==undefined)flg_empty=true;
+				
 
-
-                if(jstr.id>=0){	
-
-                    }else{}
-					 //r=(delete tile);
-
-                      jstr=null;					
-					  TLoad.loaded()
-
+                jstr=null;					
 				                      }
 									  
 
@@ -1089,6 +1102,7 @@ this.loaded = function () {
 				//arrCurRoot.push(id);
 				
 				//render();
+				land_func(id);
 
 			}
 			var serverCount = 0;
